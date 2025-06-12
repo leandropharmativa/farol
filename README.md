@@ -1,4 +1,4 @@
-CREATE TABLE seriais (
+CREATE TABLE farol_seriais (
   id UUID PRIMARY KEY,
   codigo TEXT UNIQUE NOT NULL,
   nome_empresa TEXT NOT NULL,
