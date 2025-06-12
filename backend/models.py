@@ -11,3 +11,7 @@ class SerialRequest(BaseModel):
 class ValidarSerialRequest(BaseModel):
     codigo: str
     email: str
+
+class AdminLoginRequest(BaseModel):
+    email: str
+    senha: str
