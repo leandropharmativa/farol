@@ -45,7 +45,7 @@ const buscarEmpresa = async () => {
 
   setCarregandoEmpresa(true)
   try {
-    const res = await api.get(`/serial/verificar/${codigo.trim()}`)
+    const res = await api.get(`/serial/verificar/${codigo}`)
     console.log("Resposta da verificação:", res.data)
 
     if (res.data.status === 'ok') {
