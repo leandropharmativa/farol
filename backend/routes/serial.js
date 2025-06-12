@@ -30,7 +30,7 @@ router.post('/validar', async (req, res) => {
 
   try {
     const result = await pool.query(`
-      SELECT * FROM seriais
+      SELECT * FROM farol_seriais
       WHERE codigo = $1 AND email_vinculado = $2 AND ativo = true AND validade_ate >= NOW() AND farmacia_id IS NULL
     `, [codigo, email])
 
