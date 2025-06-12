@@ -2,7 +2,7 @@
 // Este componente unifica o login normal e a ativação da farmácia (primeiro acesso)
 
 import { useState } from 'react'
-import axios from 'axios'
+import api from '../services/api'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 
@@ -28,7 +28,7 @@ export default function LoginFarmacia() {
 
   const handleLogin = async () => {
     try {
-      const res = await axios.post('/farmacia/login', { email, senha })
+      const res = await api.post('/farmacia/login', { email, senha })
       if (res.data.status === 'ok') {
         toast.success('Login realizado!')
         navigate('/painel-farmacia')
@@ -45,7 +45,7 @@ const buscarEmpresa = async () => {
 
   setCarregandoEmpresa(true)
   try {
-    const res = await axios.get(`/serial/verificar/${codigo.trim()}`)
+    const res = await api.get(`/serial/verificar/${codigo.trim()}`)
     console.log("Resposta da verificação:", res.data)
 
     if (res.data.status === 'ok') {
@@ -66,7 +66,7 @@ const buscarEmpresa = async () => {
 
   const handleAtivar = async () => {
     try {
-      const res = await axios.post('/farmacia/registrar', {
+      const res = await api.post('/farmacia/registrar', {
         nome,
         email,
         senha,
