@@ -1,6 +1,6 @@
 # backend/models.py
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 
 class SerialRequest(BaseModel):
