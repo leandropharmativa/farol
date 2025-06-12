@@ -102,40 +102,47 @@ export default function LoginFarmacia() {
         </>
       ) : (
         <>
-          <input
-            type="text"
-            placeholder="Código de ativação"
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
-            onBlur={buscarEmpresa}
-          />
-          {carregandoEmpresa && <p>Verificando código...</p>}
-          {nomeEmpresa && (
-            <>
-              <p><strong>Empresa:</strong> {nomeEmpresa}</p>
-              <input
-                type="text"
-                placeholder="Nome da farmácia"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <input
-                type="email"
-                placeholder="E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Senha"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
-              <button onClick={handleAtivar}>Ativar Conta</button>
-            </>
-          )}
-        </>
-      )}
+<input
+  type="text"
+  placeholder="Código de ativação"
+  value={codigo}
+  onChange={(e) => setCodigo(e.target.value)}
+/>
+
+<button
+  onClick={buscarEmpresa}
+  disabled={!codigo.trim()}
+  style={{ marginTop: '0.5rem' }}
+>
+  Validar Código
+</button>
+
+{carregandoEmpresa && <p>Verificando código...</p>}
+
+{nomeEmpresa && (
+  <>
+    <p><strong>Empresa:</strong> {nomeEmpresa}</p>
+    <input
+      type="text"
+      placeholder="Nome da farmácia"
+      value={nome}
+      onChange={(e) => setNome(e.target.value)}
+    />
+    <input
+      type="email"
+      placeholder="E-mail"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+    />
+    <input
+      type="password"
+      placeholder="Senha"
+      value={senha}
+      onChange={(e) => setSenha(e.target.value)}
+    />
+    <button onClick={handleAtivar}>Ativar Conta</button>
+  </>
+)}
 
       <button onClick={alternarModo} style={{ marginTop: '1rem' }}>
         {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
