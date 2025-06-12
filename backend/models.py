@@ -15,3 +15,13 @@ class ValidarSerialRequest(BaseModel):
 class AdminLoginRequest(BaseModel):
     email: str
     senha: str
+
+class NovaFarmaciaRequest(BaseModel):
+    nome: str
+    email: EmailStr
+    senha: str
+    codigoSerial: str
+
+class LoginFarmaciaRequest(BaseModel):
+    email: EmailStr
+    senha: str
