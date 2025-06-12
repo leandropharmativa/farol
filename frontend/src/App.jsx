@@ -15,9 +15,7 @@ export default function App() {
     <BrowserRouter>
 <Routes>
 <Route path="/farmacia" element={<LoginFarmacia />} />
-<Route path="/ativar/:codigo" element={<AtivarContaFarmacia />} />
-<Route path="/login-farmacia" element={<TelaLoginComEmailSenha />} />
-  
+ 
   <Route path="/" element={<LoginAdmin />} />
   <Route path="/login" element={<LoginAdmin />} />
   <Route
