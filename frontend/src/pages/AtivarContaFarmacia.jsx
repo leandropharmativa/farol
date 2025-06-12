@@ -1,3 +1,33 @@
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import axios from 'axios'
+import { toast } from 'react-toastify'
+
+export default function AtivarContaFarmacia() {
+  const { codigo } = useParams()
+  const navigate = useNavigate()
+
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+  const [nomeEmpresa, setNomeEmpresa] = useState('')
+
+  useEffect(() => {
+    const buscarDadosSerial = async () => {
+      try {
+        const res = await axios.get(`/serial/verificar/${codigo}`)
+        if (res.data.status === 'ok') {
+          setNomeEmpresa(res.data.nomeEmpresa)
+        } else {
+          toast.error('Código inválido ou expirado.')
+          navigate('/farmacia')
+        }
+      } catch (err) {
+        toast.error('Erro ao verificar código.')
+        navigate('/farmacia')
+      }
+    }
+
     buscarDadosSerial()
   }, [codigo, navigate])
 
