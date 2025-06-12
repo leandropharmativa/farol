@@ -40,26 +40,29 @@ export default function LoginFarmacia() {
     }
   }
 
-  const buscarEmpresa = async () => {
-    if (!codigo.trim()) return
-    setCarregandoEmpresa(true)
-    try {
-      const res = await axios.get(`/serial/verificar/${codigo}`)
-      if (res.data.status === 'ok') {
-        if (!res.data.precisaCriarLogin) {
-          toast.info('Esse código já foi usado. Faça login normalmente.')
-          setModo('login')
-          return
-        }
-        setNomeEmpresa(res.data.nomeEmpresa)
+const buscarEmpresa = async () => {
+  if (!codigo.trim()) return
+
+  setCarregandoEmpresa(true)
+  try {
+    const res = await axios.get(`/serial/verificar/${codigo.trim()}`)
+    console.log("Resposta da verificação:", res.data)
+
+    if (res.data.status === 'ok') {
+      if (!res.data.precisaCriarLogin) {
+        toast.info('Esse código já foi usado. Faça login normalmente.')
+        setModo('login')
       } else {
-        toast.error('Código inválido ou expirado.')
+        setNomeEmpresa(res.data.nomeEmpresa)
       }
-    } catch (err) {
-      toast.error('Erro ao verificar código.')
+    } else {
+      toast.error(res.data.mensagem || 'Código inválido ou expirado.')
     }
-    setCarregandoEmpresa(false)
+  } catch (err) {
+    toast.error('Erro ao verificar código.')
   }
+  setCarregandoEmpresa(false)
+}
 
   const handleAtivar = async () => {
     try {
