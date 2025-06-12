@@ -11,13 +11,15 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LoginAdmin />} />
-        <Route
-          path="/gerar"
-          element={token ? <GerarSerial /> : <Navigate to="/" />}
-        />
-      </Routes>
+<Routes>
+  <Route path="/" element={<LoginAdmin />} />
+  <Route path="/login" element={<LoginAdmin />} />
+  <Route
+    path="/gerar"
+    element={token ? <GerarSerial /> : <Navigate to="/" />}
+  />
+</Routes>
+
     </BrowserRouter>
   )
 }
