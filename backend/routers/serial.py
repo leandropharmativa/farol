@@ -1,6 +1,7 @@
 # backend/routers/serial.py
 
-from fastapi import APIRouter
+from fastapi import Header, HTTPException, APIRouter
+from auth import verificar_token
 from models import SerialRequest, ValidarSerialRequest
 from db import cursor
 from uuid import uuid4
@@ -8,16 +9,30 @@ from datetime import datetime, timedelta
 import random
 import string
 
+
 router = APIRouter()
 
 def gerar_codigo():
     return f"FARM-{''.join(random.choices(string.ascii_uppercase + string.digits, k=4))}-{''.join(random.choices(string.ascii_uppercase + string.digits, k=4))}"
 
 @router.post("/serial/gerar")
-def gerar_serial(req: SerialRequest):
+def gerar_serial(req: SerialRequest, authorization: str = Header(None)):
+    # Verifica se o header Authorization foi enviado e está no formato correto
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Token ausente ou malformado")
+
+    # Extrai o token e valida
+    token = authorization.split(" ")[1]
+    email = verificar_token(token)
+
+    if not email:
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+    # Geração do código e validade
     codigo = gerar_codigo()
     validade = datetime.now() + timedelta(days=req.validadeDias)
 
+    # Insere o serial no banco
     cursor.execute("""
         INSERT INTO farol_seriais (id, codigo, nome_empresa, email_vinculado, validade_ate, ativo)
         VALUES (%s, %s, %s, %s, %s, true)
