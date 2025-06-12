@@ -1,6 +1,6 @@
 # backend/routers/serial.py
 
-from fastapi import Header, HTTPException, APIRouter
+from fastapi import Header, HTTPException, APIRouter, Depends
 from auth import verificar_token
 from models import SerialRequest, ValidarSerialRequest
 from db import cursor
@@ -52,3 +52,35 @@ def validar_serial(req: ValidarSerialRequest):
         return {"status": "erro", "mensagem": "Serial inválido, expirado ou já utilizado."}
 
     return {"status": "ok", "nomeEmpresa": resultado[2]}  # nome_empresa
+
+@router.get("/serial/listar")
+def listar_seriais(authorization: str = Header(None)):
+    # Verifica e valida o token
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Token ausente ou malformado")
+
+    token = authorization.split(" ")[1]
+    email = verificar_token(token)
+
+    if not email:
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+    # Consulta todos os seriais gerados
+    cursor.execute("""
+        SELECT codigo, nome_empresa, email_vinculado, validade_ate, ativo
+        FROM farol_seriais
+        ORDER BY validade_ate DESC
+    """)
+    resultados = cursor.fetchall()
+
+    # Monta e retorna a lista formatada
+    return [
+        {
+            "codigo": r[0],
+            "nomeEmpresa": r[1],
+            "email": r[2],
+            "validade": r[3],
+            "ativo": r[4]
+        }
+        for r in resultados
+    ]
