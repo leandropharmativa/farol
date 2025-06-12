@@ -4,6 +4,7 @@ import React from 'react'
 
 import LoginAdmin from './pages/LoginAdmin'
 import GerarSerial from './pages/GerarSerial'
+import LoginFarmacia from './pages/LoginFarmacia'
 import { getToken } from './utils/auth'
 
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
   return (
     <BrowserRouter>
 <Routes>
+  <Route path="/farmacia" element={<LoginFarmacia />} />
   <Route path="/" element={<LoginAdmin />} />
   <Route path="/login" element={<LoginAdmin />} />
   <Route
