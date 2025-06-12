@@ -21,7 +21,7 @@ export default function LoginAdmin() {
       saveToken(res.data.token)
       navigate('/gerar')
     } catch (err) {
-      oast.error('Credenciais inválidas. Verifique e tente novamente.')
+      toast.error('Credenciais inválidas. Verifique e tente novamente.')
     }
   }
 
