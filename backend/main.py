@@ -6,10 +6,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="API Farol")
 
+origens = [
+    "https://farol-nu.vercel.app"
+]
+
 # Libera CORS para frontend (ex: Vercel)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origens,
     allow_methods=["*"],
     allow_headers=["*"],
 )
