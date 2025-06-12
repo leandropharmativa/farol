@@ -48,5 +48,5 @@ def login_farmacia(dados: LoginFarmaciaRequest):
     if not resultado:
         raise HTTPException(status_code=401, detail="Credenciais inválidas.")
 
-    token = gerar_token(dados.email)
+    token = criar_token(dados.email)
     return {"status": "ok", "token": token, "farmaciaId": resultado[0]}
