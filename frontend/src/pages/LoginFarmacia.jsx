@@ -31,8 +31,7 @@ export default function LoginFarmacia() {
       const res = await axios.post('/farmacia/login', { email, senha })
       if (res.data.status === 'ok') {
         toast.success('Login realizado!')
-        // Armazene token se necessário: localStorage.setItem('token', res.data.token)
-        navigate('/painel-farmacia') // ajuste a rota conforme sua aplicação
+        navigate('/painel-farmacia')
       } else {
         toast.error('Falha no login.')
       }
@@ -42,6 +41,7 @@ export default function LoginFarmacia() {
   }
 
   const buscarEmpresa = async () => {
+    if (!codigo.trim()) return
     setCarregandoEmpresa(true)
     try {
       const res = await axios.get(`/serial/verificar/${codigo}`)
@@ -102,48 +102,51 @@ export default function LoginFarmacia() {
         </>
       ) : (
         <>
-<input
-  type="text"
-  placeholder="Código de ativação"
-  value={codigo}
-  onChange={(e) => setCodigo(e.target.value)}
-/>
+          <input
+            type="text"
+            placeholder="Código de ativação"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value)}
+          />
 
-<button
-  onClick={buscarEmpresa}
-  disabled={!codigo.trim()}
-  style={{ marginTop: '0.5rem' }}
->
-  Validar Código
-</button>
+          <button
+            onClick={buscarEmpresa}
+            disabled={!codigo.trim()}
+            style={{ marginTop: '0.5rem' }}
+          >
+            Validar Código
+          </button>
 
-{carregandoEmpresa && <p>Verificando código...</p>}
+          {carregandoEmpresa && <p>Verificando código...</p>}
 
-{nomeEmpresa && (
-  <>
-    <p><strong>Empresa:</strong> {nomeEmpresa}</p>
-    <input
-      type="text"
-      placeholder="Nome da farmácia"
-      value={nome}
-      onChange={(e) => setNome(e.target.value)}
-    />
-    <input
-      type="email"
-      placeholder="E-mail"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-    />
-    <input
-      type="password"
-      placeholder="Senha"
-      value={senha}
-      onChange={(e) => setSenha(e.target.value)}
-    />
-    <button onClick={handleAtivar}>Ativar Conta</button>
-  </>
-)}
+          {nomeEmpresa && (
+            <>
+              <p><strong>Empresa:</strong> {nomeEmpresa}</p>
+              <input
+                type="text"
+                placeholder="Nome da farmácia"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <input
+                type="email"
+                placeholder="E-mail"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <input
+                type="password"
+                placeholder="Senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
+              <button onClick={handleAtivar}>Ativar Conta</button>
+            </>
+          )}
+        </>
+      )}
 
+      {/* ⬇️ Agora está fora dos blocos de modo e sempre visível */}
       <button onClick={alternarModo} style={{ marginTop: '1rem' }}>
         {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
       </button>
