@@ -84,3 +84,23 @@ def listar_seriais(authorization: str = Header(None)):
         }
         for r in resultados
     ]
+
+@router.get("/serial/verificar/{codigo}")
+def verificar_serial(codigo: str):
+    cursor.execute("""
+        SELECT codigo, nome_empresa, farmacia_id
+        FROM farol_seriais
+        WHERE codigo = %s AND ativo = true AND validade_ate >= NOW()
+    """, (codigo,))
+    resultado = cursor.fetchone()
+
+    if not resultado:
+        return {"status": "erro", "mensagem": "Código inválido ou expirado"}
+
+    return {
+        "status": "ok",
+        "codigo": resultado[0],
+        "nomeEmpresa": resultado[1],
+        "precisaCriarLogin": resultado[2] is None
+    }
+
