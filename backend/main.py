@@ -1,7 +1,7 @@
 # backend/main.py
 
 from fastapi import FastAPI
-from routers import serial
+from routers import serial, admin
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="API Farol")
@@ -15,4 +15,5 @@ app.add_middleware(
 )
 
 # Inclui rotas
+app.include_router(admin.router)
 app.include_router(serial.router)
