@@ -1,5 +1,6 @@
-import React from 'react'
-import { useState } from 'react'
+// frontend/src/pages/GerarSerial.jsx
+
+import React, { useEffect, useState } from 'react'
 import api from '../services/api'
 
 export default function GerarSerial() {
@@ -8,6 +9,20 @@ export default function GerarSerial() {
   const [dias, setDias] = useState(30)
   const [serial, setSerial] = useState('')
   const [erro, setErro] = useState('')
+  const [listaSeriais, setListaSeriais] = useState([])
+
+  const carregarSeriais = async () => {
+    try {
+      const res = await api.get('/serial/listar')
+      setListaSeriais(res.data)
+    } catch (err) {
+      console.error('Erro ao carregar seriais', err)
+    }
+  }
+
+  useEffect(() => {
+    carregarSeriais()
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -19,6 +34,10 @@ export default function GerarSerial() {
       })
       setSerial(res.data.codigo)
       setErro('')
+      setEmpresa('')
+      setEmail('')
+      setDias(30)
+      carregarSeriais() // Atualiza lista após gerar
     } catch (err) {
       setErro('Erro ao gerar serial')
     }
@@ -33,8 +52,33 @@ export default function GerarSerial() {
         <input type="number" placeholder="Dias de validade" value={dias} onChange={e => setDias(e.target.value)} />
         <button type="submit">Gerar</button>
       </form>
-      {serial && <p>Serial: {serial}</p>}
-      {erro && <p>{erro}</p>}
+
+      {serial && <p>Serial gerado: <strong>{serial}</strong></p>}
+      {erro && <p style={{ color: 'red' }}>{erro}</p>}
+
+      <h3>Seriais gerados</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Empresa</th>
+            <th>Email</th>
+            <th>Validade</th>
+            <th>Ativo</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listaSeriais.map((s, i) => (
+            <tr key={i}>
+              <td>{s.codigo}</td>
+              <td>{s.nomeEmpresa}</td>
+              <td>{s.email}</td>
+              <td>{new Date(s.validade).toLocaleDateString()}</td>
+              <td>{s.ativo ? 'Sim' : 'Não'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }
