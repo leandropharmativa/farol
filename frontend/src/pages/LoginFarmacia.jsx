@@ -9,10 +9,10 @@ export default function LoginFarmacia() {
 
   const verificarCodigo = async () => {
     try {
-      const res = await axios.get(`/api/farmacias/verificar/${codigo}`)
-      const { existe, precisaCriarLogin } = res.data
+      const res = await axios.get(`/serial/verificar/${codigo}`)
+      const { status, precisaCriarLogin } = res.data
 
-      if (!existe) {
+      if (status !== 'ok') {
         toast.error('Código inválido')
         return
       }
