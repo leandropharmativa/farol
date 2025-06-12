@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException
 from models import NovaFarmaciaRequest, LoginFarmaciaRequest
 from db import cursor
 from uuid import uuid4
-from auth import gerar_token
+from auth import criar_token
 
 router = APIRouter()
 
