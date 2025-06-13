@@ -30,10 +30,11 @@ export default function LoginFarmacia() {
     try {
       const res = await api.post('/farmacia/login', { email, senha })
       if (res.data.status === 'ok') {
-      localStorage.setItem('token', res.data.token)
-      localStorage.setItem('farmaciaId', res.data.farmaciaId)
-      localStorage.setItem('email', res.data.email) // <- necessário para o botão de configurações
-      navigate('/painel-farmacia')
+        localStorage.setItem('token', res.data.token)
+        localStorage.setItem('farmaciaId', res.data.farmaciaId)
+        localStorage.setItem('email', email)
+        localStorage.setItem('tipoLogin', 'farmacia') // 👈 define que é o login principal
+        navigate('/painel-farmacia')
       } else {
         toast.error('Falha no login.')
       }
@@ -42,29 +43,29 @@ export default function LoginFarmacia() {
     }
   }
 
-const buscarEmpresa = async () => {
-  if (!codigo.trim()) return
+  const buscarEmpresa = async () => {
+    if (!codigo.trim()) return
 
-  setCarregandoEmpresa(true)
-  try {
-    const res = await api.get(`/serial/verificar/${codigo}`)
-    console.log("Resposta da verificação:", res.data)
+    setCarregandoEmpresa(true)
+    try {
+      const res = await api.get(`/serial/verificar/${codigo}`)
+      console.log("Resposta da verificação:", res.data)
 
-    if (res.data.status === 'ok') {
-      if (!res.data.precisaCriarLogin) {
-        toast.info('Esse código já foi usado. Faça login normalmente.')
-        setModo('login')
+      if (res.data.status === 'ok') {
+        if (!res.data.precisaCriarLogin) {
+          toast.info('Esse código já foi usado. Faça login normalmente.')
+          setModo('login')
+        } else {
+          setNomeEmpresa(res.data.nomeEmpresa)
+        }
       } else {
-        setNomeEmpresa(res.data.nomeEmpresa)
+        toast.error(res.data.mensagem || 'Código inválido ou expirado.')
       }
-    } else {
-      toast.error(res.data.mensagem || 'Código inválido ou expirado.')
+    } catch (err) {
+      toast.error('Erro ao verificar código.')
     }
-  } catch (err) {
-    toast.error('Erro ao verificar código.')
+    setCarregandoEmpresa(false)
   }
-  setCarregandoEmpresa(false)
-}
 
   const handleAtivar = async () => {
     try {
@@ -76,7 +77,8 @@ const buscarEmpresa = async () => {
       })
       if (res.data.status === 'ok') {
         toast.success('Conta ativada com sucesso!')
-        navigate('/painel-farmacia')
+        // ⚠️ Pode logar automaticamente ou pedir para fazer login
+        setModo('login')
       } else {
         toast.error('Erro ao ativar conta.')
       }
@@ -151,7 +153,6 @@ const buscarEmpresa = async () => {
         </>
       )}
 
-      {/* ⬇️ Agora está fora dos blocos de modo e sempre visível */}
       <button onClick={alternarModo} style={{ marginTop: '1rem' }}>
         {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
       </button>
