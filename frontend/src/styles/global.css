@@ -56,3 +56,11 @@ h2 {
   text-align: center;
   margin-bottom: 1.5rem;
 }
+
+.input {
+  @apply border border-gray-300 rounded px-3 py-2 w-full;
+}
+
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center;
+}
