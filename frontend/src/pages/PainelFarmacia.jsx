@@ -20,15 +20,15 @@ export default function PainelFarmacia() {
   const menuRef = useRef(null)
 
   // Pegando dados da farmácia logada
-  const emailLogado = localStorage.getItem('email')
+  const emailLogado = (localStorage.getItem('email') || '').trim().toLowerCase()
   const farmaciaId = localStorage.getItem('farmaciaId')
-
-  const emailFarmaciaPrincipal = "escritorio@pharmativa.com.br" // ou dinamicamente do backend
+  const tipoLogin = localStorage.getItem('tipoLogin') // 'farmacia' ou 'usuario'
 
   const handleLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('email')
     localStorage.removeItem('farmaciaId')
+    localStorage.removeItem('tipoLogin')
     navigate('/')
   }
 
@@ -87,8 +87,8 @@ export default function PainelFarmacia() {
       {/* Botões flutuantes com ref */}
       <div className="menu-flutuante" ref={menuRef}>
         <div className="menu-flutuante-botoes">
-          {/* Mostrar botão de configurações apenas se for o e-mail principal */}
-          {emailLogado === emailFarmaciaPrincipal && (
+          {/* Mostrar botão de configurações apenas para login da farmácia principal */}
+          {tipoLogin === 'farmacia' && (
             <div className={`botao-submenu ${menuAberto ? 'visivel' : ''}`}>
               <button
                 onClick={irParaConfiguracoes}
