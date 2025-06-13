@@ -11,14 +11,24 @@ import {
   Sun,
 } from 'lucide-react'
 import '../styles/painelFarmacia.css'
+import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 
 export default function PainelFarmacia() {
   const navigate = useNavigate()
   const [menuAberto, setMenuAberto] = useState(false)
+  const [modalConfiguracoesAberto, setModalConfiguracoesAberto] = useState(false)
   const menuRef = useRef(null)
+
+  // Pegando dados da farmácia logada
+  const emailLogado = localStorage.getItem('email')
+  const farmaciaId = localStorage.getItem('farmaciaId')
+
+  const emailFarmaciaPrincipal = "escritorio@pharmativa.com.br" // ou dinamicamente do backend
 
   const handleLogout = () => {
     localStorage.removeItem('token')
+    localStorage.removeItem('email')
+    localStorage.removeItem('farmaciaId')
     navigate('/')
   }
 
@@ -27,10 +37,9 @@ export default function PainelFarmacia() {
   }
 
   const irParaConfiguracoes = () => {
-    navigate('/configuracoes')
+    setModalConfiguracoesAberto(true)
   }
 
-  // Fecha o menu ao clicar fora
   useEffect(() => {
     const handleClickFora = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -78,13 +87,24 @@ export default function PainelFarmacia() {
       {/* Botões flutuantes com ref */}
       <div className="menu-flutuante" ref={menuRef}>
         <div className="menu-flutuante-botoes">
-          <div className={`botao-submenu ${menuAberto ? 'visivel' : ''}`}>
-            <button onClick={irParaConfiguracoes} className="botao-icone-circular botao-cinza" title="Configurações">
-              <Settings size={20} />
-            </button>
-          </div>
+          {/* Mostrar botão de configurações apenas se for o e-mail principal */}
+          {emailLogado === emailFarmaciaPrincipal && (
+            <div className={`botao-submenu ${menuAberto ? 'visivel' : ''}`}>
+              <button
+                onClick={irParaConfiguracoes}
+                className="botao-icone-circular botao-cinza"
+                title="Configurações"
+              >
+                <Settings size={20} />
+              </button>
+            </div>
+          )}
           <div className={`botao-submenu delay ${menuAberto ? 'visivel' : ''}`}>
-            <button onClick={handleLogout} className="botao-icone-circular botao-cinza" title="Sair">
+            <button
+              onClick={handleLogout}
+              className="botao-icone-circular botao-cinza"
+              title="Sair"
+            >
               <LogOut size={20} />
             </button>
           </div>
@@ -93,6 +113,14 @@ export default function PainelFarmacia() {
           {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
         </button>
       </div>
+
+      {/* Modal de configurações */}
+      <ModalConfiguracoesFarmacia
+        aberto={modalConfiguracoesAberto}
+        onClose={() => setModalConfiguracoesAberto(false)}
+        farmaciaId={farmaciaId}
+        emailFarmacia={emailLogado}
+      />
     </div>
   )
 }
