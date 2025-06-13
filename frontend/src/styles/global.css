@@ -58,9 +58,29 @@ h2 {
 }
 
 .input {
-  @apply border border-gray-300 rounded px-3 py-2 w-full;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  font-size: 1rem;
+  background-color: white;
 }
 
 .btn-primary {
-  @apply bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded flex items-center;
+  background-color: #0074d9;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s ease;
 }
+
+.btn-primary:hover {
+  background-color: #005fa3;
+}
+
