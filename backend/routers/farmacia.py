@@ -52,5 +52,11 @@ def login_farmacia(dados: LoginFarmaciaRequest):
         raise HTTPException(status_code=401, detail="Credenciais inválidas ou código expirado.")
 
     token = criar_token(dados.email)
-    return {"status": "ok", "token": token, "farmaciaId": resultado[0]}
+    return {
+    "status": "ok",
+    "token": token,
+    "farmaciaId": resultado[0],
+    "email": dados.email  # 👈 necessário para o painel reconhecer
+}
+
 
