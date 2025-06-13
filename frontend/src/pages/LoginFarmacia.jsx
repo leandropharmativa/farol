@@ -30,7 +30,6 @@ export default function LoginFarmacia() {
     try {
       const res = await api.post('/farmacia/login', { email, senha })
       if (res.data.status === 'ok') {
-        toast.success('Login realizado!')
         navigate('/painel-farmacia')
       } else {
         toast.error('Falha no login.')
