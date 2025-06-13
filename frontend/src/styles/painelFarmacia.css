@@ -115,6 +115,24 @@ body {
   margin-bottom: 0.4rem;
 }
 
+.botao-submenu {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.botao-submenu.visivel {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.botao-submenu.delay {
+  transition-delay: 0.1s;
+}
+
+/* Botões redondos com apenas ícone */
 .botao-icone-circular {
   width: 48px;
   height: 48px;
@@ -129,6 +147,10 @@ body {
   font-size: 1rem;
 }
 
+.botao-icone-circular:hover {
+  background: #cbd5e0;
+}
+
 /* Botão principal (farol/sun) */
 .botao-principal {
   background: #0074d9;
@@ -137,6 +159,15 @@ body {
 
 .botao-principal:hover {
   background: #005fa3;
+}
+
+.botao-sair {
+  background: #ffe5e5;
+  color: #cc0000;
+}
+
+.botao-sair:hover {
+  background: #ffcccc;
 }
 
 /* Botões secundários (configuração e sair) com mesma cor cinza */
