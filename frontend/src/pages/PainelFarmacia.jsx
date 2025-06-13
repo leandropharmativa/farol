@@ -1,5 +1,5 @@
 // frontend/src/pages/PainelFarmacia.jsx
-import '../styles/painelFarmacia.css'
+
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -9,6 +9,7 @@ import {
   Settings,
   TowerControl,
 } from 'lucide-react'
+import '../styles/painelFarmacia.css'
 
 export default function PainelFarmacia() {
   const navigate = useNavigate()
@@ -24,19 +25,16 @@ export default function PainelFarmacia() {
   }
 
   const irParaConfiguracoes = () => {
-    navigate('/configuracoes') // ajuste conforme necessário
+    navigate('/configuracoes')
   }
 
   return (
     <div className="painel-container">
-      {/* Cabeçalho */}
       <header className="painel-header">
         <h1 className="painel-titulo">Painel da Farmácia</h1>
       </header>
 
-      {/* Bloco de ações */}
       <div className="painel-acoes">
-        {/* Campo de busca */}
         <div className="campo-busca">
           <Search className="icone-busca" size={20} />
           <input
@@ -46,35 +44,30 @@ export default function PainelFarmacia() {
           />
         </div>
 
-        {/* Botão de ação */}
         <button className="botao-primario">
           <PlusCircle size={18} />
           Incluir Pedido
         </button>
       </div>
 
-      {/* Placeholder de pedidos */}
       <div className="painel-placeholder">
         Nenhum pedido encontrado. Use o botão acima para incluir um novo.
       </div>
 
-      {/* Botões flutuantes */}
       <div className="menu-flutuante">
         <div className="menu-flutuante-botoes">
           <div className={`botao-submenu ${menuAberto ? 'visivel' : ''}`}>
-            <button onClick={irParaConfiguracoes} className="botao-flutuante-sub">
-              <Settings size={18} />
-              Configurações
+            <button onClick={irParaConfiguracoes} className="botao-icone-circular">
+              <Settings size={20} />
             </button>
           </div>
           <div className={`botao-submenu delay ${menuAberto ? 'visivel' : ''}`}>
-            <button onClick={handleLogout} className="botao-flutuante-sub botao-sair">
-              <LogOut size={18} />
-              Sair
+            <button onClick={handleLogout} className="botao-icone-circular botao-sair">
+              <LogOut size={20} />
             </button>
           </div>
         </div>
-        <button onClick={toggleMenu} className="botao-flutuante-principal">
+        <button onClick={toggleMenu} className="botao-icone-circular botao-principal">
           <TowerControl size={24} />
         </button>
       </div>
