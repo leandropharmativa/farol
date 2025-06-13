@@ -1,5 +1,5 @@
 // frontend/src/pages/PainelFarmacia.jsx
-
+import '../styles/painelFarmacia.css'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
