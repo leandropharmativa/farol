@@ -26,7 +26,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     }
   }, [aberto])
 
-  const gerarCodigo = async () => {
+  const gerarCodigo = () => {
     const aleatorio = Math.floor(Math.random() * 9000) + 1000
     setCodigo(aleatorio)
   }
@@ -98,8 +98,11 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   if (!aberto) return null
 
   return (
-    <div className="fixed inset-0 bg-black/30 flex justify-center items-center z-50">
-      <div className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+      <div
+        className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto
+          transition-all duration-300 transform animate-fade-slide"
+      >
         <button className="absolute top-3 right-3 text-gray-500 hover:text-red-500" onClick={onClose}>
           <X />
         </button>
@@ -157,6 +160,23 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           </button>
         </div>
       </div>
+
+      {/* animação customizada via Tailwind */}
+      <style>{`
+        @keyframes fadeSlide {
+          0% {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-slide {
+          animation: fadeSlide 0.3s ease-out;
+        }
+      `}</style>
     </div>
   )
 }
