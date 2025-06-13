@@ -1,3 +1,4 @@
+//frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { X, Plus, Upload } from 'lucide-react'
 import axios from 'axios'
