@@ -99,7 +99,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   if (!aberto) return null
 
   return (
-    <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
       <div
         className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto
           transition-all duration-300 transform animate-fade-slide"
