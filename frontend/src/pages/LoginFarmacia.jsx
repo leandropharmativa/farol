@@ -30,7 +30,10 @@ export default function LoginFarmacia() {
     try {
       const res = await api.post('/farmacia/login', { email, senha })
       if (res.data.status === 'ok') {
-        navigate('/painel-farmacia')
+      localStorage.setItem('token', res.data.token)
+      localStorage.setItem('farmaciaId', res.data.farmaciaId)
+      localStorage.setItem('email', res.data.email) // <- necessário para o botão de configurações
+      navigate('/painel-farmacia')
       } else {
         toast.error('Falha no login.')
       }
