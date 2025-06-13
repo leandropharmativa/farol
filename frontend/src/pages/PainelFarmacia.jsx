@@ -1,5 +1,7 @@
 // frontend/src/pages/PainelFarmacia.jsx
 
+// frontend/src/pages/PainelFarmacia.jsx
+
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -29,6 +31,7 @@ export default function PainelFarmacia() {
     localStorage.removeItem('email')
     localStorage.removeItem('farmaciaId')
     localStorage.removeItem('tipoLogin')
+    setModalConfiguracoesAberto(false)
     navigate('/')
   }
 
@@ -40,6 +43,7 @@ export default function PainelFarmacia() {
     setModalConfiguracoesAberto(true)
   }
 
+  // Fecha o menu flutuante ao clicar fora
   useEffect(() => {
     const handleClickFora = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -57,6 +61,18 @@ export default function PainelFarmacia() {
       document.removeEventListener('mousedown', handleClickFora)
     }
   }, [menuAberto])
+
+  // Impede rolagem do fundo ao abrir o modal
+  useEffect(() => {
+    if (modalConfiguracoesAberto) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => {
+      document.body.style.overflow = ''
+    }
+  }, [modalConfiguracoesAberto])
 
   return (
     <div className="painel-container">
@@ -114,7 +130,7 @@ export default function PainelFarmacia() {
         </button>
       </div>
 
-      {/* Modal de configurações */}
+      {/* Modal de configurações flutuante */}
       <ModalConfiguracoesFarmacia
         aberto={modalConfiguracoesAberto}
         onClose={() => setModalConfiguracoesAberto(false)}
@@ -124,4 +140,5 @@ export default function PainelFarmacia() {
     </div>
   )
 }
+
 
