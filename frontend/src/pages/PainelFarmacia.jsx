@@ -8,6 +8,7 @@ import {
   Search,
   Settings,
   TowerControl,
+  Sun,
 } from 'lucide-react'
 import '../styles/painelFarmacia.css'
 
@@ -57,18 +58,18 @@ export default function PainelFarmacia() {
       <div className="menu-flutuante">
         <div className="menu-flutuante-botoes">
           <div className={`botao-submenu ${menuAberto ? 'visivel' : ''}`}>
-            <button onClick={irParaConfiguracoes} className="botao-icone-circular">
+            <button onClick={irParaConfiguracoes} className="botao-icone-circular botao-cinza">
               <Settings size={20} />
             </button>
           </div>
           <div className={`botao-submenu delay ${menuAberto ? 'visivel' : ''}`}>
-            <button onClick={handleLogout} className="botao-icone-circular botao-sair">
+            <button onClick={handleLogout} className="botao-icone-circular botao-cinza">
               <LogOut size={20} />
             </button>
           </div>
         </div>
         <button onClick={toggleMenu} className="botao-icone-circular botao-principal">
-          <TowerControl size={24} />
+          {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
         </button>
       </div>
     </div>
