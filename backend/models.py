@@ -1,7 +1,8 @@
 # backend/models.py
 
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
+from uuid import UUID
 
 class SerialRequest(BaseModel):
     nomeEmpresa: str
@@ -25,3 +26,29 @@ class NovaFarmaciaRequest(BaseModel):
 class LoginFarmaciaRequest(BaseModel):
     email: EmailStr
     senha: str
+
+class UsuarioFarmaciaBase(BaseModel):
+    codigo: int
+    nome: str
+    senha: str
+    permissao_inclusao: bool = False
+    permissao_impressao: bool = False
+    permissao_conferencia: bool = False
+    permissao_producao: bool = False
+    permissao_despacho: bool = False
+    permissao_entrega: bool = False
+    permissao_registrar_pagamento: bool = False
+
+class UsuarioFarmaciaCreate(UsuarioFarmaciaBase):
+    farmacia_id: UUID
+
+class UsuarioFarmaciaUpdate(UsuarioFarmaciaBase):
+    id: int
+
+class LocalFarmaciaCreate(BaseModel):
+    farmacia_id: UUID
+    tipo: str  
+    nome: str
+
+class LogoUpdate(BaseModel):
+    logo_url: str
