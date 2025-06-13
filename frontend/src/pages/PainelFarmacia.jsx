@@ -1,6 +1,6 @@
 // frontend/src/pages/PainelFarmacia.jsx
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   LogOut,
@@ -15,6 +15,7 @@ import '../styles/painelFarmacia.css'
 export default function PainelFarmacia() {
   const navigate = useNavigate()
   const [menuAberto, setMenuAberto] = useState(false)
+  const menuRef = useRef(null)
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -28,6 +29,25 @@ export default function PainelFarmacia() {
   const irParaConfiguracoes = () => {
     navigate('/configuracoes')
   }
+
+  // Fecha o menu ao clicar fora
+  useEffect(() => {
+    const handleClickFora = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuAberto(false)
+      }
+    }
+
+    if (menuAberto) {
+      document.addEventListener('mousedown', handleClickFora)
+    } else {
+      document.removeEventListener('mousedown', handleClickFora)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickFora)
+    }
+  }, [menuAberto])
 
   return (
     <div className="painel-container">
@@ -55,23 +75,25 @@ export default function PainelFarmacia() {
         Nenhum pedido encontrado. Use o botão acima para incluir um novo.
       </div>
 
-      <div className="menu-flutuante">
+      {/* Botões flutuantes com ref */}
+      <div className="menu-flutuante" ref={menuRef}>
         <div className="menu-flutuante-botoes">
           <div className={`botao-submenu ${menuAberto ? 'visivel' : ''}`}>
-            <button onClick={irParaConfiguracoes} className="botao-icone-circular botao-cinza">
+            <button onClick={irParaConfiguracoes} className="botao-icone-circular botao-cinza" title="Configurações">
               <Settings size={20} />
             </button>
           </div>
           <div className={`botao-submenu delay ${menuAberto ? 'visivel' : ''}`}>
-            <button onClick={handleLogout} className="botao-icone-circular botao-cinza">
+            <button onClick={handleLogout} className="botao-icone-circular botao-cinza" title="Sair">
               <LogOut size={20} />
             </button>
           </div>
         </div>
-        <button onClick={toggleMenu} className="botao-icone-circular botao-principal">
+        <button onClick={toggleMenu} className="botao-icone-circular botao-principal" title="Menu">
           {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
         </button>
       </div>
     </div>
   )
 }
+
