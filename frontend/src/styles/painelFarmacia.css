@@ -11,7 +11,6 @@ body {
   color: #333;
 }
 
-/* Painel */
 .painel-container {
   min-height: 100vh;
   padding: 2rem;
@@ -47,7 +46,6 @@ body {
   }
 }
 
-/* Campo de busca */
 .campo-busca {
   display: flex;
   align-items: center;
@@ -72,7 +70,6 @@ body {
   font-size: 1rem;
 }
 
-/* Botões */
 .botao-primario {
   display: flex;
   align-items: center;
@@ -92,7 +89,6 @@ body {
   background: #005fa3;
 }
 
-/* Placeholder */
 .painel-placeholder {
   background: white;
   border: 1px dashed #ccc;
@@ -102,7 +98,6 @@ body {
   color: #666;
 }
 
-/* Botão flutuante */
 .menu-flutuante {
   position: fixed;
   bottom: 1.5rem;
@@ -111,21 +106,6 @@ body {
   flex-direction: column;
   align-items: flex-end;
   z-index: 100;
-}
-
-.botao-flutuante-principal {
-  background: #0074d9;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  padding: 1rem;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: background 0.3s;
-}
-
-.botao-flutuante-principal:hover {
-  background: #005fa3;
 }
 
 .menu-flutuante-botoes {
@@ -152,22 +132,33 @@ body {
   transition-delay: 0.1s;
 }
 
-.botao-flutuante-sub {
+/* Botões redondos com apenas ícone */
+.botao-icone-circular {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   background: #e2e8f0;
   color: #2d3748;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
   border: none;
-  cursor: pointer;
-  font-size: 0.95rem;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.3s;
 }
 
-.botao-flutuante-sub:hover {
+.botao-icone-circular:hover {
   background: #cbd5e0;
+}
+
+.botao-principal {
+  background: #0074d9;
+  color: white;
+}
+
+.botao-principal:hover {
+  background: #005fa3;
 }
 
 .botao-sair {
