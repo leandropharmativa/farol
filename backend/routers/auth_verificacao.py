@@ -1,3 +1,4 @@
+#backend/routers/auth_verificacao.py
 from fastapi import APIRouter
 from auth import verificar_tipo_login
 
