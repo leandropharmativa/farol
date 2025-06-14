@@ -383,3 +383,9 @@ p {
 .login-link {
   @apply w-full mt-6 text-sm text-white underline hover:text-gray-200 text-center;
 }
+
+.login-input {
+  padding: 0.375rem 0.75rem !important;
+  font-size: 0.875rem !important;
+}
+
