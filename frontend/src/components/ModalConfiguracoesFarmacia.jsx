@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
   X, Plus, Upload, PackagePlus, Printer, FileCheck2,
-  CircleCheckBig, Truck, PackageCheck, CreditCard
+  CircleCheck, Truck, PackageCheck, CreditCard
 } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -12,7 +12,7 @@ const iconesPermissao = {
   permissao_inclusao: PackagePlus,
   permissao_impressao: Printer,
   permissao_conferencia: FileCheck2,
-  permissao_producao: CircleCheckBig,
+  permissao_producao: CircleCheck,
   permissao_despacho: Truck,
   permissao_entrega: PackageCheck,
   permissao_registrar_pagamento: CreditCard,
