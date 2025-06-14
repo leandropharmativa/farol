@@ -90,16 +90,18 @@ export default function PainelFarmacia() {
         Nenhum pedido encontrado. Use o botão abaixo para incluir um novo.
       </div>
 
-{/* 🟦 Botão fixo de incluir pedido - sempre visível acima do menu */}
-<button
-  className="botao-icone-circular botao-azul fixed bottom-28 right-6 z-20"
-  title="Incluir Pedido"
-  onClick={() => {
-    console.log('🟦 Incluir Pedido (ação futura)')
-  }}
->
-  <PackagePlus size={26} />
-</button>
+{/* 🟦 Botão de incluir pedido com animação de subida */}
+<div className={`fixed right-6 z-20 transition-all duration-300 ${menuAberto ? 'bottom-36' : 'bottom-20'}`}>
+  <button
+    className="botao-icone-circular botao-azul"
+    title="Incluir Pedido"
+    onClick={() => {
+      console.log('🟦 Incluir Pedido (ação futura)')
+    }}
+  >
+    <PackagePlus size={26} />
+  </button>
+</div>
 
 
 {/* Menu flutuante com botões empilhados acima do botão principal */}
