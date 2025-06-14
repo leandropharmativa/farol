@@ -2,21 +2,26 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  X, Plus, Upload,
-  PackagePlus, Printer, FileCheck2,
-  CircleCheckBig, Truck, PackageCheck, CreditCard,
-  Pencil, Trash2
+  X, Plus, Upload, Pencil, UserRoundPen, MapPinCog,
+  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 import '../styles/global.css'
 
-export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId, emailFarmacia }) {
+export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId }) {
+  const [codigo, setCodigo] = useState('')
   const [nome, setNome] = useState('')
   const [senha, setSenha] = useState('')
-  const [codigo, setCodigo] = useState('')
   const [usuarios, setUsuarios] = useState([])
+  const [editandoUsuarioId, setEditandoUsuarioId] = useState(null)
+
+  const [localNome, setLocalNome] = useState('')
+  const [isOrigem, setIsOrigem] = useState(false)
+  const [isDestino, setIsDestino] = useState(false)
   const [locais, setLocais] = useState([])
+  const [editandoLocalId, setEditandoLocalId] = useState(null)
+
   const [permissoes, setPermissoes] = useState({
     permissao_inclusao: false,
     permissao_impressao: false,
@@ -26,9 +31,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     permissao_entrega: false,
     permissao_registrar_pagamento: false,
   })
-  const [localNome, setLocalNome] = useState('')
-  const [localTipo, setLocalTipo] = useState('origem')
-  const [logoFile, setLogoFile] = useState(null)
 
   useEffect(() => {
     if (aberto) {
@@ -39,27 +41,48 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   }, [aberto])
 
   const gerarCodigo = () => {
-    const aleatorio = Math.floor(Math.random() * 9000) + 1000
-    setCodigo(aleatorio)
+    setCodigo(Math.floor(Math.random() * 9000) + 1000)
+  }
+
+  const carregarUsuarios = async () => {
+    try {
+      const res = await api.get(`/usuarios/${farmaciaId}`)
+      setUsuarios(res.data)
+    } catch {
+      toast.error('Erro ao carregar usuários')
+    }
+  }
+
+  const carregarLocais = async () => {
+    try {
+      const res = await api.get(`/locais/${farmaciaId}`)
+      setLocais(res.data)
+    } catch {
+      toast.error('Erro ao carregar locais')
+    }
   }
 
   const handlePermissaoToggle = (campo) => {
-    setPermissoes((prev) => ({ ...prev, [campo]: !prev[campo] }))
+    setPermissoes(prev => ({ ...prev, [campo]: !prev[campo] }))
   }
 
   const salvarUsuario = async () => {
     try {
-      await api.post('/usuarios', {
-        farmacia_id: farmaciaId,
-        codigo,
-        nome,
-        senha,
-        ...permissoes,
-      })
-      toast.success('Usuário salvo com sucesso')
+      if (editandoUsuarioId) {
+        await api.put(`/usuarios/${editandoUsuarioId}`, {
+          nome, senha, ...permissoes
+        })
+        toast.success('Usuário atualizado')
+      } else {
+        await api.post('/usuarios', {
+          farmacia_id: farmaciaId, codigo, nome, senha, ...permissoes
+        })
+        toast.success('Usuário criado')
+      }
+
       setNome('')
       setSenha('')
-      gerarCodigo()
+      setEditandoUsuarioId(null)
       setPermissoes({
         permissao_inclusao: false,
         permissao_impressao: false,
@@ -69,64 +92,63 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         permissao_entrega: false,
         permissao_registrar_pagamento: false,
       })
+      gerarCodigo()
       carregarUsuarios()
-    } catch (err) {
+    } catch {
       toast.error('Erro ao salvar usuário')
     }
   }
 
-  const carregarUsuarios = async () => {
-    try {
-      const res = await api.get(`/usuarios/${farmaciaId}`)
-      setUsuarios(res.data)
-    } catch (err) {
-      toast.error('Erro ao carregar usuários')
-    }
+  const editarUsuario = (usuario) => {
+    setNome(usuario.nome)
+    setSenha(usuario.senha)
+    setEditandoUsuarioId(usuario.id)
+    setPermissoes({
+      permissao_inclusao: usuario.permissao_inclusao,
+      permissao_impressao: usuario.permissao_impressao,
+      permissao_conferencia: usuario.permissao_conferencia,
+      permissao_producao: usuario.permissao_producao,
+      permissao_despacho: usuario.permissao_despacho,
+      permissao_entrega: usuario.permissao_entrega,
+      permissao_registrar_pagamento: usuario.permissao_registrar_pagamento,
+    })
   }
 
   const salvarLocal = async () => {
     try {
-      await api.post('/locais', {
-        farmacia_id: farmaciaId,
-        nome: localNome,
-        tipo: localTipo,
-      })
-      toast.success('Local salvo')
+      if (editandoLocalId) {
+        await api.put(`/locais/${editandoLocalId}`, {
+          nome: localNome,
+          origem: isOrigem,
+          destino: isDestino
+        })
+        toast.success('Local atualizado')
+      } else {
+        await api.post('/locais', {
+          farmacia_id: farmaciaId,
+          nome: localNome,
+          origem: isOrigem,
+          destino: isDestino
+        })
+        toast.success('Local criado')
+      }
+
       setLocalNome('')
+      setIsOrigem(false)
+      setIsDestino(false)
+      setEditandoLocalId(null)
       carregarLocais()
-    } catch (err) {
+    } catch {
       toast.error('Erro ao salvar local')
     }
   }
 
-  const carregarLocais = async () => {
-    try {
-      const res = await api.get(`/locais/${farmaciaId}`)
-      setLocais(res.data)
-    } catch (err) {
-      toast.error('Erro ao carregar locais')
-    }
+  const editarLocal = (local) => {
+    setLocalNome(local.nome)
+    setIsOrigem(local.origem)
+    setIsDestino(local.destino)
+    setEditandoLocalId(local.id)
   }
-
-  const enviarLogo = async () => {
-    if (!logoFile) return
-    const reader = new FileReader()
-    reader.onloadend = async () => {
-      try {
-        await api.put(`/farmacia/logo/${farmaciaId}`, {
-          logo_url: reader.result,
-        })
-        toast.success('Logo enviada com sucesso')
-      } catch (err) {
-        toast.error('Erro ao enviar logo')
-      }
-    }
-    reader.readAsDataURL(logoFile)
-  }
-
-  if (!aberto) return null
-  const modalRoot = document.getElementById('modal-root')
-  if (!modalRoot) return null
 
   const iconesPermissao = {
     permissao_inclusao: <PackagePlus size={18} />,
@@ -148,9 +170,13 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     permissao_registrar_pagamento: 'Pagamento',
   }
 
+  if (!aberto) return null
+  const modalRoot = document.getElementById('modal-root')
+  if (!modalRoot) return null
+
   return createPortal(
     <div className="modal-overlay">
-      <div className="modal-container animate-fade-slide">
+      <div className="modal-container animate-fade-slide overflow-y-auto max-h-[95vh]">
         <div className="sticky top-0 bg-white z-10 flex justify-end p-3 border-b">
           <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
             <X />
@@ -160,77 +186,71 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div className="p-5 space-y-8">
           <h2 className="text-xl font-bold text-center">Configurações da Farmácia</h2>
 
-          {/* Cadastro de usuário */}
+          {/* Usuário */}
           <div className="space-y-3">
-            <h3 className="font-semibold">Incluir usuário</h3>
+            <h3 className="font-semibold">Cadastrar ou editar usuário</h3>
             <div className="grid grid-cols-2 gap-3">
-              <input className="input" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-              <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
-              <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
+              <input className="input" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
+              <input className="input" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
+              <input className="input col-span-2" disabled value={`Código: ${codigo}`} />
             </div>
-            <div className="lista-permissoes">
+            <div className="flex gap-2 flex-wrap mt-2">
               {Object.entries(permissoes).map(([campo, ativo]) => (
                 <div
                   key={campo}
                   className={`icone-permissao ${ativo ? 'selecionado' : ''}`}
-                  onClick={() => handlePermissaoToggle(campo)}
                   title={nomesPermissao[campo]}
+                  onClick={() => handlePermissaoToggle(campo)}
                 >
                   {iconesPermissao[campo]}
                 </div>
               ))}
             </div>
-            <button className="btn-primary mt-3" onClick={salvarUsuario}>
+            <button className="btn-primary mt-2" onClick={salvarUsuario}>
               <Plus size={16} className="mr-2" />
-              Salvar usuário
+              {editandoUsuarioId ? 'Atualizar usuário' : 'Salvar usuário'}
             </button>
 
-            {/* Lista de usuários */}
-            <div className="pt-4">
-              <h4 className="font-medium">Usuários cadastrados</h4>
-              <ul className="divide-y border rounded mt-1">
-                {usuarios.map((u) => (
-                  <li key={u.id} className="flex items-center justify-between p-2 text-sm">
-                    <span>{u.nome}</span>
-                    <Pencil size={16} className="text-gray-500 hover:text-blue-500 cursor-pointer" />
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Locais */}
-          <div className="space-y-3">
-            <h3 className="font-semibold">Cadastrar loja ou cidade</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
-                <option value="origem">Origem</option>
-                <option value="destino">Destino</option>
-              </select>
-              <input className="input" placeholder="Nome" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
-            </div>
-            <button className="btn-primary mt-2" onClick={salvarLocal}>
-              <Plus size={16} className="mr-2" />
-              Salvar local
-            </button>
-            <ul className="divide-y border rounded mt-2">
-              {locais.map((l) => (
-                <li key={l.id} className="flex items-center justify-between p-2 text-sm">
-                  <span>{l.nome} <span className="text-xs text-gray-500 ml-2">({l.tipo})</span></span>
-                  <Pencil size={16} className="text-gray-500 hover:text-blue-500 cursor-pointer" />
+            <ul className="mt-4 space-y-1 text-sm">
+              {usuarios.map(u => (
+                <li key={u.id} className="flex justify-between items-center">
+                  <span>{u.nome}</span>
+                  <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
+                    <UserRoundPen size={16} />
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Logo */}
+          {/* Locais */}
           <div className="space-y-3">
-            <h3 className="font-semibold">Enviar logo (.png)</h3>
-            <input type="file" accept=".png" onChange={(e) => setLogoFile(e.target.files[0])} />
-            <button className="btn-primary mt-2" onClick={enviarLogo}>
-              <Upload size={16} className="mr-2" />
-              Enviar logo
+            <h3 className="font-semibold">Cadastrar ou editar loja/cidade</h3>
+            <input
+              className="input"
+              placeholder="Nome do local"
+              value={localNome}
+              onChange={(e) => setLocalNome(e.target.value)}
+            />
+            <div className="flex gap-4">
+              <label><input type="checkbox" checked={isOrigem} onChange={(e) => setIsOrigem(e.target.checked)} /> <span className="ml-1">Origem</span></label>
+              <label><input type="checkbox" checked={isDestino} onChange={(e) => setIsDestino(e.target.checked)} /> <span className="ml-1">Destino</span></label>
+            </div>
+            <button className="btn-primary mt-2" onClick={salvarLocal}>
+              <Plus size={16} className="mr-2" />
+              {editandoLocalId ? 'Atualizar local' : 'Salvar local'}
             </button>
+
+            <ul className="mt-4 space-y-1 text-sm">
+              {locais.map(l => (
+                <li key={l.id} className="flex justify-between items-center">
+                  <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
+                  <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
+                    <MapPinCog size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>
