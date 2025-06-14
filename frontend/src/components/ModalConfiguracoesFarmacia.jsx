@@ -143,7 +143,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
             </div>
 
-<div className="flex gap-4 flex-wrap justify-center">
+<div className="lista-permissoes">
   {Object.entries(permissoes).map(([campo, ativo]) => (
     <div
       key={campo}
@@ -155,7 +155,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     </div>
   ))}
 </div>
-
             <button className="btn-primary mt-3" onClick={salvarUsuario}>
               <Plus size={16} className="mr-2" />
               Salvar usuário
