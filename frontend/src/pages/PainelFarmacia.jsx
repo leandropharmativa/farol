@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   LogOut,
   PlusCircle,
+  PackagePlus,
   Search,
   Settings,
   TowerControl,
@@ -102,7 +103,7 @@ export default function PainelFarmacia() {
           console.log('🟦 Incluir Pedido (ação futura)')
         }}
       >
-        <PlusCircle size={26} />
+        <PackagePlus size={26} />
       </button>
 
       {/* Botões flutuantes no canto inferior direito */}
