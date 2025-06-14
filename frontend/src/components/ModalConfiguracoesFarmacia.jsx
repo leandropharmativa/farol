@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
   X, Plus, Upload, Pencil, UserRoundPen, LocationEdit,
-  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard
+  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck,
+  PackageCheck, CreditCard, XCircle
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
@@ -114,6 +115,18 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     })
   }
 
+  const excluirUsuario = async (id) => {
+    if (window.confirm('Deseja realmente excluir este usuário?')) {
+      try {
+        await api.delete(`/usuarios/${id}`)
+        toast.success('Usuário excluído')
+        carregarUsuarios()
+      } catch {
+        toast.error('Erro ao excluir usuário')
+      }
+    }
+  }
+
   const salvarLocal = async () => {
     try {
       if (editandoLocalId) {
@@ -145,9 +158,21 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
   const editarLocal = (local) => {
     setLocalNome(local.nome)
-    setIsOrigem(local.tipo === 'origem' || local.tipo === 'origem_destino')
-    setIsDestino(local.tipo === 'destino' || local.tipo === 'origem_destino')
+    setIsOrigem(local.origem)
+    setIsDestino(local.destino)
     setEditandoLocalId(local.id)
+  }
+
+  const excluirLocal = async (id) => {
+    if (window.confirm('Deseja realmente excluir este local?')) {
+      try {
+        await api.delete(`/locais/${id}`)
+        toast.success('Local excluído')
+        carregarLocais()
+      } catch {
+        toast.error('Erro ao excluir local')
+      }
+    }
   }
 
   const iconesPermissao = {
@@ -186,7 +211,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div className="p-5 space-y-8">
           <h2 className="text-xl font-bold text-center">Configurações da Farmácia</h2>
 
-          {/* Usuários */}
+          {/* Usuário */}
           <div className="space-y-3">
             <h3 className="font-semibold">Cadastrar ou editar usuário</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -210,36 +235,19 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <Plus size={16} className="mr-2" />
               {editandoUsuarioId ? 'Atualizar usuário' : 'Salvar usuário'}
             </button>
-            {editandoUsuarioId && (
-              <button
-                className="btn-claro mt-1"
-                onClick={() => {
-                  setEditandoUsuarioId(null)
-                  setNome('')
-                  setSenha('')
-                  setPermissoes({
-                    permissao_inclusao: false,
-                    permissao_impressao: false,
-                    permissao_conferencia: false,
-                    permissao_producao: false,
-                    permissao_despacho: false,
-                    permissao_entrega: false,
-                    permissao_registrar_pagamento: false,
-                  })
-                  gerarCodigo()
-                }}
-              >
-                Cancelar edição
-              </button>
-            )}
 
             <ul className="mt-4 space-y-1 text-sm">
               {usuarios.map(u => (
                 <li key={u.id} className="flex justify-between items-center">
                   <span>{u.nome}</span>
-                  <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
-                    <UserRoundPen size={16} />
-                  </button>
+                  <div className="flex gap-2">
+                    <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
+                      <UserRoundPen size={16} />
+                    </button>
+                    <button onClick={() => excluirUsuario(u.id)} className="text-red-500 hover:text-red-700">
+                      <XCircle size={16} />
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -262,26 +270,30 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <Plus size={16} className="mr-2" />
               {editandoLocalId ? 'Atualizar local' : 'Salvar local'}
             </button>
-            {editandoLocalId && (
-              <button
-                className="btn-claro mt-1"
-                onClick={() => {
-                  setEditandoLocalId(null)
-                  setLocalNome('')
-                  setIsOrigem(false)
-                  setIsDestino(false)
-                }}
-              >
-                Cancelar edição
-              </button>
-            )}
+
             <ul className="mt-4 space-y-1 text-sm">
               {locais.map(l => (
                 <li key={l.id} className="flex justify-between items-center">
-                  <span>{l.nome} ({l.tipo})</span>
-                  <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
-                    <LocationEdit size={16} />
-                  </button>
+                  <span>
+                    {l.nome}
+                    {(l.origem || l.destino) && (
+                      <>
+                        {' ('}
+                        {l.origem && 'Origem'}
+                        {l.origem && l.destino && ' / '}
+                        {l.destino && 'Destino'}
+                        {')'}
+                      </>
+                    )}
+                  </span>
+                  <div className="flex gap-2">
+                    <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
+                      <LocationEdit size={16} />
+                    </button>
+                    <button onClick={() => excluirLocal(l.id)} className="text-red-500 hover:text-red-700">
+                      <XCircle size={16} />
+                    </button>
+                  </div>
                 </li>
               ))}
             </ul>
