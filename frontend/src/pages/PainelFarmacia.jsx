@@ -9,7 +9,7 @@ import {
   TowerControl,
   Sun,
 } from 'lucide-react'
-import '../styles/painelFarmacia.css'
+//import '../styles/painelFarmacia.css'
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 
 export default function PainelFarmacia() {
