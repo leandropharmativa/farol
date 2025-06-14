@@ -5,41 +5,26 @@ from models import LocalFarmaciaCreate
 router = APIRouter()
 
 @router.post("/locais")
-def criar_local(dados: LocalFarmaciaCreate):
-    cursor.execute("""
-        INSERT INTO farol_farmacia_locais (farmacia_id, tipo, nome)
-        VALUES (%s, %s, %s)
-    """, (str(dados.farmacia_id), dados.tipo, dados.nome))
-    return {"status": "ok"}
-
-@router.get("/locais/{farmacia_id}")
-def listar_locais(farmacia_id: str):
-    cursor.execute("SELECT * FROM farol_farmacia_locais WHERE farmacia_id = %s", (farmacia_id,))
-    colunas = [desc[0] for desc in cursor.description]
-    resultado = cursor.fetchall()
-    return [dict(zip(colunas, linha)) for linha in resultado]
-
-@router.put("/locais/{id}")
-async def editar_local(id: int, request: Request):
+def criar_local(dados: LocalCreate):
     try:
-        dados = await request.json()
-        origem = dados.get('origem', False)
-        destino = dados.get('destino', False)
-
-        if origem and destino:
-            tipo = 'origem_destino'
-        elif origem:
-            tipo = 'origem'
-        elif destino:
-            tipo = 'destino'
-        else:
-            tipo = ''  # ou None, dependendo do schema
-
         cursor.execute("""
-            UPDATE farol_farmacia_locais
-            SET nome = %s, tipo = %s
-            WHERE id = %s
-        """, (dados['nome'], tipo, id))
+            INSERT INTO farol_farmacia_locais (farmacia_id, nome, origem, destino)
+            VALUES (%s, %s, %s, %s)
+        """, (dados.farmacia_id, dados.nome, dados.origem, dados.destino))
         return {"status": "ok"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/locais/{farmacia_id}")
+def listar_locais(farmacia_id: str):
+    cursor.execute("SELECT id, nome, origem, destino FROM farol_farmacia_locais WHERE farmacia_id = %s", (farmacia_id,))
+    return cursor.fetchall()
+
+@router.put("/locais/{id}")
+def editar_local(id: int, dados: LocalUpdate):
+    cursor.execute("""
+        UPDATE farol_farmacia_locais
+        SET nome = %s, origem = %s, destino = %s
+        WHERE id = %s
+    """, (dados.nome, dados.origem, dados.destino, id))
+    return {"status": "ok"}
