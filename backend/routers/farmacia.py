@@ -39,24 +39,27 @@ def registrar_farmacia(dados: NovaFarmaciaRequest):
 
 @router.post("/farmacia/login")
 def login_farmacia(dados: LoginFarmaciaRequest):
-    cursor.execute("""
-        SELECT f.id FROM farol_farmacias f
-        JOIN farol_seriais s ON s.farmacia_id = f.id
-        WHERE f.email = %s AND f.senha = %s
-          AND s.ativo = true
-          AND s.validade_ate >= NOW()
-    """, (dados.email, dados.senha))
-    resultado = cursor.fetchone()
+cursor.execute("""
+    SELECT f.id, f.nome FROM farol_farmacias f
+    JOIN farol_seriais s ON s.farmacia_id = f.id
+    WHERE f.email = %s AND f.senha = %s
+      AND s.ativo = true
+      AND s.validade_ate >= NOW()
+""", (dados.email, dados.senha))
+resultado = cursor.fetchone()
 
-    if not resultado:
-        raise HTTPException(status_code=401, detail="Credenciais inválidas ou código expirado.")
+if not resultado:
+    raise HTTPException(status_code=401, detail="Credenciais inválidas ou código expirado.")
 
-    token = criar_token(dados.email)
-    return {
+farmacia_id, nome = resultado
+token = criar_token(dados.email)
+
+return {
     "status": "ok",
     "token": token,
-    "farmaciaId": resultado[0],
-    "email": dados.email  # 👈 necessário para o painel reconhecer
+    "farmaciaId": farmacia_id,
+    "nome": nome,
+    "email": dados.email
 }
 
 
