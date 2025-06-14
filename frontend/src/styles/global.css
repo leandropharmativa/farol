@@ -1,20 +1,18 @@
-/* Reset básico */
+/* ========== RESET & BASE ========== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Fonte legível e estrutura limpa */
 body {
   font-family: Arial, sans-serif;
   background-color: #f4f6f8;
   color: #333;
-  padding: 0rem;
   line-height: 1.6;
 }
 
-/* Formulários */
+/* ========== FORMULÁRIOS ========== */
 form {
   max-width: 400px;
   margin: 2rem auto;
@@ -24,7 +22,20 @@ form {
   box-shadow: 0 0 10px rgba(0,0,0,0.05);
 }
 
-input, button {
+.input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: white;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="file"],
+select,
+textarea {
   width: 100%;
   margin: 0.5rem 0;
   padding: 0.75rem;
@@ -34,53 +45,226 @@ input, button {
 }
 
 button {
-  background-color: #0074d9;
-  color: white;
   border: none;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-button:hover {
+.btn-primary,
+.botao-primario {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #0074d9;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.btn-primary:hover,
+.botao-primario:hover {
   background-color: #005fa3;
 }
 
-/* Mensagens */
+/* ========== TIPOGRAFIA ========== */
+h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
 p {
   text-align: center;
   margin-top: 1rem;
   color: #cc0000;
 }
 
-h2 {
-  text-align: center;
+/* ========== PAINEL FARMÁCIA ========== */
+.painel-container {
+  min-height: 100vh;
+  padding: 2rem;
+  background-color: #f4f6f8;
+}
+
+.painel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 1.5rem;
 }
 
-.input {
+.painel-titulo {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.painel-acoes {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .painel-acoes {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.campo-busca {
+  display: flex;
+  align-items: center;
+  background: white;
   border: 1px solid #ccc;
   border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  width: 100%;
-  font-size: 1rem;
-  background-color: white;
+  padding: 0.25rem 0.75rem;
+  max-width: 100%;
 }
 
-.btn-primary {
-  background-color: #0074d9;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 1rem;
+.icone-busca {
+  color: #999;
+  margin-right: 0.5rem;
+}
+
+.input-busca {
   border: none;
-  cursor: pointer;
-  display: inline-flex;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+}
+
+.painel-placeholder {
+  background: white;
+  border: 1px dashed #ccc;
+  border-radius: 6px;
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+/* ========== MENU FLUTUANTE ========== */
+.menu-flutuante {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 100;
+}
+
+.menu-flutuante-botoes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+}
+
+.botao-submenu {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.botao-submenu.visivel {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.botao-submenu.delay {
+  transition-delay: 0.1s;
+}
+
+.botao-icone-circular {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: background 0.3s ease;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  transition: background 0.3s;
+  font-size: 1rem;
 }
 
-.btn-primary:hover {
-  background-color: #005fa3;
+.botao-icone-circular:hover {
+  background: #cbd5e0;
 }
 
+.botao-principal {
+  background: #0074d9;
+  color: white;
+}
+
+.botao-principal:hover {
+  background: #005fa3;
+}
+
+.botao-sair {
+  background: #ffe5e5;
+  color: #cc0000;
+}
+
+.botao-sair:hover {
+  background: #ffcccc;
+}
+
+.botao-cinza {
+  background: #e2e8f0;
+  color: #4a5568;
+}
+
+.botao-cinza:hover {
+  background: #cbd5e0;
+}
+
+/* ========== ANIMAÇÕES ========== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-slide {
+  animation: fadeSlide 0.3s ease-out;
+}
+
+/* ========== MODAL ========== */
+.modal-overlay {
+  position: fixed;
+  top: 0; bottom: 0; left: 0; right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
