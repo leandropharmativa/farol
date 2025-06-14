@@ -1,3 +1,4 @@
+//frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Plus, Upload } from 'lucide-react'
@@ -22,9 +23,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   const [logoFile, setLogoFile] = useState(null)
 
   useEffect(() => {
-    if (aberto) {
-      gerarCodigo()
-    }
+    if (aberto) gerarCodigo()
   }, [aberto])
 
   const gerarCodigo = () => {
@@ -33,10 +32,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   }
 
   const handlePermissaoToggle = (campo) => {
-    setPermissoes((prev) => ({
-      ...prev,
-      [campo]: !prev[campo],
-    }))
+    setPermissoes((prev) => ({ ...prev, [campo]: !prev[campo] }))
   }
 
   const salvarUsuario = async () => {
@@ -96,120 +92,126 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     reader.readAsDataURL(logoFile)
   }
 
-if (!aberto) return null
+  if (!aberto) return null
 
-const modalRoot = document.getElementById('modal-root')
-if (!modalRoot) {
-  console.warn('❗ modal-root não encontrado no DOM')
-  return null
-}
+  const modalRoot = document.getElementById('modal-root')
+  if (!modalRoot) {
+    console.warn('❗ modal-root não encontrado no DOM')
+    return null
+  }
 
-return createPortal(
-  <div className="modal-overlay">
-    <div className="modal-container animate-fade-slide">
-      <div className="sticky top-0 bg-white z-10 flex justify-end p-2 border-b">
-        <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
-          <X />
-        </button>
+  return createPortal(
+    <div className="modal-overlay">
+      <div className="modal-container animate-fade-slide">
+        <div className="sticky top-0 bg-white z-10 flex justify-end p-3 border-b">
+          <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
+            <X />
+          </button>
+        </div>
+
+        <div className="p-5 space-y-8">
+          <h2 className="text-xl font-bold text-center">Configurações da Farmácia</h2>
+
+          {/* Usuários */}
+          <div className="space-y-3">
+            <h3 className="font-semibold">Incluir usuário</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <input className="input" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+              <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
+              <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.keys(permissoes).map((campo) => (
+                <label key={campo} className="flex items-center gap-2 text-sm capitalize">
+                  <input
+                    type="checkbox"
+                    checked={permissoes[campo]}
+                    onChange={() => handlePermissaoToggle(campo)}
+                  />
+                  {campo.replace('permissao_', '').replace(/_/g, ' ')}
+                </label>
+              ))}
+            </div>
+            <button className="btn-primary mt-3" onClick={salvarUsuario}>
+              <Plus size={16} className="mr-2" />
+              Salvar usuário
+            </button>
+          </div>
+
+          {/* Locais */}
+          <div className="space-y-3">
+            <h3 className="font-semibold">Cadastrar loja ou cidade</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
+                <option value="origem">Origem</option>
+                <option value="destino">Destino</option>
+              </select>
+              <input
+                className="input"
+                placeholder="Nome"
+                value={localNome}
+                onChange={(e) => setLocalNome(e.target.value)}
+              />
+            </div>
+            <button className="btn-primary mt-2" onClick={salvarLocal}>
+              <Plus size={16} className="mr-2" />
+              Salvar local
+            </button>
+          </div>
+
+          {/* Logo */}
+          <div className="space-y-3">
+            <h3 className="font-semibold">Enviar logo (.png)</h3>
+            <input type="file" accept=".png" onChange={(e) => setLogoFile(e.target.files[0])} />
+            <button className="btn-primary mt-2" onClick={enviarLogo}>
+              <Upload size={16} className="mr-2" />
+              Enviar logo
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="p-4 space-y-6">
-        <h2 className="text-xl font-bold">Configurações da Farmácia</h2>
-
-        {/* Usuários */}
-        <div>
-          <h3 className="font-semibold mb-2">Incluir usuário</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <input className="input" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-            <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
-            <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
-          </div>
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {Object.keys(permissoes).map((campo) => (
-              <label key={campo} className="flex items-center gap-2 text-sm capitalize">
-                <input
-                  type="checkbox"
-                  checked={permissoes[campo]}
-                  onChange={() => handlePermissaoToggle(campo)}
-                />
-                {campo.replace('permissao_', '').replace('_', ' ')}
-              </label>
-            ))}
-          </div>
-          <button className="btn-primary mt-3" onClick={salvarUsuario}>
-            <Plus size={16} className="mr-2" />
-            Salvar usuário
-          </button>
-        </div>
-
-        {/* Locais */}
-        <div>
-          <h3 className="font-semibold mb-2">Cadastrar loja ou cidade</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
-              <option value="origem">Origem</option>
-              <option value="destino">Destino</option>
-            </select>
-            <input className="input" placeholder="Nome" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
-          </div>
-          <button className="btn-primary mt-3" onClick={salvarLocal}>
-            <Plus size={16} className="mr-2" />
-            Salvar local
-          </button>
-        </div>
-
-        {/* Logo */}
-        <div>
-          <h3 className="font-semibold mb-2">Enviar logo (.png)</h3>
-          <input type="file" accept=".png" onChange={(e) => setLogoFile(e.target.files[0])} />
-          <button className="btn-primary mt-2" onClick={enviarLogo}>
-            <Upload size={16} className="mr-2" />
-            Enviar logo
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <style>{`
-      .modal-overlay {
-        position: fixed;
-        inset: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 9999;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow-y: auto;
-        padding: 1rem;
-      }
-
-      .modal-container {
-        background: white;
-        width: 100%;
-        max-width: 520px;
-        border-radius: 0.5rem;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        max-height: 90vh;
-        overflow-y: auto;
-        position: relative;
-      }
-
-      @keyframes fadeSlide {
-        0% {
-          opacity: 0;
-          transform: translateY(-10px);
+      <style>{`
+        .modal-overlay {
+          position: fixed;
+          inset: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          z-index: 9999;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          overflow-y: auto;
+          padding: 1rem;
         }
-        100% {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
 
-      .animate-fade-slide {
-        animation: fadeSlide 0.3s ease-out;
-      }
-    `}</style>
-  </div>,
-  modalRoot
-)
+        .modal-container {
+          background: white;
+          width: 100%;
+          max-width: 600px;
+          border-radius: 8px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+          max-height: 95vh;
+          overflow-y: auto;
+          position: relative;
+        }
+
+        @keyframes fadeSlide {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-fade-slide {
+          animation: fadeSlide 0.3s ease-out;
+        }
+      `}</style>
+    </div>,
+    modalRoot
+  )
 }
+
