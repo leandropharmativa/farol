@@ -1,5 +1,6 @@
 // frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
+import ReactDOM from 'react-dom'
 import { X, Plus, Upload } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -98,7 +99,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
   if (!aberto) return null
 
-  return (
+  return ReactDOM.createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 z-[999] flex items-center justify-center">
       <div
         className="bg-white w-full max-w-xl mx-4 rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto
@@ -177,6 +178,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           animation: fadeSlide 0.3s ease-out;
         }
       `}</style>
-    </div>
+    </div>,
+    document.getElementById('modal-root')
   )
 }
