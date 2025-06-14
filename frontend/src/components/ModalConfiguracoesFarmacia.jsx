@@ -1,4 +1,4 @@
-//frontend/src/components/ModalConfiguracoesFarmacia.jsx
+// frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { X, Plus, Upload } from 'lucide-react'
 import axios from 'axios'
@@ -99,9 +99,9 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   if (!aberto) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-[999] flex items-center justify-center">
       <div
-        className="bg-white w-full max-w-2xl rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto
+        className="bg-white w-full max-w-xl mx-4 rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto
           transition-all duration-300 transform animate-fade-slide"
       >
         <button className="absolute top-3 right-3 text-gray-500 hover:text-red-500" onClick={onClose}>
@@ -162,7 +162,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         </div>
       </div>
 
-      {/* animação customizada via Tailwind */}
       <style>{`
         @keyframes fadeSlide {
           0% {
