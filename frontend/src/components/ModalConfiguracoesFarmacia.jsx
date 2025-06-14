@@ -96,94 +96,101 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     reader.readAsDataURL(logoFile)
   }
 
-  if (!aberto) return null
+if (!aberto) return null
 
-  const modalRoot = document.getElementById('modal-root')
-  if (!modalRoot) {
-    console.warn('❗ modal-root não encontrado no DOM')
-    return null
-  }
+const modalRoot = document.getElementById('modal-root')
+if (!modalRoot) {
+  console.warn('❗ modal-root não encontrado no DOM')
+  return null
+}
 
-  return createPortal(
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[999] flex items-center justify-center">
-      <div
-        className="bg-white w-full max-w-xl mx-4 rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto
-          transition-all duration-300 transform animate-fade-slide"
-      >
-        <button className="absolute top-3 right-3 text-gray-500 hover:text-red-500" onClick={onClose}>
-          <X />
+return createPortal(
+  <div className="modal-overlay">
+    <div className="bg-white w-full max-w-xl mx-4 rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto animate-fade-slide">
+      <button className="absolute top-3 right-3 text-gray-500 hover:text-red-500" onClick={onClose}>
+        <X />
+      </button>
+      <h2 className="text-xl font-bold mb-4">Configurações da Farmácia</h2>
+
+      {/* Usuários */}
+      <div className="mb-6">
+        <h3 className="font-semibold mb-2">Incluir usuário</h3>
+        <div className="grid grid-cols-2 gap-2">
+          <input className="input" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+          <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
+          <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
+        </div>
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          {Object.keys(permissoes).map((campo) => (
+            <label key={campo} className="flex items-center gap-2 text-sm capitalize">
+              <input
+                type="checkbox"
+                checked={permissoes[campo]}
+                onChange={() => handlePermissaoToggle(campo)}
+              />
+              {campo.replace('permissao_', '').replace('_', ' ')}
+            </label>
+          ))}
+        </div>
+        <button className="btn-primary mt-3" onClick={salvarUsuario}>
+          <Plus size={16} className="mr-2" />
+          Salvar usuário
         </button>
-        <h2 className="text-xl font-bold mb-4">Configurações da Farmácia</h2>
-
-        {/* Usuários */}
-        <div className="mb-6">
-          <h3 className="font-semibold mb-2">Incluir usuário</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <input className="input" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-            <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
-            <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
-          </div>
-          <div className="grid grid-cols-2 gap-2 mt-2">
-            {Object.keys(permissoes).map((campo) => (
-              <label key={campo} className="flex items-center gap-2 text-sm capitalize">
-                <input
-                  type="checkbox"
-                  checked={permissoes[campo]}
-                  onChange={() => handlePermissaoToggle(campo)}
-                />
-                {campo.replace('permissao_', '').replace('_', ' ')}
-              </label>
-            ))}
-          </div>
-          <button className="btn-primary mt-3" onClick={salvarUsuario}>
-            <Plus size={16} className="mr-2" />
-            Salvar usuário
-          </button>
-        </div>
-
-        {/* Locais */}
-        <div className="mb-6">
-          <h3 className="font-semibold mb-2">Cadastrar loja ou cidade</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
-              <option value="origem">Origem</option>
-              <option value="destino">Destino</option>
-            </select>
-            <input className="input" placeholder="Nome" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
-          </div>
-          <button className="btn-primary mt-3" onClick={salvarLocal}>
-            <Plus size={16} className="mr-2" />
-            Salvar local
-          </button>
-        </div>
-
-        {/* Logo */}
-        <div className="mb-3">
-          <h3 className="font-semibold mb-2">Enviar logo (.png)</h3>
-          <input type="file" accept=".png" onChange={(e) => setLogoFile(e.target.files[0])} />
-          <button className="btn-primary mt-2" onClick={enviarLogo}>
-            <Upload size={16} className="mr-2" />
-            Enviar logo
-          </button>
-        </div>
       </div>
 
-      <style>{`
-        @keyframes fadeSlide {
-          0% {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
+      {/* Locais */}
+      <div className="mb-6">
+        <h3 className="font-semibold mb-2">Cadastrar loja ou cidade</h3>
+        <div className="grid grid-cols-2 gap-2">
+          <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
+            <option value="origem">Origem</option>
+            <option value="destino">Destino</option>
+          </select>
+          <input className="input" placeholder="Nome" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
+        </div>
+        <button className="btn-primary mt-3" onClick={salvarLocal}>
+          <Plus size={16} className="mr-2" />
+          Salvar local
+        </button>
+      </div>
+
+      {/* Logo */}
+      <div className="mb-3">
+        <h3 className="font-semibold mb-2">Enviar logo (.png)</h3>
+        <input type="file" accept=".png" onChange={(e) => setLogoFile(e.target.files[0])} />
+        <button className="btn-primary mt-2" onClick={enviarLogo}>
+          <Upload size={16} className="mr-2" />
+          Enviar logo
+        </button>
+      </div>
+    </div>
+
+    <style>{`
+      .modal-overlay {
+        position: fixed;
+        top: 0; bottom: 0; left: 0; right: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @keyframes fadeSlide {
+        0% {
+          opacity: 0;
+          transform: translateY(-10px);
         }
-        .animate-fade-slide {
-          animation: fadeSlide 0.3s ease-out;
+        100% {
+          opacity: 1;
+          transform: translateY(0);
         }
-      `}</style>
-    </div>,
-    modalRoot
-  )
-}
+      }
+
+      .animate-fade-slide {
+        animation: fadeSlide 0.3s ease-out;
+      }
+    `}</style>
+  </div>,
+  modalRoot
+)
