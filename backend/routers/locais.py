@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from db import cursor
 from models import LocalFarmaciaCreate
 
@@ -13,8 +13,9 @@ def criar_local(dados: LocalFarmaciaCreate):
     return {"status": "ok"}
 
 @router.put("/locais/{id}")
-def editar_local(id: int, dados: dict):
+async def editar_local(id: int, request: Request):
     try:
+        dados = await request.json()
         cursor.execute("""
             UPDATE farol_farmacia_locais SET
                 nome = %s,
