@@ -23,13 +23,23 @@ def listar_locais(farmacia_id: str):
 async def editar_local(id: int, request: Request):
     try:
         dados = await request.json()
+        origem = dados.get('origem', False)
+        destino = dados.get('destino', False)
+
+        if origem and destino:
+            tipo = 'origem_destino'
+        elif origem:
+            tipo = 'origem'
+        elif destino:
+            tipo = 'destino'
+        else:
+            tipo = ''  # ou None, dependendo do schema
+
         cursor.execute("""
-            UPDATE farol_farmacia_locais SET
-                nome = %s,
-                origem = %s,
-                destino = %s
+            UPDATE farol_farmacia_locais
+            SET nome = %s, tipo = %s
             WHERE id = %s
-        """, (dados['nome'], dados['origem'], dados['destino'], id))
+        """, (dados['nome'], tipo, id))
         return {"status": "ok"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
