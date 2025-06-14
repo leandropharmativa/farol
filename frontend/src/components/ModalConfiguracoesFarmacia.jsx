@@ -278,7 +278,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
             <ul className="mt-4 space-y-1 text-sm">
               {usuarios.map(u => (
-                <li key={u.id} className="flex justify-between items-center">
+                <li key={u.id} className="flex items-center gap-2">
                   <span>{u.nome}</span>
                   <div className="flex gap-2">
                     <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
@@ -328,7 +328,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
             <ul className="mt-4 space-y-1 text-sm">
               {locais.map(l => (
-                <li key={l.id} className="flex justify-between items-center">
+                <li key={l.id} className="flex items-center gap-2">
                   <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
                   <div className="flex gap-2">
                     <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
