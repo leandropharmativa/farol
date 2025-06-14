@@ -1,4 +1,3 @@
-// frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Plus, Upload } from 'lucide-react'
@@ -99,6 +98,12 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
   if (!aberto) return null
 
+  const modalRoot = document.getElementById('modal-root')
+  if (!modalRoot) {
+    console.warn('❗ modal-root não encontrado no DOM')
+    return null
+  }
+
   return createPortal(
     <div className="fixed inset-0 bg-black bg-opacity-50 z-[999] flex items-center justify-center">
       <div
@@ -179,6 +184,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         }
       `}</style>
     </div>,
-    document.getElementById('modal-root')
+    modalRoot
   )
 }
