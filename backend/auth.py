@@ -2,10 +2,8 @@ import os
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.hash import bcrypt
-from sqlalchemy.orm import Session
 
-from database import get_db
-from models import FarolAdmin, FarolFarmacia, FarolFarmaciaUsuario
+from db import conn, cursor
 
 # Configurações do JWT
 SECRET_KEY = os.getenv("JWT_SECRET", "segredo_super_secreto")
@@ -30,24 +28,27 @@ def gerar_hash(senha: str) -> str:
 def verificar_senha(senha: str, hash_salvo: str) -> bool:
     return bcrypt.verify(senha, hash_salvo)
 
-def verificar_tipo_login(identificador: str, db: Session = None) -> str:
+def verificar_tipo_login(identificador: str) -> str:
     """
     Verifica se o identificador pertence a um admin, farmácia ou usuário.
     Pode ser e-mail (admin/farmácia) ou código (usuário).
     Retorna: "admin", "farmacia", "usuario" ou "nenhum"
     """
-    if db is None:
-        db = next(get_db())
-
     identificador = identificador.strip().lower()
 
-    if db.query(FarolAdmin).filter_by(email=identificador).first():
+    # Verifica admin
+    cursor.execute("SELECT 1 FROM farol_admin WHERE LOWER(email) = %s LIMIT 1", (identificador,))
+    if cursor.fetchone():
         return "admin"
 
-    if db.query(FarolFarmacia).filter_by(email=identificador).first():
+    # Verifica farmácia
+    cursor.execute("SELECT 1 FROM farol_farmacias WHERE LOWER(email) = %s LIMIT 1", (identificador,))
+    if cursor.fetchone():
         return "farmacia"
 
-    if db.query(FarolFarmaciaUsuario).filter_by(codigo=identificador).first():
+    # Verifica usuário da farmácia (por código)
+    cursor.execute("SELECT 1 FROM farol_farmacia_usuarios WHERE LOWER(codigo) = %s LIMIT 1", (identificador,))
+    if cursor.fetchone():
         return "usuario"
 
     return "nenhum"
