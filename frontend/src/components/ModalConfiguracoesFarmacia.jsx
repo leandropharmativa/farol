@@ -106,74 +106,92 @@ if (!modalRoot) {
 
 return createPortal(
   <div className="modal-overlay">
-    <div className="bg-white w-full max-w-md min-w-[320px] mx-4 rounded-lg shadow-lg p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto animate-fade-slide">
-      <button className="absolute top-3 right-3 text-gray-500 hover:text-red-500" onClick={onClose}>
-        <X />
-      </button>
-      <h2 className="text-xl font-bold mb-4">Configurações da Farmácia</h2>
-
-      {/* Usuários */}
-      <div className="mb-6">
-        <h3 className="font-semibold mb-2">Incluir usuário</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <input className="input" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
-          <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
-          <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
-        </div>
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          {Object.keys(permissoes).map((campo) => (
-            <label key={campo} className="flex items-center gap-2 text-sm capitalize">
-              <input
-                type="checkbox"
-                checked={permissoes[campo]}
-                onChange={() => handlePermissaoToggle(campo)}
-              />
-              {campo.replace('permissao_', '').replace('_', ' ')}
-            </label>
-          ))}
-        </div>
-        <button className="btn-primary mt-3" onClick={salvarUsuario}>
-          <Plus size={16} className="mr-2" />
-          Salvar usuário
+    <div className="modal-container animate-fade-slide">
+      <div className="sticky top-0 bg-white z-10 flex justify-end p-2 border-b">
+        <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
+          <X />
         </button>
       </div>
 
-      {/* Locais */}
-      <div className="mb-6">
-        <h3 className="font-semibold mb-2">Cadastrar loja ou cidade</h3>
-        <div className="grid grid-cols-2 gap-2">
-          <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
-            <option value="origem">Origem</option>
-            <option value="destino">Destino</option>
-          </select>
-          <input className="input" placeholder="Nome" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
-        </div>
-        <button className="btn-primary mt-3" onClick={salvarLocal}>
-          <Plus size={16} className="mr-2" />
-          Salvar local
-        </button>
-      </div>
+      <div className="p-4 space-y-6">
+        <h2 className="text-xl font-bold">Configurações da Farmácia</h2>
 
-      {/* Logo */}
-      <div className="mb-3">
-        <h3 className="font-semibold mb-2">Enviar logo (.png)</h3>
-        <input type="file" accept=".png" onChange={(e) => setLogoFile(e.target.files[0])} />
-        <button className="btn-primary mt-2" onClick={enviarLogo}>
-          <Upload size={16} className="mr-2" />
-          Enviar logo
-        </button>
+        {/* Usuários */}
+        <div>
+          <h3 className="font-semibold mb-2">Incluir usuário</h3>
+          <div className="grid grid-cols-2 gap-2">
+            <input className="input" placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+            <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
+            <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
+          </div>
+          <div className="grid grid-cols-2 gap-2 mt-2">
+            {Object.keys(permissoes).map((campo) => (
+              <label key={campo} className="flex items-center gap-2 text-sm capitalize">
+                <input
+                  type="checkbox"
+                  checked={permissoes[campo]}
+                  onChange={() => handlePermissaoToggle(campo)}
+                />
+                {campo.replace('permissao_', '').replace('_', ' ')}
+              </label>
+            ))}
+          </div>
+          <button className="btn-primary mt-3" onClick={salvarUsuario}>
+            <Plus size={16} className="mr-2" />
+            Salvar usuário
+          </button>
+        </div>
+
+        {/* Locais */}
+        <div>
+          <h3 className="font-semibold mb-2">Cadastrar loja ou cidade</h3>
+          <div className="grid grid-cols-2 gap-2">
+            <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
+              <option value="origem">Origem</option>
+              <option value="destino">Destino</option>
+            </select>
+            <input className="input" placeholder="Nome" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
+          </div>
+          <button className="btn-primary mt-3" onClick={salvarLocal}>
+            <Plus size={16} className="mr-2" />
+            Salvar local
+          </button>
+        </div>
+
+        {/* Logo */}
+        <div>
+          <h3 className="font-semibold mb-2">Enviar logo (.png)</h3>
+          <input type="file" accept=".png" onChange={(e) => setLogoFile(e.target.files[0])} />
+          <button className="btn-primary mt-2" onClick={enviarLogo}>
+            <Upload size={16} className="mr-2" />
+            Enviar logo
+          </button>
+        </div>
       </div>
     </div>
 
     <style>{`
       .modal-overlay {
         position: fixed;
-        top: 0; bottom: 0; left: 0; right: 0;
+        inset: 0;
         background-color: rgba(0, 0, 0, 0.5);
         z-index: 9999;
         display: flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
+        overflow-y: auto;
+        padding: 1rem;
+      }
+
+      .modal-container {
+        background: white;
+        width: 100%;
+        max-width: 520px;
+        border-radius: 0.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
       }
 
       @keyframes fadeSlide {
