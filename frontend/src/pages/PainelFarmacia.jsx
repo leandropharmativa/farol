@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   LogOut,
-  PlusCircle,
   PackagePlus,
   Search,
   Settings,
@@ -21,12 +20,11 @@ export default function PainelFarmacia() {
   const emailLogado = (localStorage.getItem('email') || '').trim().toLowerCase()
   const farmaciaId = localStorage.getItem('farmaciaId')
   const tipoLogin = localStorage.getItem('tipoLogin')
+  const nomeFarmacia = localStorage.getItem('nomeFarmacia') || 'Painel da Farmácia'
+  const nomeUsuario = localStorage.getItem('nomeUsuario') || ''
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('email')
-    localStorage.removeItem('farmaciaId')
-    localStorage.removeItem('tipoLogin')
+    localStorage.clear()
     setModalConfiguracoesAberto(false)
     navigate('/')
   }
@@ -71,7 +69,10 @@ export default function PainelFarmacia() {
   return (
     <div className="painel-container">
       <header className="painel-header">
-        <h1 className="painel-titulo">Painel da Farmácia</h1>
+        <h1 className="painel-titulo">{nomeFarmacia}</h1>
+        {tipoLogin === 'usuario' && (
+          <p className="text-sm text-gray-600 mt-1 text-center">Usuário: {nomeUsuario}</p>
+        )}
       </header>
 
       <div className="painel-acoes">
@@ -89,16 +90,12 @@ export default function PainelFarmacia() {
         Nenhum pedido encontrado. Use o botão abaixo para incluir um novo.
       </div>
 
-      {/* 🟦 Botão fixo de incluir pedido no canto inferior direito */}
+      {/* 🟦 Botão fixo de incluir pedido */}
       <button
-        className="botao-icone-circular botao-azul"
+        className={`botao-icone-circular botao-azul fixed right-6 z-10 transition-all duration-300 ${
+          menuAberto ? 'bottom-28' : 'bottom-20'
+        }`}
         title="Incluir Pedido"
-        style={{
-          position: 'fixed',
-          bottom: '5.5rem',
-          right: '1.5rem',
-          zIndex: 10
-        }}
         onClick={() => {
           console.log('🟦 Incluir Pedido (ação futura)')
         }}
@@ -106,7 +103,7 @@ export default function PainelFarmacia() {
         <PackagePlus size={26} />
       </button>
 
-      {/* Botões flutuantes no canto inferior direito */}
+      {/* Menu flutuante */}
       <div className="menu-flutuante" ref={menuRef}>
         <div className="menu-flutuante-botoes">
           {menuAberto && tipoLogin === 'farmacia' && (
@@ -120,7 +117,6 @@ export default function PainelFarmacia() {
               </button>
             </div>
           )}
-
           {menuAberto && (
             <div className="botao-submenu delay visivel">
               <button
