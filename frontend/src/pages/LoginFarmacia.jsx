@@ -83,9 +83,8 @@ export default function LoginFarmacia() {
   }
 
   return (
-<div className="bg-orange-500 min-h-screen flex items-center justify-center">
-  <div className="login-box">
-
+    <div className="bg-gray-100 flex items-center justify-center">
+      <div className="login-box min-h-screen flex flex-col justify-center">
         <div className="login-header">
           <TowerControl size={36} />
           <h1 className="text-3xl font-bold tracking-wide">Farol</h1>
