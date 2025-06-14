@@ -58,8 +58,10 @@ const handleLogin = async () => {
         localStorage.setItem('email', emailOuCodigo)
         localStorage.setItem('tipoLogin', 'farmacia')
         toast.success('Login como farmácia')
+        setTimeout(() => {
         navigate('/painel-farmacia')
         window.location.reload()
+          }, 5000)
         return
       } else {
         console.log('Login farmácia falhou:', resFarmacia.data)
