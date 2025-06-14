@@ -145,8 +145,8 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
   const editarLocal = (local) => {
     setLocalNome(local.nome)
-    setIsOrigem(local.origem)
-    setIsDestino(local.destino)
+    setIsOrigem(local.tipo === 'origem' || local.tipo === 'origem_destino')
+    setIsDestino(local.tipo === 'destino' || local.tipo === 'origem_destino')
     setEditandoLocalId(local.id)
   }
 
@@ -186,7 +186,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div className="p-5 space-y-8">
           <h2 className="text-xl font-bold text-center">Configurações da Farmácia</h2>
 
-          {/* Usuário */}
+          {/* Usuários */}
           <div className="space-y-3">
             <h3 className="font-semibold">Cadastrar ou editar usuário</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -210,6 +210,28 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <Plus size={16} className="mr-2" />
               {editandoUsuarioId ? 'Atualizar usuário' : 'Salvar usuário'}
             </button>
+            {editandoUsuarioId && (
+              <button
+                className="btn-claro mt-1"
+                onClick={() => {
+                  setEditandoUsuarioId(null)
+                  setNome('')
+                  setSenha('')
+                  setPermissoes({
+                    permissao_inclusao: false,
+                    permissao_impressao: false,
+                    permissao_conferencia: false,
+                    permissao_producao: false,
+                    permissao_despacho: false,
+                    permissao_entrega: false,
+                    permissao_registrar_pagamento: false,
+                  })
+                  gerarCodigo()
+                }}
+              >
+                Cancelar edição
+              </button>
+            )}
 
             <ul className="mt-4 space-y-1 text-sm">
               {usuarios.map(u => (
@@ -240,11 +262,23 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <Plus size={16} className="mr-2" />
               {editandoLocalId ? 'Atualizar local' : 'Salvar local'}
             </button>
-
+            {editandoLocalId && (
+              <button
+                className="btn-claro mt-1"
+                onClick={() => {
+                  setEditandoLocalId(null)
+                  setLocalNome('')
+                  setIsOrigem(false)
+                  setIsDestino(false)
+                }}
+              >
+                Cancelar edição
+              </button>
+            )}
             <ul className="mt-4 space-y-1 text-sm">
               {locais.map(l => (
                 <li key={l.id} className="flex justify-between items-center">
-                  <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
+                  <span>{l.nome} ({l.tipo})</span>
                   <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
                     <LocationEdit size={16} />
                   </button>
