@@ -1,12 +1,13 @@
-// frontend/src/components/ModalConfiguracoesFarmacia.jsx
+// 📄 frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
   X, Plus, Upload,
   PackagePlus, Printer, FileCheck2,
-  CircleCheckBig, Truck, PackageCheck, CreditCard, Pencil
+  CircleCheckBig, Truck, PackageCheck, CreditCard,
+  Pencil, Trash2
 } from 'lucide-react'
-import axios from 'axios'
+import api from '../services/api'
 import { toast } from 'react-toastify'
 import '../styles/global.css'
 
@@ -14,6 +15,8 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   const [nome, setNome] = useState('')
   const [senha, setSenha] = useState('')
   const [codigo, setCodigo] = useState('')
+  const [usuarios, setUsuarios] = useState([])
+  const [locais, setLocais] = useState([])
   const [permissoes, setPermissoes] = useState({
     permissao_inclusao: false,
     permissao_impressao: false,
@@ -23,13 +26,8 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     permissao_entrega: false,
     permissao_registrar_pagamento: false,
   })
-  const [usuarios, setUsuarios] = useState([])
-  const [locais, setLocais] = useState([])
-
   const [localNome, setLocalNome] = useState('')
-  const [isOrigem, setIsOrigem] = useState(false)
-  const [isDestino, setIsDestino] = useState(false)
-
+  const [localTipo, setLocalTipo] = useState('origem')
   const [logoFile, setLogoFile] = useState(null)
 
   useEffect(() => {
@@ -51,7 +49,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
   const salvarUsuario = async () => {
     try {
-      await axios.post('https://farol-mjtt.onrender.com/usuarios', {
+      await api.post('/usuarios', {
         farmacia_id: farmaciaId,
         codigo,
         nome,
@@ -77,36 +75,33 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     }
   }
 
-  const salvarLocal = async () => {
-    try {
-      await axios.post('https://farol-mjtt.onrender.com/locais', {
-        farmacia_id: farmaciaId,
-        nome: localNome,
-        origem: isOrigem,
-        destino: isDestino,
-      })
-      toast.success('Local salvo')
-      setLocalNome('')
-      setIsOrigem(false)
-      setIsDestino(false)
-      carregarLocais()
-    } catch (err) {
-      toast.error('Erro ao salvar local')
-    }
-  }
-
   const carregarUsuarios = async () => {
     try {
-      const res = await axios.get(`https://farol-mjtt.onrender.com/usuarios/farmacia/${farmaciaId}`)
+      const res = await api.get(`/usuarios/${farmaciaId}`)
       setUsuarios(res.data)
     } catch (err) {
       toast.error('Erro ao carregar usuários')
     }
   }
 
+  const salvarLocal = async () => {
+    try {
+      await api.post('/locais', {
+        farmacia_id: farmaciaId,
+        nome: localNome,
+        tipo: localTipo,
+      })
+      toast.success('Local salvo')
+      setLocalNome('')
+      carregarLocais()
+    } catch (err) {
+      toast.error('Erro ao salvar local')
+    }
+  }
+
   const carregarLocais = async () => {
     try {
-      const res = await axios.get(`https://farol-mjtt.onrender.com/locais/farmacia/${farmaciaId}`)
+      const res = await api.get(`/locais/${farmaciaId}`)
       setLocais(res.data)
     } catch (err) {
       toast.error('Erro ao carregar locais')
@@ -118,7 +113,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     const reader = new FileReader()
     reader.onloadend = async () => {
       try {
-        await axios.put(`https://farol-mjtt.onrender.com/farmacia/logo/${farmaciaId}`, {
+        await api.put(`/farmacia/logo/${farmaciaId}`, {
           logo_url: reader.result,
         })
         toast.success('Logo enviada com sucesso')
@@ -155,7 +150,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
   return createPortal(
     <div className="modal-overlay">
-      <div className="modal-container animate-fade-slide overflow-y-auto max-h-[95vh]">
+      <div className="modal-container animate-fade-slide">
         <div className="sticky top-0 bg-white z-10 flex justify-end p-3 border-b">
           <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
             <X />
@@ -165,7 +160,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div className="p-5 space-y-8">
           <h2 className="text-xl font-bold text-center">Configurações da Farmácia</h2>
 
-          {/* Usuários */}
+          {/* Cadastro de usuário */}
           <div className="space-y-3">
             <h3 className="font-semibold">Incluir usuário</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -173,8 +168,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
               <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
             </div>
-
-            <div className="lista-permissoes flex gap-2 flex-wrap">
+            <div className="lista-permissoes">
               {Object.entries(permissoes).map(([campo, ativo]) => (
                 <div
                   key={campo}
@@ -186,21 +180,19 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
                 </div>
               ))}
             </div>
-
             <button className="btn-primary mt-3" onClick={salvarUsuario}>
               <Plus size={16} className="mr-2" />
               Salvar usuário
             </button>
 
-            <div className="mt-4">
-              <h4 className="font-semibold mb-2">Usuários cadastrados</h4>
-              <ul className="space-y-1 text-sm">
+            {/* Lista de usuários */}
+            <div className="pt-4">
+              <h4 className="font-medium">Usuários cadastrados</h4>
+              <ul className="divide-y border rounded mt-1">
                 {usuarios.map((u) => (
-                  <li key={u.id} className="flex justify-between items-center">
+                  <li key={u.id} className="flex items-center justify-between p-2 text-sm">
                     <span>{u.nome}</span>
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <Pencil size={16} />
-                    </button>
+                    <Pencil size={16} className="text-gray-500 hover:text-blue-500 cursor-pointer" />
                   </li>
                 ))}
               </ul>
@@ -210,40 +202,25 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           {/* Locais */}
           <div className="space-y-3">
             <h3 className="font-semibold">Cadastrar loja ou cidade</h3>
-            <input
-              className="input"
-              placeholder="Nome"
-              value={localNome}
-              onChange={(e) => setLocalNome(e.target.value)}
-            />
-            <div className="flex gap-4 mt-2">
-              <label>
-                <input type="checkbox" checked={isOrigem} onChange={(e) => setIsOrigem(e.target.checked)} />
-                <span className="ml-1">Usado como origem</span>
-              </label>
-              <label>
-                <input type="checkbox" checked={isDestino} onChange={(e) => setIsDestino(e.target.checked)} />
-                <span className="ml-1">Usado como destino</span>
-              </label>
+            <div className="grid grid-cols-2 gap-3">
+              <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
+                <option value="origem">Origem</option>
+                <option value="destino">Destino</option>
+              </select>
+              <input className="input" placeholder="Nome" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
             </div>
             <button className="btn-primary mt-2" onClick={salvarLocal}>
               <Plus size={16} className="mr-2" />
               Salvar local
             </button>
-
-            <div className="mt-4">
-              <h4 className="font-semibold mb-2">Locais cadastrados</h4>
-              <ul className="space-y-1 text-sm">
-                {locais.map((l) => (
-                  <li key={l.id} className="flex justify-between items-center">
-                    <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
-                    <button className="text-blue-600 hover:text-blue-800">
-                      <Pencil size={16} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <ul className="divide-y border rounded mt-2">
+              {locais.map((l) => (
+                <li key={l.id} className="flex items-center justify-between p-2 text-sm">
+                  <span>{l.nome} <span className="text-xs text-gray-500 ml-2">({l.tipo})</span></span>
+                  <Pencil size={16} className="text-gray-500 hover:text-blue-500 cursor-pointer" />
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Logo */}
