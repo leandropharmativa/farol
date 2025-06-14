@@ -1,13 +1,12 @@
 // frontend/src/pages/LoginFarmacia.jsx
-// Este componente unifica o login normal e a ativação da farmácia (primeiro acesso)
-
 import { useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
+import { TowerControl } from 'lucide-react'
 
 export default function LoginFarmacia() {
-  const [modo, setModo] = useState('login') // 'login' ou 'ativar'
+  const [modo, setModo] = useState('login')
   const [email, setEmail] = useState('')
   const [senha, setSenha] = useState('')
   const [nome, setNome] = useState('')
@@ -84,29 +83,30 @@ export default function LoginFarmacia() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f4f6f8' }}>
-      <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '400px', width: '100%', boxShadow: '0 0 12px rgba(0,0,0,0.1)' }}>
-        <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-          {modo === 'login' ? 'Login da Farmácia' : 'Primeiro Acesso'}
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-orange-500 w-full max-w-md rounded-md shadow-lg p-8 text-white">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <TowerControl size={36} />
+          <h1 className="text-3xl font-bold tracking-wide">Farol</h1>
+        </div>
 
         {modo === 'login' ? (
           <>
             <input
               type="email"
-              className="input"
+              className="input mb-3"
               placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <input
               type="password"
-              className="input"
+              className="input mb-4"
               placeholder="Senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
-            <button className="btn-primary" onClick={handleLogin}>
+            <button className="btn-primary w-full" onClick={handleLogin}>
               Entrar
             </button>
           </>
@@ -114,49 +114,48 @@ export default function LoginFarmacia() {
           <>
             <input
               type="text"
-              className="input"
+              className="input mb-3"
               placeholder="Código de ativação"
               value={codigo}
               onChange={(e) => setCodigo(e.target.value)}
             />
             <button
-              className="btn-primary"
+              className="btn-primary w-full mb-2"
               onClick={buscarEmpresa}
               disabled={!codigo.trim()}
-              style={{ marginTop: '0.5rem' }}
             >
               Validar Código
             </button>
 
-            {carregandoEmpresa && <p>Verificando código...</p>}
+            {carregandoEmpresa && <p className="text-center text-sm">Verificando código...</p>}
 
             {nomeEmpresa && (
               <>
-                <p style={{ marginTop: '1rem' }}>
+                <p className="text-sm mt-2 mb-2 text-center">
                   <strong>Empresa:</strong> {nomeEmpresa}
                 </p>
                 <input
                   type="text"
-                  className="input"
+                  className="input mb-3"
                   placeholder="Nome da farmácia"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                 />
                 <input
                   type="email"
-                  className="input"
+                  className="input mb-3"
                   placeholder="E-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                   type="password"
-                  className="input"
+                  className="input mb-4"
                   placeholder="Senha"
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
                 />
-                <button className="btn-primary" onClick={handleAtivar}>
+                <button className="btn-primary w-full" onClick={handleAtivar}>
                   Ativar Conta
                 </button>
               </>
@@ -164,11 +163,13 @@ export default function LoginFarmacia() {
           </>
         )}
 
-        <button onClick={alternarModo} style={{ marginTop: '1rem', background: 'transparent', color: '#0074d9', border: 'none', cursor: 'pointer' }}>
+        <button
+          onClick={alternarModo}
+          className="w-full mt-6 text-sm text-white underline hover:text-gray-200"
+        >
           {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
         </button>
       </div>
     </div>
   )
 }
-
