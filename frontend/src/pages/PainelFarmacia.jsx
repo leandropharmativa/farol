@@ -56,11 +56,7 @@ export default function PainelFarmacia() {
   }, [menuAberto])
 
   useEffect(() => {
-    if (modalConfiguracoesAberto) {
-      document.body.style.overflow = 'hidden'
-    } else {
-      document.body.style.overflow = ''
-    }
+    document.body.style.overflow = modalConfiguracoesAberto ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
     }
@@ -90,51 +86,73 @@ export default function PainelFarmacia() {
         Nenhum pedido encontrado. Use o botão abaixo para incluir um novo.
       </div>
 
-{/* 🟦 Botão de incluir pedido com animação de subida */}
-<div className={`fixed right-6 z-20 transition-all duration-300 ${menuAberto ? 'bottom-36' : 'bottom-20'}`}>
-  <button
-    className="botao-icone-circular botao-azul"
-    title="Incluir Pedido"
-    onClick={() => {
-      console.log('🟦 Incluir Pedido (ação futura)')
-    }}
-  >
-    <PackagePlus size={26} />
-  </button>
-</div>
+      {/* Botão de incluir pedido com transição de subida */}
+      <div
+        className={`fixed right-6 z-20 transition-all duration-300 ${
+          menuAberto ? 'bottom-36' : 'bottom-20'
+        }`}
+      >
+        <button
+          className="botao-icone-circular botao-azul"
+          title="Incluir Pedido"
+          onClick={() => {
+            console.log('🟦 Incluir Pedido (ação futura)')
+          }}
+        >
+          <PackagePlus size={26} />
+        </button>
+      </div>
 
+      {/* Menu flutuante com animação */}
+      <div
+        ref={menuRef}
+        className="fixed bottom-6 right-6 z-30 flex flex-col items-end gap-2"
+      >
+        <div className="relative flex flex-col items-end space-y-2">
+          {/* Configurações */}
+          <div
+            className={`transition-all duration-300 transform ${
+              menuAberto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+            }`}
+          >
+            {tipoLogin === 'farmacia' && (
+              <button
+                onClick={irParaConfiguracoes}
+                className="botao-icone-circular botao-cinza"
+                title="Configurações"
+              >
+                <Settings size={20} />
+              </button>
+            )}
+          </div>
 
-{/* Menu flutuante com botões empilhados acima do botão principal */}
-<div className="fixed bottom-6 right-6 z-20 flex flex-col items-end gap-2" ref={menuRef}>
-  {menuAberto && tipoLogin === 'farmacia' && (
-    <button
-      onClick={irParaConfiguracoes}
-      className="botao-icone-circular botao-cinza"
-      title="Configurações"
-    >
-      <Settings size={20} />
-    </button>
-  )}
-  {menuAberto && (
-    <button
-      onClick={handleLogout}
-      className="botao-icone-circular botao-cinza"
-      title="Sair"
-    >
-      <LogOut size={20} />
-    </button>
-  )}
-  <button
-    onClick={toggleMenu}
-    className="botao-icone-circular botao-principal"
-    title="Menu"
-  >
-    {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
-  </button>
-</div>
+          {/* Sair */}
+          <div
+            className={`transition-all duration-300 transform ${
+              menuAberto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+            }`}
+          >
+            <button
+              onClick={handleLogout}
+              className="botao-icone-circular botao-cinza"
+              title="Sair"
+            >
+              <LogOut size={20} />
+            </button>
+          </div>
+        </div>
 
+        {/* Botão principal do menu */}
+        <button
+          onClick={toggleMenu}
+          className="botao-icone-circular botao-principal"
+          title="Menu"
+        >
+          {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
+        </button>
+      </div>
 
-      {/* ⚙️ Modal de configurações */}
+      {/* Modal de configurações */}
       <ModalConfiguracoesFarmacia
         aberto={modalConfiguracoesAberto}
         onClose={() => setModalConfiguracoesAberto(false)}
