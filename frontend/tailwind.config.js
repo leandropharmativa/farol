@@ -1,10 +1,13 @@
 theme: {
   extend: {
     colors: {
-      nublia: {
-        primary: '#0284c7',
-        primaryfocus: '#0369a1',
-      }
-    }
-  }
-}
+      farol: {
+        primary: '#750c0d',
+        primaryfocus: '#de3c3d',
+      },
+    },
+    fontFamily: {
+      sans: ['Lato', 'sans-serif'],
+    },
+  },
+},
