@@ -1,16 +1,29 @@
-// 📄 ModalConfiguracoesFarmacia.jsx
+// 📄 frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import {
-  UserPlus, X, MapPin, Trash, UserPen, Plus, Upload
+  X, Plus, Upload, Pencil, UserRoundPen, LocationEdit, Trash,
+  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard
 } from 'lucide-react'
 import api from '../services/api'
+import { toast } from 'react-toastify'
+import '../styles/global.css'
 
-export default function ModalConfiguracoesFarmacia({ farmacia, onClose }) {
-  const [logo, setLogo] = useState(null)
+export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId }) {
+  const [codigo, setCodigo] = useState('')
+  const [nome, setNome] = useState('')
+  const [senha, setSenha] = useState('')
   const [usuarios, setUsuarios] = useState([])
+  const [editandoUsuarioId, setEditandoUsuarioId] = useState(null)
+  const [logo, setLogo] = useState(null)
+
+  const [localNome, setLocalNome] = useState('')
+  const [isOrigem, setIsOrigem] = useState(false)
+  const [isDestino, setIsDestino] = useState(false)
   const [locais, setLocais] = useState([])
-  const [novoUsuario, setNovoUsuario] = useState({
-    nome: '', codigo: '', senha: '',
+  const [editandoLocalId, setEditandoLocalId] = useState(null)
+
+  const [permissoes, setPermissoes] = useState({
     permissao_inclusao: false,
     permissao_impressao: false,
     permissao_conferencia: false,
@@ -19,47 +32,59 @@ export default function ModalConfiguracoesFarmacia({ farmacia, onClose }) {
     permissao_entrega: false,
     permissao_registrar_pagamento: false,
   })
-  const [editandoUsuarioId, setEditandoUsuarioId] = useState(null)
-
-  const [novoLocal, setNovoLocal] = useState({
-    nome: '', origem: false, destino: false
-  })
-  const [editandoLocalId, setEditandoLocalId] = useState(null)
 
   useEffect(() => {
-    carregarUsuarios()
-    carregarLocais()
-  }, [])
+    if (aberto) {
+      gerarCodigo()
+      carregarUsuarios()
+      carregarLocais()
+    }
+  }, [aberto])
+
+  const gerarCodigo = () => {
+    setCodigo(Math.floor(Math.random() * 9000) + 1000)
+  }
 
   const carregarUsuarios = async () => {
     try {
-      const res = await api.get(`/usuarios/${farmacia.id}`)
+      const res = await api.get(`/usuarios/${farmaciaId}`)
       setUsuarios(res.data)
-    } catch (err) {
-      console.error('Erro ao carregar usuários:', err)
+    } catch {
+      toast.error('Erro ao carregar usuários')
     }
   }
 
   const carregarLocais = async () => {
     try {
-      const res = await api.get(`/locais/${farmacia.id}`)
+      const res = await api.get(`/locais/${farmaciaId}`)
       setLocais(res.data)
-    } catch (err) {
-      console.error('Erro ao carregar locais:', err)
+    } catch {
+      toast.error('Erro ao carregar locais')
     }
   }
 
-  const salvarUsuario = async () => {
-    const payload = { ...novoUsuario, farmacia_id: farmacia.id }
+  const handlePermissaoToggle = (campo) => {
+    setPermissoes(prev => ({ ...prev, [campo]: !prev[campo] }))
+  }
 
+  const salvarUsuario = async () => {
     try {
       if (editandoUsuarioId) {
-        await api.put(`/usuarios/${editandoUsuarioId}`, payload)
+        await api.put(`/usuarios/${editandoUsuarioId}`, {
+          nome, senha, ...permissoes
+        })
+        toast.success('Usuário atualizado')
       } else {
-        await api.post('/usuarios', payload)
+        await api.post('/usuarios', {
+          farmacia_id: farmaciaId, codigo, nome, senha, ...permissoes
+        })
+        toast.success('Usuário criado')
       }
-      setNovoUsuario({
-        nome: '', codigo: '', senha: '',
+
+      setNome('')
+      setSenha('')
+      setEditandoUsuarioId(null)
+      setPermissoes({
         permissao_inclusao: false,
         permissao_impressao: false,
         permissao_conferencia: false,
@@ -68,184 +93,258 @@ export default function ModalConfiguracoesFarmacia({ farmacia, onClose }) {
         permissao_entrega: false,
         permissao_registrar_pagamento: false,
       })
-      setEditandoUsuarioId(null)
+      gerarCodigo()
       carregarUsuarios()
-    } catch (err) {
-      console.error('Erro ao salvar usuário:', err)
+    } catch {
+      toast.error('Erro ao salvar usuário')
     }
   }
 
-  const editarUsuario = (u) => {
-    setNovoUsuario(u)
-    setEditandoUsuarioId(u.id)
+  const editarUsuario = (usuario) => {
+    setNome(usuario.nome)
+    setSenha(usuario.senha)
+    setEditandoUsuarioId(usuario.id)
+    setPermissoes({
+      permissao_inclusao: usuario.permissao_inclusao,
+      permissao_impressao: usuario.permissao_impressao,
+      permissao_conferencia: usuario.permissao_conferencia,
+      permissao_producao: usuario.permissao_producao,
+      permissao_despacho: usuario.permissao_despacho,
+      permissao_entrega: usuario.permissao_entrega,
+      permissao_registrar_pagamento: usuario.permissao_registrar_pagamento,
+    })
   }
 
   const excluirUsuario = async (id) => {
     try {
       await api.delete(`/usuarios/${id}`)
+      toast.success('Usuário excluído')
       carregarUsuarios()
-    } catch (err) {
-      console.error('Erro ao excluir usuário:', err)
+    } catch {
+      toast.error('Erro ao excluir usuário')
     }
   }
 
   const salvarLocal = async () => {
-    const payload = { ...novoLocal, farmacia_id: farmacia.id }
-
     try {
       if (editandoLocalId) {
-        await api.put(`/locais/${editandoLocalId}`, payload)
+        await api.put(`/locais/${editandoLocalId}`, {
+          nome: localNome,
+          origem: isOrigem,
+          destino: isDestino
+        })
+        toast.success('Local atualizado')
       } else {
-        await api.post('/locais', payload)
+        await api.post('/locais', {
+          farmacia_id: farmaciaId,
+          nome: localNome,
+          origem: isOrigem,
+          destino: isDestino
+        })
+        toast.success('Local criado')
       }
-      setNovoLocal({ nome: '', origem: false, destino: false })
+
+      setLocalNome('')
+      setIsOrigem(false)
+      setIsDestino(false)
       setEditandoLocalId(null)
       carregarLocais()
-    } catch (err) {
-      console.error('Erro ao salvar local:', err)
+    } catch {
+      toast.error('Erro ao salvar local')
     }
   }
 
-  const editarLocal = (l) => {
-    setNovoLocal(l)
-    setEditandoLocalId(l.id)
+  const editarLocal = (local) => {
+    setLocalNome(local.nome)
+    setIsOrigem(local.origem)
+    setIsDestino(local.destino)
+    setEditandoLocalId(local.id)
   }
 
   const excluirLocal = async (id) => {
     try {
       await api.delete(`/locais/${id}`)
+      toast.success('Local excluído')
       carregarLocais()
-    } catch (err) {
-      console.error('Erro ao excluir local:', err)
+    } catch {
+      toast.error('Erro ao excluir local')
     }
   }
 
-  const handleLogoChange = (e) => {
-    setLogo(e.target.files[0])
+  const handleLogoChange = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append('logo', file)
+
+    try {
+      await api.post(`/farmacia/${farmaciaId}/logo`, formData)
+      toast.success('Logo atualizada com sucesso')
+    } catch {
+      toast.error('Erro ao enviar logo')
+    }
   }
 
-  return (
+  const iconesPermissao = {
+    permissao_inclusao: <PackagePlus size={18} />,
+    permissao_impressao: <Printer size={18} />,
+    permissao_conferencia: <FileCheck2 size={18} />,
+    permissao_producao: <CircleCheckBig size={18} />,
+    permissao_despacho: <Truck size={18} />,
+    permissao_entrega: <PackageCheck size={18} />,
+    permissao_registrar_pagamento: <CreditCard size={18} />,
+  }
+
+  const nomesPermissao = {
+    permissao_inclusao: 'Inclusão',
+    permissao_impressao: 'Impressão',
+    permissao_conferencia: 'Conferência',
+    permissao_producao: 'Produção',
+    permissao_despacho: 'Despacho',
+    permissao_entrega: 'Entrega',
+    permissao_registrar_pagamento: 'Pagamento',
+  }
+
+  if (!aberto) return null
+  const modalRoot = document.getElementById('modal-root')
+  if (!modalRoot) return null
+
+  return createPortal(
     <div className="modal-overlay">
-      <div className="modal-container">
-        <button className="btn-fechar" onClick={onClose}>
-          <X />
-        </button>
-        <h2>Configurações da Farmácia</h2>
-
-        <label>Enviar nova logo:</label>
-        <input type="file" onChange={handleLogoChange} />
-        {logo && <p>Arquivo selecionado: {logo.name}</p>}
-
-        <h3>Usuários</h3>
-        <input className="input" placeholder="Código" value={novoUsuario.codigo}
-          onChange={(e) => setNovoUsuario({ ...novoUsuario, codigo: e.target.value })} />
-        <input className="input" placeholder="Nome" value={novoUsuario.nome}
-          onChange={(e) => setNovoUsuario({ ...novoUsuario, nome: e.target.value })} />
-        <input className="input" placeholder="Senha" value={novoUsuario.senha}
-          onChange={(e) => setNovoUsuario({ ...novoUsuario, senha: e.target.value })} />
-
-        <div className="lista-permissoes">
-          {[
-            ['permissao_inclusao', '➕'],
-            ['permissao_impressao', '🖨️'],
-            ['permissao_conferencia', '📋'],
-            ['permissao_producao', '⚙️'],
-            ['permissao_despacho', '📦'],
-            ['permissao_entrega', '🚚'],
-            ['permissao_registrar_pagamento', '💰'],
-          ].map(([key, label]) => (
-            <span
-              key={key}
-              className={`icone-permissao ${novoUsuario[key] ? 'selecionado' : ''}`}
-              onClick={() =>
-                setNovoUsuario({ ...novoUsuario, [key]: !novoUsuario[key] })
-              }
-              title={key.replace('permissao_', '')}
-            >
-              {label}
-            </span>
-          ))}
-        </div>
-
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <button className="btn-primary" onClick={salvarUsuario}>
-            {editandoUsuarioId ? 'Salvar edição' : 'Cadastrar usuário'}
+      <div className="modal-container animate-fade-slide overflow-y-auto max-h-[95vh]">
+        <div className="sticky top-0 bg-white z-10 flex justify-end p-3 border-b">
+          <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
+            <X />
           </button>
-          {editandoUsuarioId && (
-            <button className="botao-cinza" onClick={() => {
-              setEditandoUsuarioId(null)
-              setNovoUsuario({
-                nome: '', codigo: '', senha: '',
-                permissao_inclusao: false,
-                permissao_impressao: false,
-                permissao_conferencia: false,
-                permissao_producao: false,
-                permissao_despacho: false,
-                permissao_entrega: false,
-                permissao_registrar_pagamento: false,
-              })
-            }}>Cancelar</button>
-          )}
         </div>
 
-        <ul style={{ marginTop: '1rem' }}>
-          {usuarios.map((u) => (
-            <li key={u.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-              <span>{u.codigo} - {u.nome}</span>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button className="botao-icone-circular botao-cinza" onClick={() => editarUsuario(u)}>
-                  <UserPen size={18} />
-                </button>
-                <button className="botao-icone-circular botao-sair" onClick={() => excluirUsuario(u.id)}>
-                  <Trash size={18} />
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <div className="p-5 space-y-8">
+          <h2 className="text-xl font-bold text-center">Configurações da Farmácia</h2>
 
-        <h3 style={{ marginTop: '2rem' }}>Locais</h3>
-        <input className="input" placeholder="Nome do local" value={novoLocal.nome}
-          onChange={(e) => setNovoLocal({ ...novoLocal, nome: e.target.value })} />
-        <label>
-          <input type="checkbox" checked={novoLocal.origem}
-            onChange={(e) => setNovoLocal({ ...novoLocal, origem: e.target.checked })} />
-          Origem
-        </label>
-        <label>
-          <input type="checkbox" checked={novoLocal.destino}
-            onChange={(e) => setNovoLocal({ ...novoLocal, destino: e.target.checked })} />
-          Destino
-        </label>
+          {/* Logo */}
+          <div className="space-y-2">
+            <label className="font-semibold">Logo da Farmácia</label>
+            <input type="file" accept="image/*" onChange={handleLogoChange} />
+          </div>
 
-        <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
-          <button className="btn-primary" onClick={salvarLocal}>
-            {editandoLocalId ? 'Salvar local' : 'Cadastrar local'}
-          </button>
-          {editandoLocalId && (
-            <button className="botao-cinza" onClick={() => {
-              setEditandoLocalId(null)
-              setNovoLocal({ nome: '', origem: false, destino: false })
-            }}>Cancelar</button>
-          )}
+          {/* Usuário */}
+          <div className="space-y-3">
+            <h3 className="font-semibold">Cadastrar ou editar usuário</h3>
+            <div className="grid grid-cols-2 gap-3">
+              <input className="input" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
+              <input className="input" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
+              <input className="input col-span-2" disabled value={`Código: ${codigo}`} />
+            </div>
+            <div className="flex gap-2 flex-wrap mt-2">
+              {Object.entries(permissoes).map(([campo, ativo]) => (
+                <div
+                  key={campo}
+                  className={`icone-permissao ${ativo ? 'selecionado' : ''}`}
+                  title={nomesPermissao[campo]}
+                  onClick={() => handlePermissaoToggle(campo)}
+                >
+                  {iconesPermissao[campo]}
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button className="btn-primary" onClick={salvarUsuario}>
+                <Plus size={16} className="mr-2" />
+                {editandoUsuarioId ? 'Atualizar usuário' : 'Salvar usuário'}
+              </button>
+              {editandoUsuarioId && (
+                <button
+                  className="btn-claro"
+                  onClick={() => {
+                    setNome('')
+                    setSenha('')
+                    setEditandoUsuarioId(null)
+                    setPermissoes({
+                      permissao_inclusao: false,
+                      permissao_impressao: false,
+                      permissao_conferencia: false,
+                      permissao_producao: false,
+                      permissao_despacho: false,
+                      permissao_entrega: false,
+                      permissao_registrar_pagamento: false,
+                    })
+                  }}
+                >
+                  Cancelar edição
+                </button>
+              )}
+            </div>
+
+            <ul className="mt-4 space-y-1 text-sm">
+              {usuarios.map(u => (
+                <li key={u.id} className="flex justify-between items-center">
+                  <span>{u.nome}</span>
+                  <div className="flex gap-2">
+                    <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
+                      <UserRoundPen size={16} />
+                    </button>
+                    <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800">
+                      <Trash size={16} />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Locais */}
+          <div className="space-y-3">
+            <h3 className="font-semibold">Cadastrar ou editar loja/cidade</h3>
+            <input
+              className="input"
+              placeholder="Nome do local"
+              value={localNome}
+              onChange={(e) => setLocalNome(e.target.value)}
+            />
+            <div className="flex gap-4">
+              <label><input type="checkbox" checked={isOrigem} onChange={(e) => setIsOrigem(e.target.checked)} /> <span className="ml-1">Origem</span></label>
+              <label><input type="checkbox" checked={isDestino} onChange={(e) => setIsDestino(e.target.checked)} /> <span className="ml-1">Destino</span></label>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <button className="btn-primary" onClick={salvarLocal}>
+                <Plus size={16} className="mr-2" />
+                {editandoLocalId ? 'Atualizar local' : 'Salvar local'}
+              </button>
+              {editandoLocalId && (
+                <button
+                  className="btn-claro"
+                  onClick={() => {
+                    setLocalNome('')
+                    setIsOrigem(false)
+                    setIsDestino(false)
+                    setEditandoLocalId(null)
+                  }}
+                >
+                  Cancelar edição
+                </button>
+              )}
+            </div>
+
+            <ul className="mt-4 space-y-1 text-sm">
+              {locais.map(l => (
+                <li key={l.id} className="flex justify-between items-center">
+                  <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
+                  <div className="flex gap-2">
+                    <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
+                      <LocationEdit size={16} />
+                    </button>
+                    <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800">
+                      <Trash size={16} />
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-
-        <ul style={{ marginTop: '1rem' }}>
-          {locais.map((l) => (
-            <li key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
-              <span>{l.nome} {l.origem && '🔼'} {l.destino && '🔽'}</span>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button className="botao-icone-circular botao-cinza" onClick={() => editarLocal(l)}>
-                  <MapPin size={18} />
-                </button>
-                <button className="botao-icone-circular botao-sair" onClick={() => excluirLocal(l.id)}>
-                  <Trash size={18} />
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
       </div>
-    </div>
+    </div>,
+    modalRoot
   )
 }
