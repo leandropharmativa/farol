@@ -34,3 +34,12 @@ async def editar_local(id: int, request: Request):
         return {"status": "ok"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.delete("/locais/{id}")
+def excluir_local(id: int):
+    try:
+        cursor.execute("DELETE FROM farol_farmacia_locais WHERE id = %s", (id,))
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
