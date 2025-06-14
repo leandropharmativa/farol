@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  X, Plus, Upload, Pencil, UserRoundPen, MapPinCog,
+  X, Plus, Upload, Pencil, UserRoundPen, LocationEdit,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard
 } from 'lucide-react'
 import api from '../services/api'
@@ -246,7 +246,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
                 <li key={l.id} className="flex justify-between items-center">
                   <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
                   <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
-                    <MapPinCog size={16} />
+                    <LocationEdit size={16} />
                   </button>
                 </li>
               ))}
