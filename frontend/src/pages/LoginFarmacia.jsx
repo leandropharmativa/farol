@@ -30,72 +30,67 @@ export default function LoginFarmacia() {
 const handleLogin = async () => {
   setCarregandoLogin(true)
   try {
-    // 1. Tenta login de admin
-    try {
-      const resAdmin = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
+    const tipoRes = await api.get(`/auth/verificar-login/${emailOuCodigo}`)
+    const tipo = tipoRes.data.tipo
+
+    if (tipo === 'admin') {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
         email: emailOuCodigo,
         senha,
       })
-      localStorage.setItem('token', resAdmin.data.token)
+      localStorage.setItem('token', res.data.token)
       localStorage.setItem('tipoLogin', 'admin')
       toast.success('Login como administrador')
       navigate('/gerar')
       window.location.reload()
       return
-    } catch (err) {
-      console.log('Erro login admin:', err?.response?.data)
     }
 
-    // 2. Tenta login de farmácia
-    try {
-      const resFarmacia = await api.post('/farmacia/login', {
+    if (tipo === 'farmacia') {
+      const res = await api.post('/farmacia/login', {
         email: emailOuCodigo,
         senha,
       })
-      if (resFarmacia.data.status === 'ok') {
-        localStorage.setItem('token', resFarmacia.data.token)
-        localStorage.setItem('farmaciaId', resFarmacia.data.farmaciaId)
+      if (res.data.status === 'ok') {
+        localStorage.setItem('token', res.data.token)
+        localStorage.setItem('farmaciaId', res.data.farmaciaId)
         localStorage.setItem('email', emailOuCodigo)
         localStorage.setItem('tipoLogin', 'farmacia')
         toast.success('Login como farmácia')
         setTimeout(() => {
-        navigate('/painel-farmacia')
-        window.location.reload()
-          }, 5000)
+          navigate('/painel-farmacia')
+          window.location.reload()
+        }, 2000)
         return
       } else {
-        console.log('Login farmácia falhou:', resFarmacia.data)
+        toast.error('Erro ao autenticar farmácia.')
+        return
       }
-    } catch (err) {
-      console.log('Erro login farmácia:', err?.response?.data)
     }
 
-    // 3. Tenta login de usuário da farmácia
-    try {
-      const resUsuario = await api.post('/usuarios/login', {
+    if (tipo === 'usuario') {
+      const res = await api.post('/usuarios/login', {
         codigo: emailOuCodigo,
         senha,
       })
-      if (resUsuario.data.status === 'ok') {
-        localStorage.setItem('token', resUsuario.data.token)
-        localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
-        localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
+      if (res.data.status === 'ok') {
+        localStorage.setItem('token', res.data.token)
+        localStorage.setItem('usuarioId', res.data.usuarioId)
+        localStorage.setItem('farmaciaId', res.data.farmaciaId)
         localStorage.setItem('tipoLogin', 'usuario')
         toast.success('Login como usuário')
         navigate('/painel-farmacia')
         window.location.reload()
         return
       } else {
-        console.log('Login usuário falhou:', resUsuario.data)
+        toast.error('Erro ao autenticar usuário.')
+        return
       }
-    } catch (err) {
-      console.log('Erro login usuário:', err?.response?.data)
     }
 
-    // Nenhuma das tentativas deu certo
-    toast.error('Credenciais inválidas.')
+    toast.error('Login não encontrado.')
   } catch (err) {
-    console.error('Erro inesperado no login:', err)
+    console.error('Erro ao processar login:', err)
     toast.error('Erro ao processar login.')
   } finally {
     setCarregandoLogin(false)
