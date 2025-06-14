@@ -1,6 +1,6 @@
-//frontend/src/App.jsx
+// frontend/src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import LoginAdmin from './pages/LoginAdmin'
 import GerarSerial from './pages/GerarSerial'
@@ -10,8 +10,20 @@ import PainelFarmacia from './pages/PainelFarmacia'
 import { getToken } from './utils/auth'
 
 export default function App() {
-  const token = getToken()
-  const tipoLogin = localStorage.getItem('tipoLogin')
+  const [token, setToken] = useState(getToken())
+  const [tipoLogin, setTipoLogin] = useState(localStorage.getItem('tipoLogin'))
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newToken = getToken()
+      const newTipoLogin = localStorage.getItem('tipoLogin')
+
+      if (newToken !== token) setToken(newToken)
+      if (newTipoLogin !== tipoLogin) setTipoLogin(newTipoLogin)
+    }, 300)
+
+    return () => clearInterval(interval)
+  }, [token, tipoLogin])
 
   return (
     <BrowserRouter>
