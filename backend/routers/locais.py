@@ -18,3 +18,17 @@ def listar_locais(farmacia_id: str):
     colunas = [desc[0] for desc in cursor.description]
     resultado = cursor.fetchall()
     return [dict(zip(colunas, linha)) for linha in resultado]
+
+@router.put("/locais/{id}")
+def editar_local(id: int, dados: dict):
+    try:
+        cursor.execute("""
+            UPDATE farol_farmacia_locais SET
+                nome = %s,
+                origem = %s,
+                destino = %s
+            WHERE id = %s
+        """, (dados['nome'], dados['origem'], dados['destino'], id))
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
