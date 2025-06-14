@@ -276,10 +276,10 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               )}
             </div>
 
-<ul className="mt-4 space-y-1 text-sm">
+<ul className="mt-4 space-y-1 text-sm gap-2">
   {usuarios.map(u => (
     <li key={u.id} className="flex items-center gap-2">
-      <span>{u.nome}</span>
+      <span>{u.nome} (código: {u.codigo})</span>
       <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
         <UserRoundPen size={16} />
       </button>
