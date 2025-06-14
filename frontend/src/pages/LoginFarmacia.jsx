@@ -1,24 +1,26 @@
-//frontend/src/pages/LoginFarmacia.jsx
+// frontend/src/pages/LoginFarmacia.jsx
 import { useState } from 'react'
 import api from '../services/api'
+import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
 import { TowerControl } from 'lucide-react'
 
 export default function LoginFarmacia() {
   const [modo, setModo] = useState('login')
-  const [email, setEmail] = useState('')
+  const [emailOuCodigo, setEmailOuCodigo] = useState('')
   const [senha, setSenha] = useState('')
   const [nome, setNome] = useState('')
   const [codigo, setCodigo] = useState('')
   const [nomeEmpresa, setNomeEmpresa] = useState('')
   const [carregandoEmpresa, setCarregandoEmpresa] = useState(false)
+  const [carregandoLogin, setCarregandoLogin] = useState(false)
 
   const navigate = useNavigate()
 
   const alternarModo = () => {
     setModo(modo === 'login' ? 'ativar' : 'login')
-    setEmail('')
+    setEmailOuCodigo('')
     setSenha('')
     setNome('')
     setCodigo('')
@@ -26,19 +28,60 @@ export default function LoginFarmacia() {
   }
 
   const handleLogin = async () => {
+    setCarregandoLogin(true)
     try {
-      const res = await api.post('/farmacia/login', { email, senha })
-      if (res.data.status === 'ok') {
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('farmaciaId', res.data.farmaciaId)
-        localStorage.setItem('email', email)
-        localStorage.setItem('tipoLogin', 'farmacia')
-        navigate('/painel-farmacia')
-      } else {
-        toast.error('Falha no login.')
-      }
+      // 1. Tenta login de admin
+      try {
+        const resAdmin = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
+          email: emailOuCodigo,
+          senha,
+        })
+        localStorage.setItem('token', resAdmin.data.token)
+        localStorage.setItem('tipoLogin', 'admin')
+        toast.success('Login como administrador')
+        navigate('/gerar')
+        return
+      } catch (_) {}
+
+      // 2. Tenta login de farmácia
+      try {
+        const resFarmacia = await api.post('/farmacia/login', {
+          email: emailOuCodigo,
+          senha,
+        })
+        if (resFarmacia.data.status === 'ok') {
+          localStorage.setItem('token', resFarmacia.data.token)
+          localStorage.setItem('farmaciaId', resFarmacia.data.farmaciaId)
+          localStorage.setItem('email', emailOuCodigo)
+          localStorage.setItem('tipoLogin', 'farmacia')
+          toast.success('Login como farmácia')
+          navigate('/painel-farmacia')
+          return
+        }
+      } catch (_) {}
+
+      // 3. Tenta login de usuário da farmácia
+      try {
+        const resUsuario = await api.post('/usuarios/login', {
+          codigo: emailOuCodigo,
+          senha,
+        })
+        if (resUsuario.data.status === 'ok') {
+          localStorage.setItem('token', resUsuario.data.token)
+          localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
+          localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
+          localStorage.setItem('tipoLogin', 'usuario')
+          toast.success('Login como usuário')
+          navigate('/painel-farmacia')
+          return
+        }
+      } catch (_) {}
+
+      toast.error('Credenciais inválidas.')
     } catch (err) {
-      toast.error(err.response?.data?.detail || 'Erro ao logar.')
+      toast.error('Erro ao processar login.')
+    } finally {
+      setCarregandoLogin(false)
     }
   }
 
@@ -67,9 +110,9 @@ export default function LoginFarmacia() {
     try {
       const res = await api.post('/farmacia/registrar', {
         nome,
-        email,
+        email: emailOuCodigo,
         senha,
-        codigoSerial: codigo
+        codigoSerial: codigo,
       })
       if (res.data.status === 'ok') {
         toast.success('Conta ativada com sucesso!')
@@ -83,7 +126,7 @@ export default function LoginFarmacia() {
   }
 
   return (
-    <div className="bg-gray-100 flex items-center justify-center">
+    <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       <div className="login-box">
         <div className="login-header">
           <TowerControl size={36} />
@@ -93,11 +136,11 @@ export default function LoginFarmacia() {
         {modo === 'login' ? (
           <>
             <input
-              type="email"
+              type="text"
               className="login-input"
-              placeholder="Login"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Login (e-mail ou código)"
+              value={emailOuCodigo}
+              onChange={(e) => setEmailOuCodigo(e.target.value)}
             />
             <input
               type="password"
@@ -106,8 +149,12 @@ export default function LoginFarmacia() {
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
-            <button className="login-btn" onClick={handleLogin}>
-              Entrar
+            <button
+              className="login-btn disabled:opacity-60"
+              onClick={handleLogin}
+              disabled={carregandoLogin}
+            >
+              {carregandoLogin ? 'Verificando...' : 'Entrar'}
             </button>
           </>
         ) : (
@@ -147,8 +194,8 @@ export default function LoginFarmacia() {
                   type="email"
                   className="login-input"
                   placeholder="E-mail"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={emailOuCodigo}
+                  onChange={(e) => setEmailOuCodigo(e.target.value)}
                 />
                 <input
                   type="password"
