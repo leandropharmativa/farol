@@ -360,63 +360,22 @@ p {
 /* ====== ESTILOS EXCLUSIVOS PARA A TELA DE LOGIN ==== */
 /* ================================================== */
 
-/* ====== LOGIN FARMÁCIA - sem @apply ====== */
 .login-box {
-  width: 100%;
-  max-width: 28rem;
-  background-color: #f97316; /* Tailwind: bg-orange-500 */
-  color: white;
-  border-radius: 0.375rem;
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-  padding: 2rem;
+  @apply w-full max-w-md bg-orange-500 text-white rounded-md shadow-lg p-8;
 }
 
 .login-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  @apply flex items-center justify-center gap-3 mb-6;
 }
 
 .login-input {
-  width: 100%;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid white;
-  background-color: white;
-  color: black;
-  margin-bottom: 0.75rem;
-  font-size: 1rem;
-}
-
-.login-input::placeholder {
-  color: #9ca3af; /* Tailwind: placeholder-gray-400 */
+  @apply w-full p-2 rounded-md border border-white bg-white text-black placeholder-gray-400 mb-3;
 }
 
 .login-btn {
-  width: 100%;
-  background-color: white;
-  color: #f97316; /* Tailwind: text-orange-500 */
-  font-weight: 600;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  transition: background 0.3s;
-}
-
-.login-btn:hover {
-  background-color: #f3f4f6; /* Tailwind: hover:bg-gray-100 */
+  @apply w-full bg-white text-orange-600 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition;
 }
 
 .login-link {
-  width: 100%;
-  margin-top: 1.5rem;
-  font-size: 0.875rem;
-  text-align: center;
-  text-decoration: underline;
-  color: white;
-}
-
-.login-link:hover {
-  color: #e5e7eb; /* hover:text-gray-200 */
+  @apply w-full mt-6 text-sm text-white underline hover:text-gray-200 text-center;
 }
