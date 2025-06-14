@@ -58,4 +58,13 @@ async def editar_usuario(id: int, request: Request):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.delete("/usuarios/{id}")
+def excluir_usuario(id: int):
+    try:
+        cursor.execute("DELETE FROM farol_farmacia_usuarios WHERE id = %s", (id,))
+        return {"status": "ok"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
