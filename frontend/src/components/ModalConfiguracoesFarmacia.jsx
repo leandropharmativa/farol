@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { X, Plus, Upload } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import '../styles/global.css'
 
 export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId, emailFarmacia }) {
   const [nome, setNome] = useState('')
