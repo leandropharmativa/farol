@@ -276,22 +276,20 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               )}
             </div>
 
-            <ul className="mt-4 space-y-1 text-sm">
-              {usuarios.map(u => (
-                <li key={u.id} className="flex items-center gap-2">
-                  <span>{u.nome}</span>
-                  <div className="flex gap-2">
-                    <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
-                      <UserRoundPen size={16} />
-                    </button>
-                    <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800">
-                      <Trash size={16} />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
+<ul className="mt-4 space-y-1 text-sm">
+  {usuarios.map(u => (
+    <li key={u.id} className="flex items-center gap-2">
+      <span>{u.nome}</span>
+      <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
+        <UserRoundPen size={16} />
+      </button>
+      <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800">
+        <Trash size={16} />
+      </button>
+    </li>
+  ))}
+</ul>
+
 
           {/* Locais */}
           <div className="space-y-3">
@@ -326,21 +324,22 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               )}
             </div>
 
-            <ul className="mt-4 space-y-1 text-sm">
-              {locais.map(l => (
-                <li key={l.id} className="flex items-center gap-2">
-                  <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
-                  <div className="flex gap-2">
-                    <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
-                      <LocationEdit size={16} />
-                    </button>
-                    <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800">
-                      <Trash size={16} />
-                    </button>
-                  </div>
-                </li>
-              ))}
-            </ul>
+<ul className="mt-4 space-y-1 text-sm">
+  {locais.map(l => (
+    <li key={l.id} className="flex items-center gap-2">
+      <span>
+        {l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})
+      </span>
+      <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
+        <LocationEdit size={16} />
+      </button>
+      <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800">
+        <Trash size={16} />
+      </button>
+    </li>
+  ))}
+</ul>
+
           </div>
         </div>
       </div>
