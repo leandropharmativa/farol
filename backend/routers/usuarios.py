@@ -69,27 +69,29 @@ def excluir_usuario(id: int):
 
 @router.post("/usuarios/login")
 def login_usuario(dados: dict = Body(...)):
-    codigo_ou_nome = dados.get("codigo")
+    codigo = dados.get("codigo")
     senha = dados.get("senha")
 
-    if not codigo_ou_nome or not senha:
-        raise HTTPException(status_code=400, detail="Código/nome e senha são obrigatórios.")
+    if not codigo or not senha:
+        raise HTTPException(status_code=400, detail="Código e senha são obrigatórios.")
 
     cursor.execute("""
-        SELECT * FROM farol_farmacia_usuarios
-        WHERE (codigo = %s OR nome = %s) AND senha = %s
-    """, (codigo_ou_nome, codigo_ou_nome, senha))
+        SELECT u.id, u.farmacia_id, u.nome, f.nome AS nome_farmacia
+        FROM farol_farmacia_usuarios u
+        JOIN farol_farmacias f ON f.id = u.farmacia_id
+        WHERE u.codigo = %s AND u.senha = %s
+    """, (codigo, senha))
 
     usuario = cursor.fetchone()
     if usuario:
-        colunas = [desc[0] for desc in cursor.description]
-        dados_usuario = dict(zip(colunas, usuario))
         return {
             "status": "ok",
-            "usuarioId": dados_usuario["id"],
-            "farmaciaId": dados_usuario["farmacia_id"],
-            "nome": dados_usuario["nome"]
+            "usuarioId": usuario[0],
+            "farmaciaId": usuario[1],
+            "nome": usuario[2],
+            "nomeFarmacia": usuario[3]  # ✅ Aqui está o nome da farmácia
         }
     else:
         return {"status": "erro", "mensagem": "Credenciais inválidas"}
+
 
