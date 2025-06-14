@@ -28,7 +28,9 @@ def criar_usuario(dados: UsuarioFarmaciaCreate):
 @router.get("/usuarios/{farmacia_id}")
 def listar_usuarios(farmacia_id: str):
     cursor.execute("SELECT * FROM farol_farmacia_usuarios WHERE farmacia_id = %s", (farmacia_id,))
-    return cursor.fetchall()
+    colunas = [desc[0] for desc in cursor.description]
+    resultado = cursor.fetchall()
+    return [dict(zip(colunas, linha)) for linha in resultado]
 
 @router.put("/usuarios/{id}")
 def editar_usuario(id: int, dados: UsuarioFarmaciaUpdate):
