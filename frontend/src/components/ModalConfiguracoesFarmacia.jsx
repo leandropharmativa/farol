@@ -1,10 +1,23 @@
 //frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Plus, Upload } from 'lucide-react'
+import {
+  X, Plus, Upload, PackagePlus, Printer, FileCheck2,
+  CircleCheckBig, Truck, PackageCheck, CreditCard
+} from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import '../styles/global.css'
+
+const iconesPermissao = {
+  permissao_inclusao: PackagePlus,
+  permissao_impressao: Printer,
+  permissao_conferencia: FileCheck2,
+  permissao_producao: CircleCheckBig,
+  permissao_despacho: Truck,
+  permissao_entrega: PackageCheck,
+  permissao_registrar_pagamento: CreditCard,
+}
 
 export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId, emailFarmacia }) {
   const [nome, setNome] = useState('')
@@ -121,19 +134,25 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <input className="input" placeholder="Senha" value={senha} onChange={(e) => setSenha(e.target.value)} />
               <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.keys(permissoes).map((campo) => (
-                <label key={campo} className="flex items-center gap-2 text-sm capitalize">
-                  <input
-                    type="checkbox"
-                    checked={permissoes[campo]}
-                    onChange={() => handlePermissaoToggle(campo)}
-                  />
-                  {campo.replace('permissao_', '').replace(/_/g, ' ')}
-                </label>
+
+            <div className="grid grid-cols-4 gap-3 pt-2">
+              {Object.entries(iconesPermissao).map(([campo, Icone]) => (
+                <button
+                  key={campo}
+                  onClick={() => handlePermissaoToggle(campo)}
+                  title={campo.replace('permissao_', '').replace(/_/g, ' ')}
+                  className={`p-2 rounded-md border transition ${
+                    permissoes[campo]
+                      ? 'bg-green-100 text-green-600 border-green-300'
+                      : 'bg-gray-100 text-gray-400 border-gray-300'
+                  }`}
+                >
+                  <Icone size={20} className="mx-auto" />
+                </button>
               ))}
             </div>
-            <button className="btn-primary mt-3" onClick={salvarUsuario}>
+
+            <button className="btn-primary mt-4" onClick={salvarUsuario}>
               <Plus size={16} className="mr-2" />
               Salvar usuário
             </button>
@@ -175,4 +194,3 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     modalRoot
   )
 }
-
