@@ -27,63 +27,66 @@ export default function LoginFarmacia() {
     setNomeEmpresa('')
   }
 
-  const handleLogin = async () => {
-    setCarregandoLogin(true)
+const handleLogin = async () => {
+  setCarregandoLogin(true)
+  try {
+    // 1. Tenta login de admin
     try {
-      // 1. Tenta login de admin
-      try {
-        const resAdmin = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
-          email: emailOuCodigo,
-          senha,
-        })
-        localStorage.setItem('token', resAdmin.data.token)
-        localStorage.setItem('tipoLogin', 'admin')
-        toast.success('Login como administrador')
-        navigate('/gerar')
+      const resAdmin = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
+        email: emailOuCodigo,
+        senha,
+      })
+      localStorage.setItem('token', resAdmin.data.token)
+      localStorage.setItem('tipoLogin', 'admin')
+      toast.success('Login como administrador')
+      navigate('/gerar')
+      window.location.reload()
+      return
+    } catch (_) {}
+
+    // 2. Tenta login de farmácia
+    try {
+      const resFarmacia = await api.post('/farmacia/login', {
+        email: emailOuCodigo,
+        senha,
+      })
+      if (resFarmacia.data.status === 'ok') {
+        localStorage.setItem('token', resFarmacia.data.token)
+        localStorage.setItem('farmaciaId', resFarmacia.data.farmaciaId)
+        localStorage.setItem('email', emailOuCodigo)
+        localStorage.setItem('tipoLogin', 'farmacia')
+        toast.success('Login como farmácia')
+        navigate('/painel-farmacia')
+        window.location.reload()
         return
-      } catch (_) {}
+      }
+    } catch (_) {}
 
-      // 2. Tenta login de farmácia
-      try {
-        const resFarmacia = await api.post('/farmacia/login', {
-          email: emailOuCodigo,
-          senha,
-        })
-        if (resFarmacia.data.status === 'ok') {
-          localStorage.setItem('token', resFarmacia.data.token)
-          localStorage.setItem('farmaciaId', resFarmacia.data.farmaciaId)
-          localStorage.setItem('email', emailOuCodigo)
-          localStorage.setItem('tipoLogin', 'farmacia')
-          toast.success('Login como farmácia')
-          navigate('/painel-farmacia')
-          return
-        }
-      } catch (_) {}
+    // 3. Tenta login de usuário da farmácia
+    try {
+      const resUsuario = await api.post('/usuarios/login', {
+        codigo: emailOuCodigo,
+        senha,
+      })
+      if (resUsuario.data.status === 'ok') {
+        localStorage.setItem('token', resUsuario.data.token)
+        localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
+        localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
+        localStorage.setItem('tipoLogin', 'usuario')
+        toast.success('Login como usuário')
+        navigate('/painel-farmacia')
+        window.location.reload()
+        return
+      }
+    } catch (_) {}
 
-      // 3. Tenta login de usuário da farmácia
-      try {
-        const resUsuario = await api.post('/usuarios/login', {
-          codigo: emailOuCodigo,
-          senha,
-        })
-        if (resUsuario.data.status === 'ok') {
-          localStorage.setItem('token', resUsuario.data.token)
-          localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
-          localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
-          localStorage.setItem('tipoLogin', 'usuario')
-          toast.success('Login como usuário')
-          navigate('/painel-farmacia')
-          return
-        }
-      } catch (_) {}
-
-      toast.error('Credenciais inválidas.')
-    } catch (err) {
-      toast.error('Erro ao processar login.')
-    } finally {
-      setCarregandoLogin(false)
-    }
+    toast.error('Credenciais inválidas.')
+  } catch (err) {
+    toast.error('Erro ao processar login.')
+  } finally {
+    setCarregandoLogin(false)
   }
+}
 
   const buscarEmpresa = async () => {
     if (!codigo.trim()) return
