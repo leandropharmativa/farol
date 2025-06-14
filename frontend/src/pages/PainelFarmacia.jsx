@@ -89,7 +89,7 @@ export default function PainelFarmacia() {
       {/* Botão de incluir pedido com transição de subida */}
       <div
         className={`fixed right-6 z-20 transition-all duration-300 ${
-          menuAberto ? 'bottom-46' : 'bottom-20'
+          menuAberto ? 'bottom-32' : 'bottom-20'
         }`}
       >
         <button
