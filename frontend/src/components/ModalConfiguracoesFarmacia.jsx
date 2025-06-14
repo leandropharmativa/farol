@@ -149,7 +149,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
       key={campo}
       className={`icone-permissao ${ativo ? 'selecionado' : ''}`}
       onClick={() => handlePermissaoToggle(campo)}
-      title={nomesPermissao[campo]} // opcional: tooltip ao passar o mouse
+      title={nomesPermissao[campo]}
     >
       {iconesPermissao[campo]}
     </div>
