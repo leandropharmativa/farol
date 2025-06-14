@@ -1,5 +1,4 @@
 # backend/routers/farmacia.py
-
 from fastapi import APIRouter, HTTPException
 from models import NovaFarmaciaRequest, LoginFarmaciaRequest
 from db import cursor
@@ -37,29 +36,28 @@ def registrar_farmacia(dados: NovaFarmaciaRequest):
 
     return {"status": "ok"}
 
+
 @router.post("/farmacia/login")
 def login_farmacia(dados: LoginFarmaciaRequest):
-cursor.execute("""
-    SELECT f.id, f.nome FROM farol_farmacias f
-    JOIN farol_seriais s ON s.farmacia_id = f.id
-    WHERE f.email = %s AND f.senha = %s
-      AND s.ativo = true
-      AND s.validade_ate >= NOW()
-""", (dados.email, dados.senha))
-resultado = cursor.fetchone()
+    cursor.execute("""
+        SELECT f.id, f.nome FROM farol_farmacias f
+        JOIN farol_seriais s ON s.farmacia_id = f.id
+        WHERE f.email = %s AND f.senha = %s
+          AND s.ativo = true
+          AND s.validade_ate >= NOW()
+    """, (dados.email, dados.senha))
+    resultado = cursor.fetchone()
 
-if not resultado:
-    raise HTTPException(status_code=401, detail="Credenciais inválidas ou código expirado.")
+    if not resultado:
+        raise HTTPException(status_code=401, detail="Credenciais inválidas ou código expirado.")
 
-farmacia_id, nome = resultado
-token = criar_token(dados.email)
+    farmacia_id, nome = resultado
+    token = criar_token(dados.email)
 
-return {
-    "status": "ok",
-    "token": token,
-    "farmaciaId": farmacia_id,
-    "nome": nome,
-    "email": dados.email
-}
-
-
+    return {
+        "status": "ok",
+        "token": token,
+        "farmaciaId": farmacia_id,
+        "nome": nome,
+        "email": dados.email
+    }
