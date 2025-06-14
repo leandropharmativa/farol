@@ -15,4 +15,6 @@ def criar_local(dados: LocalFarmaciaCreate):
 @router.get("/locais/{farmacia_id}")
 def listar_locais(farmacia_id: str):
     cursor.execute("SELECT * FROM farol_farmacia_locais WHERE farmacia_id = %s", (farmacia_id,))
-    return cursor.fetchall()
+    colunas = [desc[0] for desc in cursor.description]
+    resultado = cursor.fetchall()
+    return [dict(zip(colunas, linha)) for linha in resultado]
