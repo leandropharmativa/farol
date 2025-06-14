@@ -3,6 +3,8 @@
 @tailwind utilities;
 
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
 
 /* ====== ESTILOS GLOBAIS E UTILITÁRIOS ====== */
 
@@ -387,5 +389,9 @@ p {
 .login-input {
   padding: 0.375rem 0.75rem !important;
   font-size: 0.875rem !important;
+}
+
+.fonte-pacifico {
+  font-family: 'Pacifico', cursive;
 }
 
