@@ -1,4 +1,3 @@
-// frontend/src/pages/LoginFarmacia.jsx
 import { useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
@@ -84,8 +83,8 @@ export default function LoginFarmacia() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-orange-500 w-full max-w-md rounded-md shadow-lg p-8 text-white">
-        <div className="flex items-center justify-center gap-3 mb-6">
+      <div className="login-box">
+        <div className="login-header">
           <TowerControl size={36} />
           <h1 className="text-3xl font-bold tracking-wide">Farol</h1>
         </div>
@@ -94,19 +93,19 @@ export default function LoginFarmacia() {
           <>
             <input
               type="email"
-              className="input mb-3"
+              className="login-input"
               placeholder="E-mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
             <input
               type="password"
-              className="input mb-4"
+              className="login-input"
               placeholder="Senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
             />
-            <button className="btn-primary w-full" onClick={handleLogin}>
+            <button className="login-btn" onClick={handleLogin}>
               Entrar
             </button>
           </>
@@ -114,20 +113,22 @@ export default function LoginFarmacia() {
           <>
             <input
               type="text"
-              className="input mb-3"
+              className="login-input"
               placeholder="Código de ativação"
               value={codigo}
               onChange={(e) => setCodigo(e.target.value)}
             />
             <button
-              className="btn-primary w-full mb-2"
+              className="login-btn"
               onClick={buscarEmpresa}
               disabled={!codigo.trim()}
             >
               Validar Código
             </button>
 
-            {carregandoEmpresa && <p className="text-center text-sm">Verificando código...</p>}
+            {carregandoEmpresa && (
+              <p className="text-sm text-center mt-2">Verificando código...</p>
+            )}
 
             {nomeEmpresa && (
               <>
@@ -136,26 +137,26 @@ export default function LoginFarmacia() {
                 </p>
                 <input
                   type="text"
-                  className="input mb-3"
+                  className="login-input"
                   placeholder="Nome da farmácia"
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                 />
                 <input
                   type="email"
-                  className="input mb-3"
+                  className="login-input"
                   placeholder="E-mail"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                   type="password"
-                  className="input mb-4"
+                  className="login-input"
                   placeholder="Senha"
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
                 />
-                <button className="btn-primary w-full" onClick={handleAtivar}>
+                <button className="login-btn" onClick={handleAtivar}>
                   Ativar Conta
                 </button>
               </>
@@ -163,10 +164,7 @@ export default function LoginFarmacia() {
           </>
         )}
 
-        <button
-          onClick={alternarModo}
-          className="w-full mt-6 text-sm text-white underline hover:text-gray-200"
-        >
+        <button className="login-link" onClick={alternarModo}>
           {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
         </button>
       </div>
