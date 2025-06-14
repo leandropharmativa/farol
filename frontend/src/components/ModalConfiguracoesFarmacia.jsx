@@ -171,46 +171,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           </div>
         </div>
       </div>
-
-      <style>{`
-        .modal-overlay {
-          position: fixed;
-          inset: 0;
-          background-color: rgba(0, 0, 0, 0.5);
-          z-index: 9999;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          overflow-y: auto;
-          padding: 1rem;
-        }
-
-        .modal-container {
-          background: white;
-          width: 100%;
-          max-width: 600px;
-          border-radius: 8px;
-          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-          max-height: 95vh;
-          overflow-y: auto;
-          position: relative;
-        }
-
-        @keyframes fadeSlide {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-slide {
-          animation: fadeSlide 0.3s ease-out;
-        }
-      `}</style>
     </div>,
     modalRoot
   )
