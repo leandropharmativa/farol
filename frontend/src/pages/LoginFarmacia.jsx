@@ -33,7 +33,7 @@ export default function LoginFarmacia() {
         localStorage.setItem('token', res.data.token)
         localStorage.setItem('farmaciaId', res.data.farmaciaId)
         localStorage.setItem('email', email)
-        localStorage.setItem('tipoLogin', 'farmacia') // 👈 define que é o login principal
+        localStorage.setItem('tipoLogin', 'farmacia')
         navigate('/painel-farmacia')
       } else {
         toast.error('Falha no login.')
@@ -45,12 +45,9 @@ export default function LoginFarmacia() {
 
   const buscarEmpresa = async () => {
     if (!codigo.trim()) return
-
     setCarregandoEmpresa(true)
     try {
       const res = await api.get(`/serial/verificar/${codigo}`)
-      console.log("Resposta da verificação:", res.data)
-
       if (res.data.status === 'ok') {
         if (!res.data.precisaCriarLogin) {
           toast.info('Esse código já foi usado. Faça login normalmente.')
@@ -77,7 +74,6 @@ export default function LoginFarmacia() {
       })
       if (res.data.status === 'ok') {
         toast.success('Conta ativada com sucesso!')
-        // ⚠️ Pode logar automaticamente ou pedir para fazer login
         setModo('login')
       } else {
         toast.error('Erro ao ativar conta.')
@@ -88,74 +84,91 @@ export default function LoginFarmacia() {
   }
 
   return (
-    <div>
-      <h2>{modo === 'login' ? 'Login da Farmácia' : 'Primeiro Acesso'}</h2>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f4f6f8' }}>
+      <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', maxWidth: '400px', width: '100%', boxShadow: '0 0 12px rgba(0,0,0,0.1)' }}>
+        <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+          {modo === 'login' ? 'Login da Farmácia' : 'Primeiro Acesso'}
+        </h2>
 
-      {modo === 'login' ? (
-        <>
-          <input
-            type="email"
-            placeholder="E-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Senha"
-            value={senha}
-            onChange={(e) => setSenha(e.target.value)}
-          />
-          <button onClick={handleLogin}>Entrar</button>
-        </>
-      ) : (
-        <>
-          <input
-            type="text"
-            placeholder="Código de ativação"
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
-          />
+        {modo === 'login' ? (
+          <>
+            <input
+              type="email"
+              className="input"
+              placeholder="E-mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              className="input"
+              placeholder="Senha"
+              value={senha}
+              onChange={(e) => setSenha(e.target.value)}
+            />
+            <button className="btn-primary" onClick={handleLogin}>
+              Entrar
+            </button>
+          </>
+        ) : (
+          <>
+            <input
+              type="text"
+              className="input"
+              placeholder="Código de ativação"
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
+            />
+            <button
+              className="btn-primary"
+              onClick={buscarEmpresa}
+              disabled={!codigo.trim()}
+              style={{ marginTop: '0.5rem' }}
+            >
+              Validar Código
+            </button>
 
-          <button
-            onClick={buscarEmpresa}
-            disabled={!codigo.trim()}
-            style={{ marginTop: '0.5rem' }}
-          >
-            Validar Código
-          </button>
+            {carregandoEmpresa && <p>Verificando código...</p>}
 
-          {carregandoEmpresa && <p>Verificando código...</p>}
+            {nomeEmpresa && (
+              <>
+                <p style={{ marginTop: '1rem' }}>
+                  <strong>Empresa:</strong> {nomeEmpresa}
+                </p>
+                <input
+                  type="text"
+                  className="input"
+                  placeholder="Nome da farmácia"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                />
+                <input
+                  type="email"
+                  className="input"
+                  placeholder="E-mail"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+                <input
+                  type="password"
+                  className="input"
+                  placeholder="Senha"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                />
+                <button className="btn-primary" onClick={handleAtivar}>
+                  Ativar Conta
+                </button>
+              </>
+            )}
+          </>
+        )}
 
-          {nomeEmpresa && (
-            <>
-              <p><strong>Empresa:</strong> {nomeEmpresa}</p>
-              <input
-                type="text"
-                placeholder="Nome da farmácia"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-              />
-              <input
-                type="email"
-                placeholder="E-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <input
-                type="password"
-                placeholder="Senha"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-              />
-              <button onClick={handleAtivar}>Ativar Conta</button>
-            </>
-          )}
-        </>
-      )}
-
-      <button onClick={alternarModo} style={{ marginTop: '1rem' }}>
-        {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
-      </button>
+        <button onClick={alternarModo} style={{ marginTop: '1rem', background: 'transparent', color: '#0074d9', border: 'none', cursor: 'pointer' }}>
+          {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
+        </button>
+      </div>
     </div>
   )
 }
+
