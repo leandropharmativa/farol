@@ -290,6 +290,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   ))}
 </ul>
 
+          </div>
 
           {/* Locais */}
           <div className="space-y-3">
