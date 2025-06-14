@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  X, Plus, Upload, Pencil, UserRoundPen, LocationEdit,
+  X, Plus, Upload, Pencil, UserRoundPen, LocationEdit, Trash,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck,
-  PackageCheck, CreditCard, XCircle
+  PackageCheck, CreditCard
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
@@ -22,6 +22,8 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   const [isDestino, setIsDestino] = useState(false)
   const [locais, setLocais] = useState([])
   const [editandoLocalId, setEditandoLocalId] = useState(null)
+
+  const [logoFile, setLogoFile] = useState(null)
 
   const [permissoes, setPermissoes] = useState({
     permissao_inclusao: false,
@@ -80,7 +82,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         })
         toast.success('Usuário criado')
       }
-
       setNome('')
       setSenha('')
       setEditandoUsuarioId(null)
@@ -116,14 +117,12 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   }
 
   const excluirUsuario = async (id) => {
-    if (window.confirm('Deseja realmente excluir este usuário?')) {
-      try {
-        await api.delete(`/usuarios/${id}`)
-        toast.success('Usuário excluído')
-        carregarUsuarios()
-      } catch {
-        toast.error('Erro ao excluir usuário')
-      }
+    try {
+      await api.delete(`/usuarios/${id}`)
+      toast.success('Usuário excluído')
+      carregarUsuarios()
+    } catch {
+      toast.error('Erro ao excluir usuário')
     }
   }
 
@@ -145,7 +144,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         })
         toast.success('Local criado')
       }
-
       setLocalNome('')
       setIsOrigem(false)
       setIsDestino(false)
@@ -164,14 +162,12 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   }
 
   const excluirLocal = async (id) => {
-    if (window.confirm('Deseja realmente excluir este local?')) {
-      try {
-        await api.delete(`/locais/${id}`)
-        toast.success('Local excluído')
-        carregarLocais()
-      } catch {
-        toast.error('Erro ao excluir local')
-      }
+    try {
+      await api.delete(`/locais/${id}`)
+      toast.success('Local excluído')
+      carregarLocais()
+    } catch {
+      toast.error('Erro ao excluir local')
     }
   }
 
@@ -211,7 +207,30 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div className="p-5 space-y-8">
           <h2 className="text-xl font-bold text-center">Configurações da Farmácia</h2>
 
-          {/* Usuário */}
+          {/* Enviar logo */}
+          <div>
+            <h3 className="font-semibold">Enviar logotipo</h3>
+            <input type="file" onChange={e => setLogoFile(e.target.files[0])} className="input" />
+            <button
+              className="btn-claro mt-2 flex items-center gap-2"
+              onClick={async () => {
+                if (!logoFile) return
+                const formData = new FormData()
+                formData.append('logo', logoFile)
+                try {
+                  await api.post(`/farmacia/logo/${farmaciaId}`, formData)
+                  toast.success('Logo enviada com sucesso')
+                  setLogoFile(null)
+                } catch {
+                  toast.error('Erro ao enviar logo')
+                }
+              }}
+            >
+              <Upload size={16} /> Enviar logo
+            </button>
+          </div>
+
+          {/* Usuários */}
           <div className="space-y-3">
             <h3 className="font-semibold">Cadastrar ou editar usuário</h3>
             <div className="grid grid-cols-2 gap-3">
@@ -235,7 +254,27 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <Plus size={16} className="mr-2" />
               {editandoUsuarioId ? 'Atualizar usuário' : 'Salvar usuário'}
             </button>
-
+            {editandoUsuarioId && (
+              <button
+                className="btn-claro mt-1"
+                onClick={() => {
+                  setEditandoUsuarioId(null)
+                  setNome('')
+                  setSenha('')
+                  setPermissoes({
+                    permissao_inclusao: false,
+                    permissao_impressao: false,
+                    permissao_conferencia: false,
+                    permissao_producao: false,
+                    permissao_despacho: false,
+                    permissao_entrega: false,
+                    permissao_registrar_pagamento: false,
+                  })
+                }}
+              >
+                Cancelar edição
+              </button>
+            )}
             <ul className="mt-4 space-y-1 text-sm">
               {usuarios.map(u => (
                 <li key={u.id} className="flex justify-between items-center">
@@ -244,8 +283,8 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
                     <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
                       <UserRoundPen size={16} />
                     </button>
-                    <button onClick={() => excluirUsuario(u.id)} className="text-red-500 hover:text-red-700">
-                      <XCircle size={16} />
+                    <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800">
+                      <Trash size={16} />
                     </button>
                   </div>
                 </li>
@@ -270,28 +309,29 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <Plus size={16} className="mr-2" />
               {editandoLocalId ? 'Atualizar local' : 'Salvar local'}
             </button>
-
+            {editandoLocalId && (
+              <button
+                className="btn-claro mt-1"
+                onClick={() => {
+                  setEditandoLocalId(null)
+                  setLocalNome('')
+                  setIsOrigem(false)
+                  setIsDestino(false)
+                }}
+              >
+                Cancelar edição
+              </button>
+            )}
             <ul className="mt-4 space-y-1 text-sm">
               {locais.map(l => (
                 <li key={l.id} className="flex justify-between items-center">
-                  <span>
-                    {l.nome}
-                    {(l.origem || l.destino) && (
-                      <>
-                        {' ('}
-                        {l.origem && 'Origem'}
-                        {l.origem && l.destino && ' / '}
-                        {l.destino && 'Destino'}
-                        {')'}
-                      </>
-                    )}
-                  </span>
+                  <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
                   <div className="flex gap-2">
                     <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
                       <LocationEdit size={16} />
                     </button>
-                    <button onClick={() => excluirLocal(l.id)} className="text-red-500 hover:text-red-700">
-                      <XCircle size={16} />
+                    <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800">
+                      <Trash size={16} />
                     </button>
                   </div>
                 </li>
