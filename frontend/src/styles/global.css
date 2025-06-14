@@ -369,7 +369,7 @@ p {
 }
 
 .login-header {
-  @apply flex items-center justify-center gap-3 mb-6;
+  @apply flex items-center gap-3 mb-6;
 }
 
 .login-input {
