@@ -106,7 +106,7 @@ if (!modalRoot) {
 
 return createPortal(
   <div className="modal-overlay">
-    <div className="bg-white w-full max-w-xl mx-4 rounded-lg shadow-lg p-6 relative max-h-[90vh] overflow-y-auto animate-fade-slide">
+    <div className="bg-white w-full max-w-md min-w-[320px] mx-4 rounded-lg shadow-lg p-4 sm:p-6 relative max-h-[90vh] overflow-y-auto animate-fade-slide">
       <button className="absolute top-3 right-3 text-gray-500 hover:text-red-500" onClick={onClose}>
         <X />
       </button>
