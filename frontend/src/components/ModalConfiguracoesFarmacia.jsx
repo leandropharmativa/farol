@@ -1,10 +1,10 @@
-//frontend/src/components/ModalConfiguracoesFarmacia.jsx
+// frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
   X, Plus, Upload,
   PackagePlus, Printer, FileCheck2,
-  CircleCheckBig, Truck, PackageCheck, CreditCard
+  CircleCheckBig, Truck, PackageCheck, CreditCard, Pencil
 } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -23,12 +23,21 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     permissao_entrega: false,
     permissao_registrar_pagamento: false,
   })
+  const [usuarios, setUsuarios] = useState([])
+  const [locais, setLocais] = useState([])
+
   const [localNome, setLocalNome] = useState('')
-  const [localTipo, setLocalTipo] = useState('origem')
+  const [isOrigem, setIsOrigem] = useState(false)
+  const [isDestino, setIsDestino] = useState(false)
+
   const [logoFile, setLogoFile] = useState(null)
 
   useEffect(() => {
-    if (aberto) gerarCodigo()
+    if (aberto) {
+      gerarCodigo()
+      carregarUsuarios()
+      carregarLocais()
+    }
   }, [aberto])
 
   const gerarCodigo = () => {
@@ -62,6 +71,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         permissao_entrega: false,
         permissao_registrar_pagamento: false,
       })
+      carregarUsuarios()
     } catch (err) {
       toast.error('Erro ao salvar usuário')
     }
@@ -72,12 +82,34 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
       await axios.post('https://farol-mjtt.onrender.com/locais', {
         farmacia_id: farmaciaId,
         nome: localNome,
-        tipo: localTipo,
+        origem: isOrigem,
+        destino: isDestino,
       })
       toast.success('Local salvo')
       setLocalNome('')
+      setIsOrigem(false)
+      setIsDestino(false)
+      carregarLocais()
     } catch (err) {
       toast.error('Erro ao salvar local')
+    }
+  }
+
+  const carregarUsuarios = async () => {
+    try {
+      const res = await axios.get(`https://farol-mjtt.onrender.com/usuarios/farmacia/${farmaciaId}`)
+      setUsuarios(res.data)
+    } catch (err) {
+      toast.error('Erro ao carregar usuários')
+    }
+  }
+
+  const carregarLocais = async () => {
+    try {
+      const res = await axios.get(`https://farol-mjtt.onrender.com/locais/farmacia/${farmaciaId}`)
+      setLocais(res.data)
+    } catch (err) {
+      toast.error('Erro ao carregar locais')
     }
   }
 
@@ -98,7 +130,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   }
 
   if (!aberto) return null
-
   const modalRoot = document.getElementById('modal-root')
   if (!modalRoot) return null
 
@@ -124,7 +155,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
   return createPortal(
     <div className="modal-overlay">
-      <div className="modal-container animate-fade-slide">
+      <div className="modal-container animate-fade-slide overflow-y-auto max-h-[95vh]">
         <div className="sticky top-0 bg-white z-10 flex justify-end p-3 border-b">
           <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
             <X />
@@ -143,43 +174,76 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
             </div>
 
-<div className="lista-permissoes">
-  {Object.entries(permissoes).map(([campo, ativo]) => (
-    <div
-      key={campo}
-      className={`icone-permissao ${ativo ? 'selecionado' : ''}`}
-      onClick={() => handlePermissaoToggle(campo)}
-      title={nomesPermissao[campo]}
-    >
-      {iconesPermissao[campo]}
-    </div>
-  ))}
-</div>
+            <div className="lista-permissoes flex gap-2 flex-wrap">
+              {Object.entries(permissoes).map(([campo, ativo]) => (
+                <div
+                  key={campo}
+                  className={`icone-permissao ${ativo ? 'selecionado' : ''}`}
+                  onClick={() => handlePermissaoToggle(campo)}
+                  title={nomesPermissao[campo]}
+                >
+                  {iconesPermissao[campo]}
+                </div>
+              ))}
+            </div>
+
             <button className="btn-primary mt-3" onClick={salvarUsuario}>
               <Plus size={16} className="mr-2" />
               Salvar usuário
             </button>
+
+            <div className="mt-4">
+              <h4 className="font-semibold mb-2">Usuários cadastrados</h4>
+              <ul className="space-y-1 text-sm">
+                {usuarios.map((u) => (
+                  <li key={u.id} className="flex justify-between items-center">
+                    <span>{u.nome}</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Pencil size={16} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Locais */}
           <div className="space-y-3">
             <h3 className="font-semibold">Cadastrar loja ou cidade</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <select className="input" value={localTipo} onChange={(e) => setLocalTipo(e.target.value)}>
-                <option value="origem">Origem</option>
-                <option value="destino">Destino</option>
-              </select>
-              <input
-                className="input"
-                placeholder="Nome"
-                value={localNome}
-                onChange={(e) => setLocalNome(e.target.value)}
-              />
+            <input
+              className="input"
+              placeholder="Nome"
+              value={localNome}
+              onChange={(e) => setLocalNome(e.target.value)}
+            />
+            <div className="flex gap-4 mt-2">
+              <label>
+                <input type="checkbox" checked={isOrigem} onChange={(e) => setIsOrigem(e.target.checked)} />
+                <span className="ml-1">Usado como origem</span>
+              </label>
+              <label>
+                <input type="checkbox" checked={isDestino} onChange={(e) => setIsDestino(e.target.checked)} />
+                <span className="ml-1">Usado como destino</span>
+              </label>
             </div>
             <button className="btn-primary mt-2" onClick={salvarLocal}>
               <Plus size={16} className="mr-2" />
               Salvar local
             </button>
+
+            <div className="mt-4">
+              <h4 className="font-semibold mb-2">Locais cadastrados</h4>
+              <ul className="space-y-1 text-sm">
+                {locais.map((l) => (
+                  <li key={l.id} className="flex justify-between items-center">
+                    <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
+                    <button className="text-blue-600 hover:text-blue-800">
+                      <Pencil size={16} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
           {/* Logo */}
