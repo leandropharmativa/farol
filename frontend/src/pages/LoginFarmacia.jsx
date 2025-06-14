@@ -57,6 +57,7 @@ const handleLogin = async () => {
         localStorage.setItem('farmaciaId', resFarmacia.data.farmaciaId)
         localStorage.setItem('email', emailOuCodigo)
         localStorage.setItem('tipoLogin', 'farmacia')
+        localStorage.setItem('nomeFarmacia', resFarmacia.data.nome)
         toast.success('Login como farmácia')
         setTimeout(() => {
         navigate('/painel-farmacia')
@@ -80,6 +81,8 @@ const handleLogin = async () => {
         localStorage.setItem('token', resUsuario.data.token)
         localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
         localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
+        localStorage.setItem('nomeUsuario', resUsuario.data.nome)
+        localStorage.setItem('nomeFarmacia', resUsuario.data.nomeFarmacia)
         localStorage.setItem('tipoLogin', 'usuario')
         toast.success('Login como usuário')
         navigate('/painel-farmacia')
