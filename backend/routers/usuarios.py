@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from db import cursor
 from models import UsuarioFarmaciaCreate, UsuarioFarmaciaUpdate
 from typing import List
@@ -33,8 +33,9 @@ def listar_usuarios(farmacia_id: str):
     return [dict(zip(colunas, linha)) for linha in resultado]
 
 @router.put("/usuarios/{id}")
-def editar_usuario(id: int, dados: UsuarioFarmaciaUpdate):
+async def editar_usuario(id: int, request: Request):
     try:
+        dados = await request.json()
         cursor.execute("""
             UPDATE farol_farmacia_usuarios SET
                 nome = %s,
@@ -48,10 +49,10 @@ def editar_usuario(id: int, dados: UsuarioFarmaciaUpdate):
                 permissao_registrar_pagamento = %s
             WHERE id = %s
         """, (
-            dados.nome, dados.senha,
-            dados.permissao_inclusao, dados.permissao_impressao, dados.permissao_conferencia,
-            dados.permissao_producao, dados.permissao_despacho, dados.permissao_entrega,
-            dados.permissao_registrar_pagamento, id
+            dados['nome'], dados['senha'],
+            dados['permissao_inclusao'], dados['permissao_impressao'], dados['permissao_conferencia'],
+            dados['permissao_producao'], dados['permissao_despacho'], dados['permissao_entrega'],
+            dados['permissao_registrar_pagamento'], id
         ))
         return {"status": "ok"}
     except Exception as e:
