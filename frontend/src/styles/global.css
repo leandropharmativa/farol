@@ -1,15 +1,7 @@
-/* frontend/src/styles/global.css */
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
 
-.input {
-  @apply w-full p-2 rounded-md border border-white text-black placeholder-gray-400;
-}
+/* ====== ESTILOS GLOBAIS E UTILITÁRIOS ====== */
 
-.btn-primary {
-  @apply bg-white text-orange-600 font-semibold py-2 px-4 rounded-md hover:bg-gray-100;
-}
-
-/* ========== RESET & BASE ========== */
 * {
   margin: 0;
   padding: 0;
@@ -23,23 +15,23 @@ body {
   line-height: 1.6;
 }
 
-/* ========== FORMULÁRIOS ========== */
+/* ====== INPUT E BOTÃO GERAL ====== */
+.input {
+  @apply w-full p-2 rounded-md border border-white text-black placeholder-gray-400;
+}
+
+.btn-primary {
+  @apply w-full bg-white text-orange-600 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition;
+}
+
+/* ====== FORMULÁRIOS GERAIS (EXCETO LOGIN) ====== */
 form {
   max-width: 400px;
   margin: 2rem auto;
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.05);
-}
-
-.input {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 1rem;
-  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 input[type="text"],
@@ -78,7 +70,7 @@ button {
   background-color: #005fa3;
 }
 
-/* ========== TIPOGRAFIA ========== */
+/* ====== TIPOGRAFIA ====== */
 h2 {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -90,7 +82,7 @@ p {
   color: #cc0000;
 }
 
-/* ========== PAINEL FARMÁCIA ========== */
+/* ====== PAINEL FARMÁCIA ====== */
 .painel-container {
   min-height: 100vh;
   padding: 2rem;
@@ -158,7 +150,7 @@ p {
   color: #666;
 }
 
-/* ========== MENU FLUTUANTE ========== */
+/* ====== MENU FLUTUANTE ====== */
 .menu-flutuante {
   position: fixed;
   bottom: 1.5rem;
@@ -238,7 +230,7 @@ p {
   background: #cbd5e0;
 }
 
-/* ========== ANIMAÇÕES ========== */
+/* ====== ANIMAÇÕES ====== */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -269,11 +261,11 @@ p {
   animation: fadeSlide 0.3s ease-out;
 }
 
-/* ========== MODAL ========== */
+/* ====== MODAL ====== */
 .modal-overlay {
   position: fixed;
   top: 0; bottom: 0; left: 0; right: 0;
-  background-color: rgba(0, 0, 0, 0.5); /* corrigido para semitransparente */
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -282,7 +274,7 @@ p {
   padding: 1rem;
 }
 
-/* ========== MODAL CONFIGURAÇÕES ========== */
+/* ====== MODAL CONFIGURAÇÕES ====== */
 .modal-container {
   background: white;
   width: 100%;
@@ -311,7 +303,7 @@ p {
 }
 
 .modal-container .input {
-  margin-bottom: 1rem; /* aumenta o espaçamento entre campos */
+  margin-bottom: 1rem;
 }
 
 .modal-container label {
@@ -329,7 +321,6 @@ p {
   margin-top: 1.5rem;
 }
 
-/* 🔺 Corrige botão de fechar fixo no topo */
 .modal-container .btn-fechar {
   position: absolute;
   top: 0.75rem;
@@ -343,10 +334,10 @@ p {
   color: #000;
 }
 
-/* ========== ÍCONES DE PERMISSÃO ========== */
+/* ====== ÍCONES DE PERMISSÃO ====== */
 .icone-permissao {
   font-size: 1.5rem;
-  color: #aaa; /* cinza claro padrão */
+  color: #aaa;
   cursor: pointer;
   transition: color 0.2s ease;
 }
@@ -356,7 +347,7 @@ p {
 }
 
 .icone-permissao.selecionado {
-  color: #28a745; /* verde */
+  color: #28a745;
 }
 
 .lista-permissoes {
@@ -365,4 +356,26 @@ p {
   gap: 1rem;
 }
 
+/* ================================================== */
+/* ====== ESTILOS EXCLUSIVOS PARA A TELA DE LOGIN ==== */
+/* ================================================== */
 
+.login-box {
+  @apply w-full max-w-md bg-orange-500 text-white rounded-md shadow-lg p-8;
+}
+
+.login-header {
+  @apply flex items-center justify-center gap-3 mb-6;
+}
+
+.login-input {
+  @apply w-full p-2 rounded-md border border-white bg-white text-black placeholder-gray-400 mb-3;
+}
+
+.login-btn {
+  @apply w-full bg-white text-orange-600 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition;
+}
+
+.login-link {
+  @apply w-full mt-6 text-sm text-white underline hover:text-gray-200 text-center;
+}
