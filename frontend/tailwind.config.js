@@ -9,8 +9,9 @@ module.exports = {
     extend: {
       colors: {
         farol: {
-          primary: '#750c0d',
-          primaryfocus: '#de3c3d',
+          primary: '#d4674c',
+	        secondary:'#67727e',	
+          focus: '#dde5e7',
         },
       },
       fontFamily: {
