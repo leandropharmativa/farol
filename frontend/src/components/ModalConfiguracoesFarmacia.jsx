@@ -236,7 +236,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <input className="input" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
               <input className="input col-span-2" disabled value={`Código: ${codigo}`} />
             </div>
-            <div className="flex gap-2 flex-wrap mt-2">
+            <div className="lista-permissoes mt-2">
               {Object.entries(permissoes).map(([campo, ativo]) => (
                 <div
                   key={campo}
