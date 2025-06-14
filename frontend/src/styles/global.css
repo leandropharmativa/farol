@@ -1,6 +1,14 @@
 /* frontend/src/styles/global.css */
 @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap');
 
+.input {
+  @apply w-full p-2 rounded-md border border-white text-black placeholder-gray-400;
+}
+
+.btn-primary {
+  @apply bg-white text-orange-600 font-semibold py-2 px-4 rounded-md hover:bg-gray-100;
+}
+
 /* ========== RESET & BASE ========== */
 * {
   margin: 0;
