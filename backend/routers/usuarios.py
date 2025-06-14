@@ -1,7 +1,8 @@
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request, Body
 from db import cursor
 from models import UsuarioFarmaciaCreate, UsuarioFarmaciaUpdate
 from typing import List
+import hashlib
 
 router = APIRouter()
 
@@ -66,5 +67,29 @@ def excluir_usuario(id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@router.post("/usuarios/login")
+def login_usuario(dados: dict = Body(...)):
+    codigo_ou_nome = dados.get("codigo")
+    senha = dados.get("senha")
 
+    if not codigo_ou_nome or not senha:
+        raise HTTPException(status_code=400, detail="Código/nome e senha são obrigatórios.")
+
+    cursor.execute("""
+        SELECT * FROM farol_farmacia_usuarios
+        WHERE (codigo = %s OR nome = %s) AND senha = %s
+    """, (codigo_ou_nome, codigo_ou_nome, senha))
+
+    usuario = cursor.fetchone()
+    if usuario:
+        colunas = [desc[0] for desc in cursor.description]
+        dados_usuario = dict(zip(colunas, usuario))
+        return {
+            "status": "ok",
+            "usuarioId": dados_usuario["id"],
+            "farmaciaId": dados_usuario["farmacia_id"],
+            "nome": dados_usuario["nome"]
+        }
+    else:
+        return {"status": "erro", "mensagem": "Credenciais inválidas"}
 
