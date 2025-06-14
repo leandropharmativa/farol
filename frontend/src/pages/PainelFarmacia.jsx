@@ -101,17 +101,21 @@ export default function PainelFarmacia() {
       <div className="menu-flutuante" ref={menuRef}>
         <div className="menu-flutuante-botoes">
           {/* Mostrar botão de configurações apenas para login da farmácia principal */}
-          {tipoLogin === 'farmacia' && (
-            <div className={`botao-submenu ${menuAberto ? 'visivel' : ''}`}>
-              <button
-                onClick={irParaConfiguracoes}
-                className="botao-icone-circular botao-cinza"
-                title="Configurações"
-              >
-                <Settings size={20} />
-              </button>
-            </div>
-          )}
+{tipoLogin === 'farmacia' && (
+  <div className="botao-submenu visivel"> {/* força visível para teste */}
+    <button
+      onClick={() => {
+        console.log('⚙️ Clique no botão de configurações')
+        setModalConfiguracoesAberto(true)
+      }}
+      className="botao-icone-circular botao-cinza"
+      title="Configurações"
+    >
+      <Settings size={20} />
+    </button>
+  </div>
+)}
+
           <div className={`botao-submenu delay ${menuAberto ? 'visivel' : ''}`}>
             <button
               onClick={handleLogout}
