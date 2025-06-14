@@ -42,7 +42,9 @@ const handleLogin = async () => {
       navigate('/gerar')
       window.location.reload()
       return
-    } catch (_) {}
+    } catch (err) {
+      console.log('Erro login admin:', err?.response?.data)
+    }
 
     // 2. Tenta login de farmácia
     try {
@@ -59,8 +61,12 @@ const handleLogin = async () => {
         navigate('/painel-farmacia')
         window.location.reload()
         return
+      } else {
+        console.log('Login farmácia falhou:', resFarmacia.data)
       }
-    } catch (_) {}
+    } catch (err) {
+      console.log('Erro login farmácia:', err?.response?.data)
+    }
 
     // 3. Tenta login de usuário da farmácia
     try {
@@ -77,11 +83,17 @@ const handleLogin = async () => {
         navigate('/painel-farmacia')
         window.location.reload()
         return
+      } else {
+        console.log('Login usuário falhou:', resUsuario.data)
       }
-    } catch (_) {}
+    } catch (err) {
+      console.log('Erro login usuário:', err?.response?.data)
+    }
 
+    // Nenhuma das tentativas deu certo
     toast.error('Credenciais inválidas.')
   } catch (err) {
+    console.error('Erro inesperado no login:', err)
     toast.error('Erro ao processar login.')
   } finally {
     setCarregandoLogin(false)
