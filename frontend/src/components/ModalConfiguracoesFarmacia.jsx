@@ -143,7 +143,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
             </div>
 
-<div className="grid grid-cols-4 gap-3 justify-items-center">
+<div className="flex gap-4 flex-wrap justify-center">
   {Object.entries(permissoes).map(([campo, ativo]) => (
     <div
       key={campo}
