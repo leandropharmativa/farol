@@ -143,18 +143,18 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              {Object.entries(permissoes).map(([campo, ativo]) => (
-                <button
-                  key={campo}
-                  className={`botao-permissao ${ativo ? 'selecionado' : ''}`}
-                  onClick={() => handlePermissaoToggle(campo)}
-                  type="button"
-                >
-                  {iconesPermissao[campo]} {nomesPermissao[campo]}
-                </button>
-              ))}
-            </div>
+<div className="grid grid-cols-4 gap-3 justify-items-center">
+  {Object.entries(permissoes).map(([campo, ativo]) => (
+    <div
+      key={campo}
+      className={`icone-permissao ${ativo ? 'selecionado' : ''}`}
+      onClick={() => handlePermissaoToggle(campo)}
+      title={nomesPermissao[campo]} // opcional: tooltip ao passar o mouse
+    >
+      {iconesPermissao[campo]}
+    </div>
+  ))}
+</div>
 
             <button className="btn-primary mt-3" onClick={salvarUsuario}>
               <Plus size={16} className="mr-2" />
