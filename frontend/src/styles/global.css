@@ -383,7 +383,7 @@ p {
 }
 
 .login-link {
-  @apply w-full mt-6 text-sm text-white hover:text-farol-secondary text-center;
+  @apply w-full mt-6 text-sm text-white hover:text-farol-focus text-center;
 }
 
 .login-input {
