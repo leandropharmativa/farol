@@ -90,54 +90,47 @@ export default function PainelFarmacia() {
         Nenhum pedido encontrado. Use o botão abaixo para incluir um novo.
       </div>
 
-      {/* 🟦 Botão fixo de incluir pedido */}
-      <button
-        className={`botao-icone-circular botao-azul fixed right-6 z-10 transition-all duration-300 ${
-          menuAberto ? 'bottom-28' : 'bottom-20'
-        }`}
-        title="Incluir Pedido"
-        onClick={() => {
-          console.log('🟦 Incluir Pedido (ação futura)')
-        }}
-      >
-        <PackagePlus size={26} />
-      </button>
+{/* 🟦 Botão fixo de incluir pedido - sempre visível acima do menu */}
+<button
+  className="botao-icone-circular botao-azul fixed bottom-28 right-6 z-20"
+  title="Incluir Pedido"
+  onClick={() => {
+    console.log('🟦 Incluir Pedido (ação futura)')
+  }}
+>
+  <PackagePlus size={26} />
+</button>
 
-      {/* Menu flutuante */}
-      <div className="menu-flutuante" ref={menuRef}>
-        <div className="menu-flutuante-botoes">
-          {menuAberto && tipoLogin === 'farmacia' && (
-            <div className="botao-submenu visivel">
-              <button
-                onClick={irParaConfiguracoes}
-                className="botao-icone-circular botao-cinza"
-                title="Configurações"
-              >
-                <Settings size={20} />
-              </button>
-            </div>
-          )}
-          {menuAberto && (
-            <div className="botao-submenu delay visivel">
-              <button
-                onClick={handleLogout}
-                className="botao-icone-circular botao-cinza"
-                title="Sair"
-              >
-                <LogOut size={20} />
-              </button>
-            </div>
-          )}
-        </div>
 
-        <button
-          onClick={toggleMenu}
-          className="botao-icone-circular botao-principal"
-          title="Menu"
-        >
-          {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
-        </button>
-      </div>
+{/* Menu flutuante com botões empilhados acima do botão principal */}
+<div className="fixed bottom-6 right-6 z-20 flex flex-col items-end gap-2" ref={menuRef}>
+  {menuAberto && tipoLogin === 'farmacia' && (
+    <button
+      onClick={irParaConfiguracoes}
+      className="botao-icone-circular botao-cinza"
+      title="Configurações"
+    >
+      <Settings size={20} />
+    </button>
+  )}
+  {menuAberto && (
+    <button
+      onClick={handleLogout}
+      className="botao-icone-circular botao-cinza"
+      title="Sair"
+    >
+      <LogOut size={20} />
+    </button>
+  )}
+  <button
+    onClick={toggleMenu}
+    className="botao-icone-circular botao-principal"
+    title="Menu"
+  >
+    {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
+  </button>
+</div>
+
 
       {/* ⚙️ Modal de configurações */}
       <ModalConfiguracoesFarmacia
