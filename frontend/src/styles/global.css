@@ -331,4 +331,24 @@ p {
 .modal-container .btn-fechar:hover {
   color: #000;
 }
+.botao-permissao {
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #555;
+}
+
+.botao-permissao:hover {
+  background-color: #f0f0f0;
+}
+
+.botao-permissao.selecionado {
+  background-color: #38a169; /* verde */
+  color: white;
+  border-color: #2f855a;
+}
 
