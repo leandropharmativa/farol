@@ -1,3 +1,4 @@
+//frontend/src/pages/GerarSerial.jsx
 import React, { useEffect, useState } from 'react'
 import api from '../services/api'
 import { useNavigate } from 'react-router-dom'
@@ -45,16 +46,17 @@ export default function GerarSerial() {
 
   const handleLogout = () => {
     localStorage.removeItem('token')
-    navigate('/login')
+    localStorage.removeItem('tipoLogin')
+    navigate('/') // redireciona para LoginFarmacia
   }
 
   return (
     <div className="max-w-5xl mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-nublia-primary">Gerar Serial</h2>
+        <h2 className="text-2xl font-bold text-farol-primary">Gerar Serial</h2>
         <button
           onClick={handleLogout}
-          className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded"
+          className="btn-base bg-red-600 hover:bg-red-700"
         >
           Deslogar
         </button>
@@ -67,7 +69,7 @@ export default function GerarSerial() {
           value={empresa}
           onChange={e => setEmpresa(e.target.value)}
           required
-          className="border p-2 rounded focus:outline-none focus:border-nublia-primary"
+          className="input-base"
         />
         <input
           type="email"
@@ -75,18 +77,18 @@ export default function GerarSerial() {
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
-          className="border p-2 rounded focus:outline-none focus:border-nublia-primary"
+          className="input-base"
         />
         <input
           type="number"
           placeholder="Dias de validade"
           value={dias}
           onChange={e => setDias(e.target.value)}
-          className="border p-2 rounded focus:outline-none focus:border-nublia-primary"
+          className="input-base"
         />
         <button
           type="submit"
-          className="md:col-span-3 bg-nublia-primary hover:bg-nublia-primaryfocus text-white py-2 px-4 rounded transition"
+          className="md:col-span-3 btn-base bg-farol-primary hover:bg-farol-primaryfocus"
         >
           Gerar Serial
         </button>
@@ -133,3 +135,4 @@ export default function GerarSerial() {
     </div>
   )
 }
+
