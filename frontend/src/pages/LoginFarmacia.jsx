@@ -87,7 +87,7 @@ export default function LoginFarmacia() {
       <div className="login-box">
         <div className="login-header">
           <TowerControl size={36} />
-          <h1 className="text-3xl font-bold tracking-wide">Farol</h1>
+          <h1 className="text-3xl font-bold tracking-wide fonte-pacifico">Farol</h1>
         </div>
 
         {modo === 'login' ? (
