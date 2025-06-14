@@ -1,22 +1,13 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  X, Plus, Upload, PackagePlus, Printer, FileCheck2,
-  SquareCheck, Truck, PackageCheck, CreditCard
+  X, Plus, Upload,
+  PackagePlus, Printer, FileCheck2,
+  CircleCheckBig, Truck, PackageCheck, CreditCard
 } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import '../styles/global.css'
-
-const iconesPermissao = {
-  permissao_inclusao: PackagePlus,
-  permissao_impressao: Printer,
-  permissao_conferencia: FileCheck2,
-  permissao_producao: SquareCheck,
-  permissao_despacho: Truck,
-  permissao_entrega: PackageCheck,
-  permissao_registrar_pagamento: CreditCard,
-}
 
 export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId, emailFarmacia }) {
   const [nome, setNome] = useState('')
@@ -108,9 +99,26 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   if (!aberto) return null
 
   const modalRoot = document.getElementById('modal-root')
-  if (!modalRoot) {
-    console.warn('❗ modal-root não encontrado no DOM')
-    return null
+  if (!modalRoot) return null
+
+  const iconesPermissao = {
+    permissao_inclusao: <PackagePlus size={18} />,
+    permissao_impressao: <Printer size={18} />,
+    permissao_conferencia: <FileCheck2 size={18} />,
+    permissao_producao: <CircleCheckBig size={18} />,
+    permissao_despacho: <Truck size={18} />,
+    permissao_entrega: <PackageCheck size={18} />,
+    permissao_registrar_pagamento: <CreditCard size={18} />,
+  }
+
+  const nomesPermissao = {
+    permissao_inclusao: 'Inclusão',
+    permissao_impressao: 'Impressão',
+    permissao_conferencia: 'Conferência',
+    permissao_producao: 'Produção',
+    permissao_despacho: 'Despacho',
+    permissao_entrega: 'Entrega',
+    permissao_registrar_pagamento: 'Pagamento',
   }
 
   return createPortal(
@@ -134,24 +142,20 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
               <input className="input col-span-2" disabled value={`Código gerado: ${codigo}`} />
             </div>
 
-            <div className="grid grid-cols-4 gap-3 pt-2">
-              {Object.entries(iconesPermissao).map(([campo, Icone]) => (
+            <div className="grid grid-cols-3 gap-2">
+              {Object.entries(permissoes).map(([campo, ativo]) => (
                 <button
                   key={campo}
+                  className={`botao-permissao ${ativo ? 'selecionado' : ''}`}
                   onClick={() => handlePermissaoToggle(campo)}
-                  title={campo.replace('permissao_', '').replace(/_/g, ' ')}
-                  className={`p-2 rounded-md border transition ${
-                    permissoes[campo]
-                      ? 'bg-green-100 text-green-600 border-green-300'
-                      : 'bg-gray-100 text-gray-400 border-gray-300'
-                  }`}
+                  type="button"
                 >
-                  <Icone size={20} className="mx-auto" />
+                  {iconesPermissao[campo]} {nomesPermissao[campo]}
                 </button>
               ))}
             </div>
 
-            <button className="btn-primary mt-4" onClick={salvarUsuario}>
+            <button className="btn-primary mt-3" onClick={salvarUsuario}>
               <Plus size={16} className="mr-2" />
               Salvar usuário
             </button>
