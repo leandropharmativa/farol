@@ -95,7 +95,7 @@ export default function LoginFarmacia() {
             <input
               type="email"
               className="login-input"
-              placeholder="E-mail"
+              placeholder="Login"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
