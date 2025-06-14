@@ -9,7 +9,6 @@ import {
   TowerControl,
   Sun,
 } from 'lucide-react'
-//import '../styles/painelFarmacia.css'
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 
 export default function PainelFarmacia() {
@@ -18,10 +17,9 @@ export default function PainelFarmacia() {
   const [modalConfiguracoesAberto, setModalConfiguracoesAberto] = useState(false)
   const menuRef = useRef(null)
 
-  // Pegando dados da farmácia logada
   const emailLogado = (localStorage.getItem('email') || '').trim().toLowerCase()
   const farmaciaId = localStorage.getItem('farmaciaId')
-  const tipoLogin = localStorage.getItem('tipoLogin') // 'farmacia' ou 'usuario'
+  const tipoLogin = localStorage.getItem('tipoLogin')
 
   const handleLogout = () => {
     localStorage.removeItem('token')
@@ -40,7 +38,6 @@ export default function PainelFarmacia() {
     setModalConfiguracoesAberto(true)
   }
 
-  // Fecha o menu flutuante ao clicar fora
   useEffect(() => {
     const handleClickFora = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -59,7 +56,6 @@ export default function PainelFarmacia() {
     }
   }, [menuAberto])
 
-  // Impede rolagem do fundo ao abrir o modal
   useEffect(() => {
     if (modalConfiguracoesAberto) {
       document.body.style.overflow = 'hidden'
@@ -87,6 +83,7 @@ export default function PainelFarmacia() {
           />
         </div>
 
+        {/* ✅ Botão Incluir Pedido acima do Farol */}
         <button className="botao-primario">
           <PlusCircle size={18} />
           Incluir Pedido
@@ -97,24 +94,21 @@ export default function PainelFarmacia() {
         Nenhum pedido encontrado. Use o botão acima para incluir um novo.
       </div>
 
-      {/* Botões flutuantes com ref */}
+      {/* 🔘 Menu flutuante no canto inferior direito */}
       <div className="menu-flutuante" ref={menuRef}>
         <div className="menu-flutuante-botoes">
-          {/* Mostrar botão de configurações apenas para login da farmácia principal */}
-{tipoLogin === 'farmacia' && (
-  <div className="botao-submenu visivel"> {/* força visível para teste */}
-    <button
-      onClick={() => {
-        console.log('⚙️ Clique no botão de configurações')
-        setModalConfiguracoesAberto(true)
-      }}
-      className="botao-icone-circular botao-cinza"
-      title="Configurações"
-    >
-      <Settings size={20} />
-    </button>
-  </div>
-)}
+
+          {tipoLogin === 'farmacia' && (
+            <div className="botao-submenu visivel">
+              <button
+                onClick={irParaConfiguracoes}
+                className="botao-icone-circular botao-cinza"
+                title="Configurações"
+              >
+                <Settings size={20} />
+              </button>
+            </div>
+          )}
 
           <div className={`botao-submenu delay ${menuAberto ? 'visivel' : ''}`}>
             <button
@@ -126,12 +120,17 @@ export default function PainelFarmacia() {
             </button>
           </div>
         </div>
-        <button onClick={toggleMenu} className="botao-icone-circular botao-principal" title="Menu">
+
+        <button
+          onClick={toggleMenu}
+          className="botao-icone-circular botao-principal"
+          title="Menu"
+        >
           {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
         </button>
       </div>
 
-      {/* Modal de configurações flutuante */}
+      {/* ⚙️ Modal de configurações */}
       <ModalConfiguracoesFarmacia
         aberto={modalConfiguracoesAberto}
         onClose={() => setModalConfiguracoesAberto(false)}
@@ -141,5 +140,3 @@ export default function PainelFarmacia() {
     </div>
   )
 }
-
-
