@@ -82,23 +82,33 @@ export default function PainelFarmacia() {
             className="input-busca"
           />
         </div>
-
-        {/* ✅ Botão Incluir Pedido acima do Farol */}
-        <button className="botao-primario">
-          <PlusCircle size={18} />
-          Incluir Pedido
-        </button>
       </div>
 
       <div className="painel-placeholder">
-        Nenhum pedido encontrado. Use o botão acima para incluir um novo.
+        Nenhum pedido encontrado. Use o botão abaixo para incluir um novo.
       </div>
 
-      {/* 🔘 Menu flutuante no canto inferior direito */}
+      {/* 🟦 Botão fixo de incluir pedido no canto inferior direito */}
+      <button
+        className="botao-icone-circular botao-azul"
+        title="Incluir Pedido"
+        style={{
+          position: 'fixed',
+          bottom: '5.5rem',
+          right: '1.5rem',
+          zIndex: 10
+        }}
+        onClick={() => {
+          console.log('🟦 Incluir Pedido (ação futura)')
+        }}
+      >
+        <PlusCircle size={26} />
+      </button>
+
+      {/* Botões flutuantes no canto inferior direito */}
       <div className="menu-flutuante" ref={menuRef}>
         <div className="menu-flutuante-botoes">
-
-          {tipoLogin === 'farmacia' && (
+          {menuAberto && tipoLogin === 'farmacia' && (
             <div className="botao-submenu visivel">
               <button
                 onClick={irParaConfiguracoes}
@@ -110,15 +120,17 @@ export default function PainelFarmacia() {
             </div>
           )}
 
-          <div className={`botao-submenu delay ${menuAberto ? 'visivel' : ''}`}>
-            <button
-              onClick={handleLogout}
-              className="botao-icone-circular botao-cinza"
-              title="Sair"
-            >
-              <LogOut size={20} />
-            </button>
-          </div>
+          {menuAberto && (
+            <div className="botao-submenu delay visivel">
+              <button
+                onClick={handleLogout}
+                className="botao-icone-circular botao-cinza"
+                title="Sair"
+              >
+                <LogOut size={20} />
+              </button>
+            </div>
+          )}
         </div>
 
         <button
