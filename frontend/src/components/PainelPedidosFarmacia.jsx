@@ -101,27 +101,40 @@ useEffect(() => {
 eventSource.onmessage = (event) => {
   console.log('🔁 Evento SSE recebido:', event.data)
 
-  if (event.data.startsWith('novo_pedido')) {
-    const partes = event.data.split(':')
-    const farmaciaIdEvento = partes[1]
-    const pedidoId = partes[2]
+  if (!event.data.startsWith('novo_pedido')) return
 
-    if (farmaciaIdEvento !== farmaciaId) return
-
-    setTimeout(() => {
-      api.get(`/pedidos/${pedidoId}`)
-        .then(res => {
-          console.log('✅ Pedido carregado via GET:', res.data)
-          setPedidoExtra(res.data)
-          toast.info('Novo pedido recebido')
-        })
-        .catch(err => {
-          console.error('❌ Erro ao buscar novo pedido:', err)
-          toast.error('Erro ao buscar novo pedido')
-        })
-    }, 300)
+  const partes = event.data.split(':')
+  if (partes.length < 3) {
+    console.warn('⚠️ Evento malformado:', event.data)
+    return
   }
+
+  const farmaciaIdEvento = partes[1]
+  const pedidoId = partes[2]
+
+  if (farmaciaIdEvento !== farmaciaId) {
+    console.log(`🔕 Ignorando evento de outra farmácia: ${farmaciaIdEvento}`)
+    return
+  }
+
+  setTimeout(() => {
+    api.get(`/pedidos/${pedidoId}`)
+      .then(res => {
+        if (!res?.data?.id) {
+          console.warn('⚠️ Pedido retornado inválido:', res.data)
+          return
+        }
+        console.log('✅ Pedido carregado via GET:', res.data)
+        setPedidoExtra(res.data)
+        toast.info('Novo pedido recebido')
+      })
+      .catch(err => {
+        console.error('❌ Erro ao buscar novo pedido:', err)
+        toast.error('Erro ao buscar novo pedido')
+      })
+  }, 200) // pode usar até 100ms se o backend responder rápido
 }
+
 
   eventSource.onerror = () => {
     console.warn('⚠️ SSE desconectado')
@@ -257,6 +270,7 @@ return (
     <div className="space-y-0">
       {/* Novo pedido destacado (caso exista) */}
 
+  console.log('🚨 Render pedidoExtra:', pedidoExtra)
   {pedidoExtra && (
   <div className="pedido-card border-2 border-farol-primary bg-yellow-50">
     <div className="pedido-linha">
