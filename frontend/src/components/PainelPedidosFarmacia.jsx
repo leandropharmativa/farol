@@ -99,39 +99,24 @@ useEffect(() => {
 eventSource.onmessage = (event) => {
   console.log('🔁 Evento SSE recebido:', event.data)
 
-  if (event.data.startsWith('novo_pedido')) {
-    const partes = event.data.split(':')
-    const dataStr = partes[2] || new Date().toISOString().split('T')[0]
-    const [ano, mes, dia] = dataStr.split('-')
-    const novaData = new Date(`${ano}-${mes}-${dia}T00:00:00`)
+if (event.data.startsWith('novo_pedido')) {
+  api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
+    .then(res => {
+      const pedidosOrdenados = res.data.sort((a, b) =>
+        new Date(b.data_criacao) - new Date(a.data_criacao)
+      )
+      const maisRecente = pedidosOrdenados[0]
 
-    const dataAtualFormatada = dataSelecionada.toDateString()
-    const novaDataFormatada = novaData.toDateString()
+      // Evita adicionar duplicado
+      setPedidos(prev => {
+        const jaExiste = prev.some(p => p.id === maisRecente.id)
+        if (jaExiste) return prev
+        return [{ ...maisRecente, destaque: true }, ...prev]
+      })
 
-    if (dataAtualFormatada === novaDataFormatada) {
-      setTimeout(() => {
-        console.log('⏳ Recarregando pedidos após evento SSE...')
-        carregarPedidos()
-      }, 500)
-    } else {
-      // ✅ Pedido de outra data, buscar manualmente
-      api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
-        .then(res => {
-          const pedidoNovo = res.data.find(p => {
-            const dataCriacao = new Date(p.data_criacao).toDateString()
-            return dataCriacao === novaDataFormatada
-          })
-          if (pedidoNovo) {
-            toast.info('Novo pedido registrado em outra data.')
-            setPedidos(p => [
-              { ...pedidoNovo, destaque: true },
-              ...p
-            ])
-          }
-        })
-        .catch(() => toast.error('Erro ao buscar novo pedido'))
-    }
-  }
+      toast.info('Novo pedido recebido')
+    })
+    .catch(() => toast.error('Erro ao buscar novo pedido'))
 }
 
   eventSource.onerror = () => {
@@ -142,6 +127,17 @@ eventSource.onmessage = (event) => {
     eventSource.close()
   }
 }, [farmaciaId]) 
+
+  useEffect(() => {
+  if (pedidos.length > 0 && pedidos[0].destaque) {
+    const timer = setTimeout(() => {
+      setPedidos(prev =>
+        prev.map(p => ({ ...p, destaque: false }))
+      )
+    }, 3000)
+    return () => clearTimeout(timer)
+  }
+}, [pedidos])
 
 useEffect(() => {
   if (farmaciaId) carregarPedidos()
