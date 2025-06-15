@@ -38,7 +38,6 @@ const carregarPedidos = async () => {
     toast.error('Erro ao carregar pedidos')
   }
 }
-
   
   const etapas = [
     { campo: 'status_inclusao', nome: 'Inclusão', icone: PackagePlus },
@@ -101,21 +100,29 @@ useEffect(() => {
   eventSource.onmessage = (event) => {
     console.log('🔁 Evento SSE recebido:', event.data)
 
-if (event.data.startsWith('novo_pedido')) {
-  const partes = event.data.split(':')
-  const pedidoId = partes[1]
+    if (event.data.startsWith('novo_pedido')) {
+      const partes = event.data.split(':')
+      const pedidoId = partes[2] // <- aqui está o ID do pedido (ex: "37")
 
-  api.get(`/pedidos/${pedidoId}`)
-    .then(res => {
-    pedidoExtraRef.current = { ...res.data }
-    setPedidos(prev => [...prev]) // força re-render
-    toast.info('Novo pedido recebido')
-  })
-  .catch(() => toast.error('Erro ao buscar novo pedido'))
+      if (!pedidoId) return
+
+      api.get(`/pedidos/${pedidoId}`)
+        .then(res => {
+          console.log('📦 Novo pedido carregado via ID:', res.data)
+
+          pedidoExtraRef.current = res.data
+          setPedidos(prev => [...prev]) // força re-render
+          toast.info('Novo pedido recebido')
+        })
+        .catch(err => {
+          console.error('❌ Erro ao buscar pedido por ID:', err)
+          toast.error('Erro ao buscar novo pedido')
+        })
+    }
   }
- }
 
   eventSource.onerror = () => {
+    console.warn('⚠️ SSE desconectado')
     eventSource.close()
   }
 
@@ -169,7 +176,8 @@ const corLocalClasse = (nome) => {
   const indice = (hash % 6) + 1
   return `bg-farol-loc${indice} text-white`
 }
-
+//teste
+console.log('🧪 pedidoExtraRef:', pedidoExtraRef.current)
 return (
   <div>
     
