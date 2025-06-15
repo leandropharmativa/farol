@@ -412,3 +412,18 @@ p {
   @apply text-farol-primary hover:text-farol-secondary pt-[4px];
 }
 
+/* lista de pedidos */
+
+.pedido-linha {
+  @apply flex flex-wrap items-center gap-6 text-sm;
+}
+
+.pedido-info {
+  @apply flex items-center gap-1 min-w-[120px];
+}
+
+.pedido-etapas {
+  @apply flex flex-wrap items-center gap-1 justify-end;
+}
+
+
