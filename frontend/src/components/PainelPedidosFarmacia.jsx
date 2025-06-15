@@ -80,8 +80,8 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
               <div className="flex flex-wrap gap-4 flex-1">
                 <div className="pedido-info"><PillBottle size={16} /><span>{p.registro}</span></div>
                 <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
-                <span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span>
-                <span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span>
+                <div className="pedido-info"><MapPin size={16} /><span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span></div>
+                <div className="pedido-info"><MapPinned size={16} /><span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span></div>
                 <div className="pedido-info"><CalendarClock size={16} /><span>{new Date(p.previsao_entrega).toLocaleString()}</span></div>
                 {p.receita_arquivo && (
                   <div className="pedido-info text-blue-600">
