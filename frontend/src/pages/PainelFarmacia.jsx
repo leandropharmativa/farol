@@ -91,8 +91,8 @@ export default function PainelFarmacia() {
   className={`fixed right-6 z-20 transition-all duration-300 ${
     menuAberto
       ? tipoLogin === 'usuario'
-        ? 'bottom-28' // 👤 usuário (sobe menos)
-        : 'bottom-49' // 🏥 farmácia (sobe mais)
+        ? 'bottom-[11rem]' // 👤 usuário (sobe menos)
+        : 'bottom-[11rem]' // 🏥 farmácia (sobe mais)
       : 'bottom-20'   // menu fechado
   }`}
 >
