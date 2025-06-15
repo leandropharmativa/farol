@@ -1,3 +1,4 @@
+//frontend/src/components/PainelPedidosFarmacia.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
