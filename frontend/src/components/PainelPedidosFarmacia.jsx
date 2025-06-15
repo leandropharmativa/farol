@@ -36,7 +36,6 @@ const carregarPedidos = async () => {
   } catch (err) {
     toast.error('Erro ao carregar pedidos')
   }
-}
   
   const etapas = [
     { campo: 'status_inclusao', nome: 'Inclusão', icone: PackagePlus },
