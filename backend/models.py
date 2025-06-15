@@ -47,8 +47,9 @@ class UsuarioFarmaciaUpdate(UsuarioFarmaciaBase):
 
 class LocalFarmaciaCreate(BaseModel):
     farmacia_id: UUID
-    tipo: str  
     nome: str
+    origem: bool
+    destino: bool
 
 class LogoUpdate(BaseModel):
     logo_url: str
