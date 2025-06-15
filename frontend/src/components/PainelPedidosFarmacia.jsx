@@ -92,37 +92,37 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
 return (
   <div>
-    <div className="flex items-center gap-2 mb-4">
-      <button
-        onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
-        className="text-farol-primary hover:text-farol-secondary transition"
-        title={
-          filtroPorPrevisao
-            ? 'Filtrando por data de previsão de entrega'
-            : 'Filtrando por data de criação'
-        }
-      >
-        {filtroPorPrevisao ? <CalendarCheck2 size={20} /> : <CalendarPlus size={20} />}
-      </button>
+<div className="flex items-center gap-2 mb-4">
+  <button
+    onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
+    className="text-farol-primary hover:text-farol-secondary transition"
+    title={
+      filtroPorPrevisao
+        ? 'Filtrando por data de previsão de entrega'
+        : 'Filtrando por data de criação'
+    }
+  >
+    {filtroPorPrevisao ? <CalendarCheck2 size={20} /> : <CalendarPlus size={20} />}
+  </button>
 
-      <h2 className="text-xl font-bold text-left space-x-2">
-        <span
-          className="cursor-pointer select-none"
-          onClick={() => alterarData('dia', +1)}
-          onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
-        >{dia}</span>{' '}
-        <span
-          className="cursor-pointer select-none"
-          onClick={() => alterarData('mes', +1)}
-          onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
-        >{mes}</span>{' '}
-        <span
-          className="cursor-pointer select-none"
-          onClick={() => alterarData('ano', +1)}
-          onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
-        >{ano}</span>
-      </h2>
-    </div>
+  <h2 className="text-xl font-bold text-left space-x-2">
+    <span
+      className="cursor-pointer select-none"
+      onClick={() => alterarData('dia', +1)}
+      onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
+    >{dia}</span>{' '}
+    <span
+      className="cursor-pointer select-none"
+      onClick={() => alterarData('mes', +1)}
+      onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
+    >{mes}</span>{' '}
+    <span
+      className="cursor-pointer select-none"
+      onClick={() => alterarData('ano', +1)}
+      onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
+    >{ano}</span>
+  </h2>
+</div>
     
       <div className="space-y-0">
         {pedidos.map((p, index) => (
