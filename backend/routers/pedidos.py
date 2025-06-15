@@ -1,11 +1,11 @@
 # 📄 backend/routers/pedidos.py
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query
 from fastapi.responses import JSONResponse
 from db import cursor
 import os
 import uuid
 from uuid import UUID
-from datetime import datetime
+from datetime import datetime, date
 
 router = APIRouter()
 UPLOAD_DIR = "receitas"
@@ -14,7 +14,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # 📌 Criar pedido
 @router.post("/pedidos/criar")
 async def criar_pedido(
-    farmacia_id: str = Form(...),
+    farmacia_id: UUID = Form(...),
     registro: str = Form(...),
     numero_itens: int = Form(...),
     atendente_id: int = Form(...),
@@ -23,35 +23,31 @@ async def criar_pedido(
     previsao_entrega: str = Form(...),
     receita: UploadFile = File(None)
 ):
-    try:
-        # Converte a data para datetime
-        previsao_dt = datetime.fromisoformat(previsao_entrega)
+    # Verifica duplicidade
+    cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE registro = %s", (registro,))
+    if cursor.fetchone():
+        return JSONResponse(status_code=400, content={"erro": "Já existe um pedido com este registro."})
 
-        # Converte farmacia_id para UUID se for string
-        farmacia_uuid = UUID(farmacia_id)
+    # Continuação normal
+    filename = None
+    if receita:
+        ext = os.path.splitext(receita.filename)[-1].lower()
+        filename = f"{registro}{ext}"
+        with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
+            f.write(await receita.read())
 
-        filename = None
-        if receita:
-            ext = os.path.splitext(receita.filename)[-1].lower()
-            filename = f"{registro}_{uuid.uuid4().hex[:6]}{ext}"
-            with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
-                f.write(await receita.read())
+    cursor.execute("""
+        INSERT INTO farol_farmacia_pedidos (
+            farmacia_id, registro, numero_itens, atendente_id,
+            origem_id, destino_id, previsao_entrega, receita_arquivo
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """, (
+        str(farmacia_id), registro, numero_itens, atendente_id,
+        origem_id, destino_id, previsao_entrega, filename
+    ))
 
-        cursor.execute("""
-            INSERT INTO farol_farmacia_pedidos (
-                farmacia_id, registro, numero_itens, atendente_id,
-                origem_id, destino_id, previsao_entrega, receita_arquivo
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (
-            str(farmacia_uuid), registro, numero_itens, atendente_id,
-            origem_id, destino_id, previsao_dt, filename
-        ))
-
-        return {"status": "ok", "mensagem": "Pedido criado com sucesso"}
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao criar pedido: {str(e)}")
+    return {"status": "ok", "mensagem": "Pedido criado com sucesso"}
 
 
 # 📌 Editar pedido
@@ -113,3 +109,84 @@ async def excluir_pedido(pedido_id: int):
         return {"status": "ok", "mensagem": "Pedido excluído com sucesso"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao excluir pedido: {str(e)}")
+        
+# registrar log de etapas
+@router.post("/pedidos/{pedido_id}/registrar-etapa")
+def registrar_etapa(
+    pedido_id: int,
+    etapa: str = Form(...),
+    usuario_logado_id: int = Form(...),
+    codigo_confirmacao: int = Form(...),
+    observacao: str = Form("")
+):
+    # Buscar usuário com esse código
+    cursor.execute("SELECT id FROM farol_farmacia_usuarios WHERE codigo = %s", (codigo_confirmacao,))
+    row = cursor.fetchone()
+    if not row:
+        raise HTTPException(status_code=401, detail="Código de confirmação inválido.")
+    usuario_confirmador_id = row[0]
+
+    # Insere o log
+    cursor.execute("""
+        INSERT INTO farol_farmacia_pedido_logs (
+            pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
+        ) VALUES (%s, %s, %s, %s, %s)
+    """, (
+        pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
+    ))
+
+    # Atualiza status booleano no pedido, se aplicável
+    coluna_status = {
+        "inclusao": "status_inclusao",
+        "producao": "status_producao",
+        "despacho": "status_despacho",
+        "entrega": "status_entrega",
+        "pagamento": "status_pagamento"
+    }.get(etapa.lower())
+
+    if coluna_status:
+        cursor.execute(f"""
+            UPDATE farol_farmacia_pedidos
+            SET {coluna_status} = TRUE
+            WHERE id = %s
+        """, (pedido_id,))
+
+    return {"status": "ok", "mensagem": f"Etapa '{etapa}' registrada com sucesso"}
+
+# listar pedidos
+@router.get("/pedidos/listar")
+def listar_pedidos(farmacia_id: UUID, data: date = Query(default_factory=date.today)):
+    cursor.execute("""
+        SELECT 
+            p.id, p.registro, p.numero_itens, p.previsao_entrega,
+            p.status_inclusao, p.status_producao, p.status_despacho,
+            p.status_entrega, p.status_pagamento,
+            u.nome AS atendente
+        FROM farol_farmacia_pedidos p
+        LEFT JOIN farol_farmacia_usuarios u ON p.atendente_id = u.id
+        WHERE p.farmacia_id = %s AND DATE(p.previsao_entrega) = %s
+        ORDER BY p.previsao_entrega
+    """, (str(farmacia_id), data))
+    colunas = [desc[0] for desc in cursor.description]
+    return [dict(zip(colunas, row)) for row in cursor.fetchall()]
+
+# listar logs de um pedido
+@router.get("/pedidos/{pedido_id}/logs")
+def listar_logs_pedido(pedido_id: int):
+    cursor.execute("""
+        SELECT 
+            l.id,
+            l.etapa,
+            l.data_hora,
+            l.observacao,
+            u1.nome AS usuario_logado,
+            u2.nome AS usuario_confirmador
+        FROM farol_farmacia_pedido_logs l
+        JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
+        JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
+        WHERE l.pedido_id = %s
+        ORDER BY l.data_hora DESC
+    """, (pedido_id,))
+    colunas = [desc[0] for desc in cursor.description]
+    return [dict(zip(colunas, row)) for row in cursor.fetchall()]
+
