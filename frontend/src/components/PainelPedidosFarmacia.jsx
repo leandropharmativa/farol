@@ -16,6 +16,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [abrirModal, setAbrirModal] = useState(false)
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
+  const [novosPedidos, setNovosPedidos] = useState([])
 
 const carregarPedidos = async () => {
   try {
@@ -96,21 +97,30 @@ useEffect(() => {
 
   const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
-eventSource.onmessage = (event) => {
+eventSource.onmessage = async (event) => {
   console.log('🔁 Evento SSE recebido:', event.data)
 
   if (event.data.startsWith('novo_pedido')) {
     const partes = event.data.split(':')
-    const dataStr = partes[2] || new Date().toISOString().split('T')[0]
-    const [ano, mes, dia] = dataStr.split('-')
-    const novaData = new Date(`${ano}-${mes}-${dia}T00:00:00`)
+    const pedidoId = partes[1]
 
-    // Atualiza sempre que for da mesma data — ou sempre, se preferir
-    const dataAtualFormatada = dataSelecionada.toISOString().split('T')[0]
-    const novaDataFormatada = novaData.toISOString().split('T')[0]
+    if (!pedidoId) return
 
-    if (dataAtualFormatada === novaDataFormatada) {
-      carregarPedidos()
+    try {
+      const res = await api.get(`/pedidos/${pedidoId}`)
+      const pedido = res.data
+
+      const campoOriginal = filtroPorPrevisao ? pedido.previsao_entrega : pedido.data_criacao
+      if (!campoOriginal) return
+
+      const campoData = new Date(campoOriginal).toISOString().split('T')[0]
+      const dataAtual = dataSelecionada.toISOString().split('T')[0]
+
+      if (campoData === dataAtual) {
+        setNovosPedidos((prev) => [pedido, ...prev])
+      }
+    } catch (err) {
+      console.warn('Erro ao buscar pedido novo:', err)
     }
   }
 }
@@ -237,6 +247,76 @@ return (
 </div>
     
       <div className="space-y-0">
+
+          {novosPedidos.length > 0 && (
+    <>
+      <div className="text-sm font-semibold text-farol-primary mb-1">NOVOS PEDIDOS</div>
+      {novosPedidos.map((p, index) => (
+        <div key={p.id} className={`pedido-card border-l-4 border-farol-primary bg-yellow-50`}>
+          <div className="pedido-linha">
+            <div className="pedido-conteudo">
+              <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
+              <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
+
+              <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
+                <MapPinHouse size={14} className="mr-1" />
+                <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
+              </div>
+
+              <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
+                <MapPinned size={14} className="mr-1" />
+                <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
+              </div>
+
+              <div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
+              <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
+              {p.receita_arquivo && (
+                <div className="pedido-info text-blue-600">
+                  <FileText size={16} />
+                  <a
+                    href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline"
+                  >
+                    Receita
+                  </a>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              {etapas.map(et => {
+                const Icone = et.icone
+                const ativo = p[et.campo]
+                return (
+                  <button
+                    key={et.campo}
+                    onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
+                    className={`rounded-full p-1 ${ativo ? 'text-green-600' : 'text-gray-400 hover:text-red-500'}`}
+                    title={et.nome}
+                  >
+                    <Icone size={18} />
+                  </button>
+                )
+              })}
+              {usuarioLogado.email === 'admin@admin.com' && (
+                <button
+                  title="Editar pedido"
+                  className="text-gray-400 hover:text-blue-500 p-1"
+                  onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
+                >
+                  <Pencil size={18} />
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+      <hr className="my-2 border-t-2 border-dashed border-gray-300" />
+    </>
+  )}
+        
         {pedidos.map((p, index) => (
           <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
             <div className="pedido-linha">
