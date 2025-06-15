@@ -82,7 +82,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
         {pedidos.map(p => (
           <div key={p.id} className="bg-white rounded-xl shadow px-4 py-2 border border-gray-200">
             <div className="pedido-linha justify-between items-center flex flex-wrap gap-2">
-              <div className="flex flex-wrap gap-3 items-center text-sm flex-1">
+              <div className="flex flex-wrap items-center text-sm flex-1">
                 <div className="pedido-info flex items-center gap-1">
                   <PillBottle size={16} />
                   <span>{p.registro} - {p.numero_itens}</span>
