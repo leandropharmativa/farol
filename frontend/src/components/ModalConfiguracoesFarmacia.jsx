@@ -1,4 +1,3 @@
-
 // 📄 frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -203,7 +202,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div>
           <div className="flex items-center gap-2 mb-2">
             <h3>Cadastrar ou editar usuário</h3>
-            <button onClick={salvarUsuario} title={editandoUsuarioId ? 'Salvar' : 'Criar'}>
+            <button className="btn-config" onClick={salvarUsuario} title={editandoUsuarioId ? 'Salvar' : 'Criar'}>
               {editandoUsuarioId ? <Save size={20} /> : <UserPlus size={20} />}
             </button>
             {editandoUsuarioId && (
@@ -250,7 +249,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div className="mt-8">
           <div className="flex items-center gap-2 mb-2">
             <h3>Cadastrar ou editar loja/cidade</h3>
-            <button onClick={salvarLocal} title={editandoLocalId ? 'Salvar' : 'Criar'}>
+            <button className="btn-config" onClick={salvarLocal} title={editandoLocalId ? 'Salvar' : 'Criar'}>
               {editandoLocalId ? <Save size={20} /> : <MapPinPlus size={20} />}
             </button>
             {editandoLocalId && (
