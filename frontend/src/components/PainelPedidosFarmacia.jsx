@@ -105,25 +105,30 @@ eventSource.onmessage = (event) => {
     const farmaciaIdEvento = partes[1]
     const pedidoId = partes[2]
 
-    console.log('📦 Evento detalhado:', { farmaciaIdEvento, pedidoId, farmaciaId })
+    console.log('🧪 Dados recebidos do evento:', { farmaciaIdEvento, pedidoId })
 
-    // 🧠 Ignora eventos de outras farmácias
     if (farmaciaIdEvento !== farmaciaId) {
-      console.warn('⛔ Evento de outra farmácia ignorado.')
+      console.warn('⛔ Ignorado: evento de outra farmácia')
       return
     }
 
-    // ⏳ Pequeno delay para garantir persistência no banco
     setTimeout(() => {
       api.get(`/pedidos/${pedidoId}`)
         .then(res => {
-          console.log('✅ Novo pedido recebido:', res.data)
+          console.log('✅ Pedido carregado via GET:', res.data)
+
+          if (!res.data || !res.data.id) {
+            console.warn('⚠️ Dados incompletos recebidos. Abortando.')
+            return
+          }
+
           pedidoExtraRef.current = res.data
+          console.log('🚀 pedidoExtraRef atualizado:', pedidoExtraRef.current)
           setPedidos(prev => [...prev]) // força re-render
           toast.info('Novo pedido recebido')
         })
         .catch(err => {
-          console.error('❌ Erro ao buscar pedido por ID:', err)
+          console.error('❌ Erro no GET /pedidos/:id:', err)
           toast.error('Erro ao buscar novo pedido')
         })
     }, 300)
