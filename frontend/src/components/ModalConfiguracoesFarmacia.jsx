@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  X, Plus, Upload, Pencil, UserRoundPen, LocationEdit, Trash,
+  X, Plus, UserRoundPen, LocationEdit, Trash,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard
 } from 'lucide-react'
 import api from '../services/api'
@@ -15,7 +15,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   const [senha, setSenha] = useState('')
   const [usuarios, setUsuarios] = useState([])
   const [editandoUsuarioId, setEditandoUsuarioId] = useState(null)
-  const [logo, setLogo] = useState(null)
 
   const [localNome, setLocalNome] = useState('')
   const [isOrigem, setIsOrigem] = useState(false)
@@ -41,8 +40,13 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     }
   }, [aberto])
 
-  const gerarCodigo = () => {
-    setCodigo(Math.floor(Math.random() * 9000) + 1000)
+  const gerarCodigo = async () => {
+    try {
+      const res = await api.get(`/usuarios/proximo_codigo/${farmaciaId}`)
+      setCodigo(res.data.proximo)
+    } catch {
+      toast.error('Erro ao gerar código')
+    }
   }
 
   const carregarUsuarios = async () => {
@@ -171,21 +175,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     }
   }
 
-  const handleLogoChange = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-
-    const formData = new FormData()
-    formData.append('logo', file)
-
-    try {
-      await api.post(`/farmacia/${farmaciaId}/logo`, formData)
-      toast.success('Logo atualizada com sucesso')
-    } catch {
-      toast.error('Erro ao enviar logo')
-    }
-  }
-
   const iconesPermissao = {
     permissao_inclusao: <PackagePlus size={18} />,
     permissao_impressao: <Printer size={18} />,
@@ -212,139 +201,128 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
   return createPortal(
     <div className="modal-overlay">
-      <div className="modal-container animate-fade-slide overflow-y-auto max-h-[95vh]">
-        <div className="sticky top-0 bg-white z-10 flex justify-end p-3 border-b">
-          <button className="text-gray-500 hover:text-red-500" onClick={onClose}>
-            <X />
-          </button>
+      <div className="modal-container animate-fade-slide">
+        <button className="btn-fechar" onClick={onClose}>
+          <X />
+        </button>
+
+        <h2>Configurações da Farmácia</h2>
+
+        {/* Usuário */}
+        <div>
+          <h3>Cadastrar ou editar usuário</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <input className="input" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
+            <input className="input" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
+            <input className="input col-span-2" disabled value={`Código: ${codigo}`} />
+          </div>
+          <div className="lista-permissoes mt-2">
+            {Object.entries(permissoes).map(([campo, ativo]) => (
+              <div
+                key={campo}
+                className={`icone-permissao ${ativo ? 'selecionado' : ''}`}
+                title={nomesPermissao[campo]}
+                onClick={() => handlePermissaoToggle(campo)}
+              >
+                {iconesPermissao[campo]}
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2 mt-4">
+            <button className="btn-primary" onClick={salvarUsuario}>
+              <Plus size={16} />
+              {editandoUsuarioId ? 'Atualizar usuário' : 'Salvar usuário'}
+            </button>
+            {editandoUsuarioId && (
+              <button
+                className="btn-claro"
+                onClick={() => {
+                  setNome('')
+                  setSenha('')
+                  setEditandoUsuarioId(null)
+                  setPermissoes({
+                    permissao_inclusao: false,
+                    permissao_impressao: false,
+                    permissao_conferencia: false,
+                    permissao_producao: false,
+                    permissao_despacho: false,
+                    permissao_entrega: false,
+                    permissao_registrar_pagamento: false,
+                  })
+                }}
+              >
+                Cancelar edição
+              </button>
+            )}
+          </div>
+
+          <ul className="mt-4 space-y-1 text-sm">
+            {usuarios.map(u => (
+              <li key={u.id} className="flex items-center gap-2">
+                <span>{u.nome} (código: {u.codigo})</span>
+                <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
+                  <UserRoundPen size={16} />
+                </button>
+                <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800">
+                  <Trash size={16} />
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <div className="p-5 space-y-8">
-          <h2 className="text-xl font-bold text-center">Configurações da Farmácia</h2>
-
-          {/* Logo */}
-          <div className="space-y-2">
-            <label className="font-semibold">Logo da Farmácia</label>
-            <input type="file" accept="image/*" onChange={handleLogoChange} />
+        {/* Locais */}
+        <div>
+          <h3>Cadastrar ou editar loja/cidade</h3>
+          <input
+            className="input"
+            placeholder="Nome do local"
+            value={localNome}
+            onChange={(e) => setLocalNome(e.target.value)}
+          />
+          <div className="flex gap-4">
+            <label><input type="checkbox" checked={isOrigem} onChange={(e) => setIsOrigem(e.target.checked)} /> Origem</label>
+            <label><input type="checkbox" checked={isDestino} onChange={(e) => setIsDestino(e.target.checked)} /> Destino</label>
           </div>
-
-          {/* Usuário */}
-          <div className="space-y-3">
-            <h3 className="font-semibold">Cadastrar ou editar usuário</h3>
-            <div className="grid grid-cols-2 gap-3">
-              <input className="input" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
-              <input className="input" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
-              <input className="input col-span-2" disabled value={`Código: ${codigo}`} />
-            </div>
-            <div className="lista-permissoes mt-2">
-              {Object.entries(permissoes).map(([campo, ativo]) => (
-                <div
-                  key={campo}
-                  className={`icone-permissao ${ativo ? 'selecionado' : ''}`}
-                  title={nomesPermissao[campo]}
-                  onClick={() => handlePermissaoToggle(campo)}
-                >
-                  {iconesPermissao[campo]}
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-2 mt-2">
-              <button className="btn-primary" onClick={salvarUsuario}>
-                <Plus size={16} className="mr-2" />
-                {editandoUsuarioId ? 'Atualizar usuário' : 'Salvar usuário'}
+          <div className="flex gap-2 mt-4">
+            <button className="btn-primary" onClick={salvarLocal}>
+              <Plus size={16} />
+              {editandoLocalId ? 'Atualizar local' : 'Salvar local'}
+            </button>
+            {editandoLocalId && (
+              <button
+                className="btn-claro"
+                onClick={() => {
+                  setLocalNome('')
+                  setIsOrigem(false)
+                  setIsDestino(false)
+                  setEditandoLocalId(null)
+                }}
+              >
+                Cancelar edição
               </button>
-              {editandoUsuarioId && (
-                <button
-                  className="btn-claro"
-                  onClick={() => {
-                    setNome('')
-                    setSenha('')
-                    setEditandoUsuarioId(null)
-                    setPermissoes({
-                      permissao_inclusao: false,
-                      permissao_impressao: false,
-                      permissao_conferencia: false,
-                      permissao_producao: false,
-                      permissao_despacho: false,
-                      permissao_entrega: false,
-                      permissao_registrar_pagamento: false,
-                    })
-                  }}
-                >
-                  Cancelar edição
-                </button>
-              )}
-            </div>
-
-<ul className="mt-4 space-y-1 text-sm gap-2">
-  {usuarios.map(u => (
-    <li key={u.id} className="flex items-center gap-2">
-      <span>{u.nome} (código: {u.codigo})</span>
-      <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
-        <UserRoundPen size={16} />
-      </button>
-      <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800">
-        <Trash size={16} />
-      </button>
-    </li>
-  ))}
-</ul>
-
+            )}
           </div>
 
-          {/* Locais */}
-          <div className="space-y-3">
-            <h3 className="font-semibold">Cadastrar ou editar loja/cidade</h3>
-            <input
-              className="input"
-              placeholder="Nome do local"
-              value={localNome}
-              onChange={(e) => setLocalNome(e.target.value)}
-            />
-            <div className="flex gap-4">
-              <label><input type="checkbox" checked={isOrigem} onChange={(e) => setIsOrigem(e.target.checked)} /> <span className="ml-1">Origem</span></label>
-              <label><input type="checkbox" checked={isDestino} onChange={(e) => setIsDestino(e.target.checked)} /> <span className="ml-1">Destino</span></label>
-            </div>
-            <div className="flex gap-2 mt-2">
-              <button className="btn-primary" onClick={salvarLocal}>
-                <Plus size={16} className="mr-2" />
-                {editandoLocalId ? 'Atualizar local' : 'Salvar local'}
-              </button>
-              {editandoLocalId && (
-                <button
-                  className="btn-claro"
-                  onClick={() => {
-                    setLocalNome('')
-                    setIsOrigem(false)
-                    setIsDestino(false)
-                    setEditandoLocalId(null)
-                  }}
-                >
-                  Cancelar edição
+          <ul className="mt-4 space-y-1 text-sm">
+            {locais.map(l => (
+              <li key={l.id} className="flex items-center gap-2">
+                <span>
+                  {l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})
+                </span>
+                <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
+                  <LocationEdit size={16} />
                 </button>
-              )}
-            </div>
-
-<ul className="mt-4 space-y-1 text-sm">
-  {locais.map(l => (
-    <li key={l.id} className="flex items-center gap-2">
-      <span>
-        {l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})
-      </span>
-      <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
-        <LocationEdit size={16} />
-      </button>
-      <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800">
-        <Trash size={16} />
-      </button>
-    </li>
-  ))}
-</ul>
-
-          </div>
+                <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800">
+                  <Trash size={16} />
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>,
     modalRoot
   )
 }
+
