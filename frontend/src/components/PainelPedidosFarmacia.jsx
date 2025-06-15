@@ -22,11 +22,9 @@ const carregarPedidos = async () => {
 
     const hoje = new Date().toISOString().slice(0, 10)
     const pedidosDoDia = res.data.filter(p => {
-    const dataEntrega = p.previsao_entrega?.slice(0, 10)
-    return dataEntrega === hoje
+    const dataCriacao = p.data_criacao?.slice(0, 10)
+    return dataCriacao === hoje
     })
-
-
     setPedidos(pedidosDoDia)
   } catch (err) {
     toast.error('Erro ao carregar pedidos')
