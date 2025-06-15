@@ -10,6 +10,7 @@ import {
   Sun,
 } from 'lucide-react'
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
+import ModalNovoPedido from '../components/ModalNovoPedido'
 
 export default function PainelFarmacia() {
   const navigate = useNavigate()
@@ -97,15 +98,14 @@ export default function PainelFarmacia() {
   }`}
 >
 
-        <button
-          className="botao-icone-circular botao-azul z-40"
-          title="Incluir Pedido"
-          onClick={() => {
-            console.log('🟦 Incluir Pedido (ação futura)')
-          }}
-        >
-          <PackagePlus size={26} />
-        </button>
+<button
+  className="botao-icone-circular botao-azul z-40"
+  title="Incluir Pedido"
+  onClick={() => setModalPedidoAberto(true)}
+>
+  <PackagePlus size={26} />
+</button>
+
       </div>
 
       {/* Menu flutuante com animação */}
@@ -156,6 +156,12 @@ export default function PainelFarmacia() {
           {menuAberto ? <Sun size={24} /> : <TowerControl size={24} />}
         </button>
       </div>
+
+      <ModalNovoPedido
+      aberto={modalPedidoAberto}
+      onClose={() => setModalPedidoAberto(false)}
+      farmaciaId={farmaciaId}
+      />
 
       {/* Modal de configurações */}
       <ModalConfiguracoesFarmacia
