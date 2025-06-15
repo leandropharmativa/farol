@@ -99,19 +99,18 @@ useEffect(() => {
 eventSource.onmessage = (event) => {
   console.log('🔁 Evento SSE recebido:', event.data)
 
-  // Ex: novo_pedido:123e4567-e89b-12d3-a456-426614174000:2025-06-15
   if (event.data.startsWith('novo_pedido')) {
     const partes = event.data.split(':')
     const dataStr = partes[2] || new Date().toISOString().split('T')[0]
     const [ano, mes, dia] = dataStr.split('-')
     const novaData = new Date(`${ano}-${mes}-${dia}T00:00:00`)
 
-    // força data sem hora para evitar erro de comparação
+    // Atualiza sempre que for da mesma data — ou sempre, se preferir
     const dataAtualFormatada = dataSelecionada.toISOString().split('T')[0]
     const novaDataFormatada = novaData.toISOString().split('T')[0]
 
     if (dataAtualFormatada === novaDataFormatada) {
-    carregarPedidosComData(novaData)
+      carregarPedidos()
     }
   }
 }
