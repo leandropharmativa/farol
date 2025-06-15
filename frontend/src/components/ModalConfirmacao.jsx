@@ -51,7 +51,7 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
               Cancelar
             </button>
             <button
-              className="bg-nublia-primary hover:bg-nublia-primaryfocus text-white px-4 py-2 rounded"
+              className="btn-confirmar"
               onClick={confirmar}
             >
               Confirmar
