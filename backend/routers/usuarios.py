@@ -94,4 +94,12 @@ def login_usuario(dados: dict = Body(...)):
     else:
         return {"status": "erro", "mensagem": "Credenciais inválidas"}
 
+@router.get("/usuarios/proximo_codigo/{farmacia_id}")
+def proximo_codigo_usuario(farmacia_id: str):
+    cursor.execute("""
+        SELECT MAX(CAST(codigo AS INTEGER)) FROM farol_farmacia_usuarios
+        WHERE farmacia_id = %s
+    """, (farmacia_id,))
+    max_codigo = cursor.fetchone()[0] or 999
+    return {"proximo": max_codigo + 1}
 
