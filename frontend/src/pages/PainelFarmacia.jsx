@@ -92,7 +92,7 @@ export default function PainelFarmacia() {
     menuAberto
       ? tipoLogin === 'usuario'
         ? 'bottom-28' // 👤 usuário (sobe menos)
-        : 'bottom-56' // 🏥 farmácia (sobe mais)
+        : 'bottom-50' // 🏥 farmácia (sobe mais)
       : 'bottom-20'   // menu fechado
   }`}
 >
