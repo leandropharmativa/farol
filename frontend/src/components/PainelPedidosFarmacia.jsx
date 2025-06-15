@@ -114,6 +114,13 @@ useEffect(() => {
     }
   }
 
+  useEffect(() => {
+  if (farmaciaId) {
+    carregarPedidos()
+  }
+}, [farmaciaId, dataSelecionada, filtroPorPrevisao])
+
+
   eventSource.onerror = () => {
     console.warn('🔌 SSE desconectado')
     eventSource.close()
