@@ -251,9 +251,10 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           </ul>
         </div>
 
-        <hr className="my-6 border-t border-gray-300" />
+        <hr className="my-3 border-t border-gray-300" />
 
         {/* Locais */}
+        <div className="mt-2">
 <h3 className="flex items-center gap-2 mb-2">
   Cadastrar ou editar loja/cidade
   <button className="btn-config" onClick={salvarLocal} title={editandoLocalId ? 'Salvar' : 'Criar'}>
@@ -270,6 +271,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     </button>
   )}
 </h3>
+
 
           <input className="input-config" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
           <div className="flex gap-4 mt-2">
