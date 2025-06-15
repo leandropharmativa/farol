@@ -96,28 +96,28 @@ useEffect(() => {
 
   const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
-eventSource.onmessage = (event) => {
-  console.log('🔁 Evento SSE recebido:', event.data)
+  eventSource.onmessage = (event) => {
+    console.log('🔁 Evento SSE recebido:', event.data)
 
-if (event.data.startsWith('novo_pedido')) {
-  api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
-    .then(res => {
-      const pedidosOrdenados = res.data.sort((a, b) =>
-        new Date(b.data_criacao) - new Date(a.data_criacao)
-      )
-      const maisRecente = pedidosOrdenados[0]
+    if (event.data.startsWith('novo_pedido')) {
+      api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
+        .then(res => {
+          const pedidosOrdenados = res.data.sort((a, b) =>
+            new Date(b.data_criacao) - new Date(a.data_criacao)
+          )
+          const maisRecente = pedidosOrdenados[0]
 
-      // Evita adicionar duplicado
-      setPedidos(prev => {
-        const jaExiste = prev.some(p => p.id === maisRecente.id)
-        if (jaExiste) return prev
-        return [{ ...maisRecente, destaque: true }, ...prev]
-      })
+          setPedidos(prev => {
+            const jaExiste = prev.some(p => p.id === maisRecente.id)
+            if (jaExiste) return prev
+            return [{ ...maisRecente, destaque: true }, ...prev]
+          })
 
-      toast.info('Novo pedido recebido')
-    })
-    .catch(() => toast.error('Erro ao buscar novo pedido'))
-}
+          toast.info('Novo pedido recebido')
+        })
+        .catch(() => toast.error('Erro ao buscar novo pedido'))
+    }
+  }
 
   eventSource.onerror = () => {
     eventSource.close()
@@ -126,7 +126,7 @@ if (event.data.startsWith('novo_pedido')) {
   return () => {
     eventSource.close()
   }
-}, [farmaciaId]) 
+}, [farmaciaId])
 
   useEffect(() => {
   if (pedidos.length > 0 && pedidos[0].destaque) {
