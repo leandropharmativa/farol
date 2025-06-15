@@ -1,3 +1,4 @@
+//frontend/src/components/ModalNovoPedido.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Save } from 'lucide-react'
@@ -72,6 +73,7 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
 
       await api.post('/pedidos/criar', formData)
       toast.success('Pedido criado com sucesso')
+      window.dispatchEvent(new Event("novoPedidoCriado"))
       onClose()
     } catch {
       toast.error('Erro ao salvar pedido')
