@@ -91,10 +91,10 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
-  const corLocalClasse = (nome) => {
+const corLocalClasse = (nome) => {
   if (!nome) return 'bg-gray-300 text-gray-800'
   const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
-  const indice = (hash % 6) + 1 // loc1 até loc6
+  const indice = (hash % 6) + 1
   return `bg-farol-loc${indice} text-white`
 }
 
@@ -177,17 +177,14 @@ return (
                 <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
                 <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
                 
-<div className="pedido-info">
-  <MapPinHouse size={16} />
-  <span className={`ml-1 px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
-    {p.origem_nome || p.origem?.nome || 'Origem'}
-  </span>
+<div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
+  <MapPinHouse size={14} className="mr-1" />
+  <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
 </div>
-<div className="pedido-info">
-  <MapPinned size={16} />
-  <span className={`ml-1 px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
-    {p.destino_nome || p.destino?.nome || 'Destino'}
-  </span>
+
+<div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
+  <MapPinned size={14} className="mr-1" />
+  <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
 </div>
                 
                 <div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
