@@ -23,12 +23,12 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
         params: { farmacia_id: farmaciaId }
       })
 
-      const dataFiltro = dataSelecionada.toISOString().slice(0, 10)
+const dataFiltro = new Date(dataSelecionada).toDateString()
 
-      const pedidosFiltrados = res.data.filter(p => {
-        const campo = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-        return campo?.slice(0, 10) === dataFiltro
-      })
+const pedidosFiltrados = res.data.filter(p => {
+  const campo = new Date(filtroPorPrevisao ? p.previsao_entrega : p.data_criacao)
+  return campo.toDateString() === dataFiltro
+})
 
       setPedidos(pedidosFiltrados)
     } catch (err) {
@@ -76,7 +76,7 @@ useEffect(() => {
 eventSource.onmessage = (event) => {
   console.log('🔁 Evento SSE recebido:', event.data)
   if (event.data === 'novo_pedido') {
-    setDataSelecionada(new Date()) // força filtrar pelo dia atual
+    setDataSelecionada(new Date()) // garante que o filtro seja para o dia atual
     carregarPedidos()
   }
 }
