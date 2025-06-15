@@ -105,12 +105,29 @@ eventSource.onmessage = (event) => {
     const [ano, mes, dia] = dataStr.split('-')
     const novaData = new Date(`${ano}-${mes}-${dia}T00:00:00`)
 
-    // Atualiza sempre que for da mesma data — ou sempre, se preferir
     const dataAtualFormatada = dataSelecionada.toISOString().split('T')[0]
     const novaDataFormatada = novaData.toISOString().split('T')[0]
 
+    // Se é do mesmo dia, atualiza lista como antes
     if (dataAtualFormatada === novaDataFormatada) {
       carregarPedidos()
+    } else {
+      // ✅ Caso não seja o mesmo dia filtrado, busca o pedido e exibe separado
+      api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
+        .then(res => {
+          const pedidoNovo = res.data.find(p => {
+            const dataCriacao = new Date(p.data_criacao).toISOString().split('T')[0]
+            return dataCriacao === novaDataFormatada
+          })
+          if (pedidoNovo) {
+            toast.info('Novo pedido registrado em outra data.')
+            setPedidos(p => [
+              { ...pedidoNovo, destaque: true },
+              ...p
+            ])
+          }
+        })
+        .catch(() => toast.error('Erro ao buscar novo pedido'))
     }
   }
 }
@@ -238,7 +255,14 @@ return (
     
       <div className="space-y-0">
         {pedidos.map((p, index) => (
-          <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
+          <div
+            key={p.id}
+            className={`pedido-card ${
+            p.destaque ? 'border-2 border-farol-primary bg-yellow-50' :
+            index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'
+          }`}
+          >
+
             <div className="pedido-linha">
               <div className="pedido-conteudo">
                 <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
