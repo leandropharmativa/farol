@@ -70,18 +70,18 @@ const carregarPedidos = async () => {
     }
   }
 
-  const carregarPedidosComData = async (dataRef) => {
+const carregarPedidosComData = async (dataRef) => {
   try {
     const res = await api.get('/pedidos/listar', {
       params: { farmacia_id: farmaciaId }
     })
 
-    const dataFiltro = dataRef.toLocaleDateString('pt-BR')
+    const dataFiltro = dataRef.toISOString().split('T')[0]
 
     const pedidosFiltrados = res.data.filter(p => {
       const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
       if (!campoOriginal) return false
-      const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
+      const campoData = new Date(campoOriginal).toISOString().split('T')[0]
       return campoData === dataFiltro
     })
 
@@ -98,10 +98,16 @@ useEffect(() => {
 
 eventSource.onmessage = (event) => {
   console.log('🔁 Evento SSE recebido:', event.data)
-  if (event.data === 'novo_pedido') {
-    const hoje = new Date()
-    setDataSelecionada(hoje)
-    carregarPedidosComData(hoje)
+
+  // Ex: novo_pedido:123e4567-e89b-12d3-a456-426614174000:2025-06-15
+  if (event.data.startsWith('novo_pedido')) {
+    const partes = event.data.split(':')
+    const dataStr = partes[2] || new Date().toISOString().split('T')[0]
+    const [ano, mes, dia] = dataStr.split('-')
+    const novaData = new Date(`${ano}-${mes}-${dia}`)
+
+    setDataSelecionada(novaData)
+    carregarPedidosComData(novaData)
   }
 }
 
