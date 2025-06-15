@@ -158,16 +158,26 @@ def registrar_etapa(
 def listar_pedidos(farmacia_id: UUID):
     cursor.execute("""
         SELECT 
-          p.id, p.registro, p.numero_itens, p.previsao_entrega,
-          p.data_criacao,
-          p.status_inclusao, p.status_producao, p.status_despacho,
-          p.status_entrega, p.status_pagamento,
-          p.receita_arquivo,
-          u.nome AS atendente
+            p.id,
+            p.registro,
+            p.numero_itens,
+            p.previsao_entrega,
+            p.data_criacao,
+            p.status_inclusao,
+            p.status_producao,
+            p.status_despacho,
+            p.status_entrega,
+            p.status_pagamento,
+            p.receita_arquivo,
+            u.nome AS atendente,
+            l_origem.nome AS origem_nome,
+            l_destino.nome AS destino_nome
         FROM farol_farmacia_pedidos p
         LEFT JOIN farol_farmacia_usuarios u ON p.atendente_id = u.id
+        LEFT JOIN farol_farmacia_locais l_origem ON p.origem_id = l_origem.id
+        LEFT JOIN farol_farmacia_locais l_destino ON p.destino_id = l_destino.id
         WHERE p.farmacia_id = %s
-        ORDER BY p.previsao_entrega DESC
+        ORDER BY p.data_criacao DESC
     """, (str(farmacia_id),))
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
