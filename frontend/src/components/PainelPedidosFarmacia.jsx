@@ -14,16 +14,22 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [etapaSelecionada, setEtapaSelecionada] = useState('')
   const [abrirModal, setAbrirModal] = useState(false)
 
-  const carregarPedidos = async () => {
-    try {
-      const res = await api.get('/pedidos/listar', {
-        params: { farmacia_id: farmaciaId }
-      })
-      setPedidos(res.data)
-    } catch (err) {
-      toast.error('Erro ao carregar pedidos')
-    }
+const carregarPedidos = async () => {
+  try {
+    const res = await api.get('/pedidos/listar', {
+      params: { farmacia_id: farmaciaId }
+    })
+
+    const hoje = new Date().toISOString().slice(0, 10)
+    const pedidosDoDia = res.data.filter(p => 
+      p.previsao_entrega?.slice(0, 10) === hoje
+    )
+
+    setPedidos(pedidosDoDia)
+  } catch (err) {
+    toast.error('Erro ao carregar pedidos')
   }
+}
 
   const etapas = [
     { campo: 'status_inclusao', nome: 'Inclusão', icone: ClipboardList },
