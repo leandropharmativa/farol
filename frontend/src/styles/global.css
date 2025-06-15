@@ -415,7 +415,7 @@ p {
 /* lista de pedidos */
 
 .pedido-linha {
-  @apply flex flex-wrap items-center gap-6 text-sm;
+  @apply flex flex-wrap items-center gap-2 text-sm;
 }
 
 .pedido-info {
