@@ -138,24 +138,27 @@ return (
   </div>
 
   {/* Totais de pedidos */}
-  <div className="flex items-center gap-4 text-sm text-gray-600">
-    <div className="flex items-center gap-1">
-      <Boxes size={16} className="text-farol-primary" />
-      <span>{pedidos.length}</span>
-    </div>
-    <div className="flex items-center gap-1">
-      <Beaker size={16} className="text-farol-secondary" />
-      <span>Semi-sólidos</span>
-    </div>
-    <div className="flex items-center gap-1">
-      <Pill size={16} className="text-farol-secondary" />
-      <span>Sólidos</span>
-    </div>
-    <div className="flex items-center gap-1">
-      <StickyNote size={16} className="text-farol-secondary" />
-      <span>Sachês</span>
-    </div>
+  
+<div className="flex items-center gap-4 text-sm">
+  <div className="flex items-center gap-1 text-farol-primary">
+    <Boxes size={16} />
+    <span>{pedidos.length}</span>
   </div>
+  <div className="flex items-center gap-1 text-farol-linecolor">
+    <Beaker size={16} />
+    <span>0</span>
+  </div>
+  <div className="flex items-center gap-1 text-farol-secondary">
+    <Pill size={16} />
+    <span>0</span>
+  </div>
+  <div className="flex items-center gap-1 text-gray-500">
+    <StickyNote size={16} />
+    <span>0</span>
+  </div>
+</div>
+
+
 </div>
     
       <div className="space-y-0">
