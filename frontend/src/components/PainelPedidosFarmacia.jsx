@@ -80,43 +80,43 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
       <div className="space-y-2">
         {pedidos.map(p => (
-          <div key={p.id} className="bg-white rounded-xl shadow px-4 py-2 border border-gray-200">
-            <div className="pedido-linha justify-between items-center flex flex-wrap gap-2">
-              <div className="flex flex-wrap items-center text-sm flex-1">
-                <div className="pedido-info flex items-center gap-1">
-                  <PillBottle size={16} />
-                  <span>{p.registro} - {p.numero_itens}</span>
-                </div>
-                <div className="pedido-info flex items-center gap-1">
-                  <User size={16} />
-                  <span>{p.atendente}</span>
-                </div>
-                <div className="pedido-info flex items-center gap-1">
-                  <MapPinHouse size={16} />
-                  <span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span>
-                </div>
-                <div className="pedido-info flex items-center gap-1">
-                  <MapPinned size={16} />
-                  <span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span>
-                </div>
-                <div className="pedido-info flex items-center gap-1">
-                  <CalendarClock size={16} />
-                  <span>{new Date(p.previsao_entrega).toLocaleString()}</span>
-                </div>
-                {p.receita_arquivo && (
-                  <div className="pedido-info text-blue-600 flex items-center gap-1">
-                    <FileText size={16} />
-                    <a
-                      href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline"
-                    >
-                      Receita
-                    </a>
-                  </div>
-                )}
-              </div>
+<div key={p.id} className="pedido-card">
+  <div className="pedido-linha">
+    <div className="pedido-conteudo">
+      <div className="pedido-info">
+        <PillBottle size={16} />
+        <span>{p.registro} - {p.numero_itens}</span>
+      </div>
+      <div className="pedido-info">
+        <User size={16} />
+        <span>{p.atendente}</span>
+      </div>
+      <div className="pedido-info">
+        <MapPinHouse size={16} />
+        <span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span>
+      </div>
+      <div className="pedido-info">
+        <MapPinned size={16} />
+        <span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span>
+      </div>
+      <div className="pedido-info">
+        <CalendarClock size={16} />
+        <span>{new Date(p.previsao_entrega).toLocaleString()}</span>
+      </div>
+      {p.receita_arquivo && (
+        <div className="pedido-info">
+          <FileText size={16} />
+          <a
+            href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Receita
+          </a>
+        </div>
+      )}
+    </div>
+
 
               <div className="flex items-center gap-2">
                 {etapas.map(et => {
