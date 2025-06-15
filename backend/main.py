@@ -1,7 +1,7 @@
 # backend/main.py
 
 from fastapi import FastAPI
-from routers import serial, admin, farmacia, usuarios, locais, logo
+from routers import serial, admin, farmacia, usuarios, locais, logo, pedidos
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="API Farol")
@@ -25,3 +25,4 @@ app.include_router(farmacia.router)
 app.include_router(usuarios.router)
 app.include_router(locais.router)
 app.include_router(logo.router)
+app.include_router(pedidos.router)
