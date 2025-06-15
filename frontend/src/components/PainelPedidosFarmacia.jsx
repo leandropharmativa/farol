@@ -97,19 +97,27 @@ useEffect(() => {
 
   const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
-  eventSource.onmessage = (event) => {
-    console.log('🔁 Evento SSE recebido:', event.data)
+eventSource.onmessage = (event) => {
+  console.log('🔁 Evento SSE recebido:', event.data)
 
-    if (event.data.startsWith('novo_pedido')) {
-      const partes = event.data.split(':')
-      const pedidoId = partes[2] // <- aqui está o ID do pedido (ex: "37")
+  if (event.data.startsWith('novo_pedido')) {
+    const partes = event.data.split(':')
+    const farmaciaIdEvento = partes[1]
+    const pedidoId = partes[2]
 
-      if (!pedidoId) return
+    console.log('📦 Evento detalhado:', { farmaciaIdEvento, pedidoId, farmaciaId })
 
+    // 🧠 Ignora eventos de outras farmácias
+    if (farmaciaIdEvento !== farmaciaId) {
+      console.warn('⛔ Evento de outra farmácia ignorado.')
+      return
+    }
+
+    // ⏳ Pequeno delay para garantir persistência no banco
+    setTimeout(() => {
       api.get(`/pedidos/${pedidoId}`)
         .then(res => {
-          console.log('📦 Novo pedido carregado via ID:', res.data)
-
+          console.log('✅ Novo pedido recebido:', res.data)
           pedidoExtraRef.current = res.data
           setPedidos(prev => [...prev]) // força re-render
           toast.info('Novo pedido recebido')
@@ -118,8 +126,9 @@ useEffect(() => {
           console.error('❌ Erro ao buscar pedido por ID:', err)
           toast.error('Erro ao buscar novo pedido')
         })
-    }
+    }, 300)
   }
+}
 
   eventSource.onerror = () => {
     console.warn('⚠️ SSE desconectado')
