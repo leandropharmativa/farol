@@ -59,10 +59,8 @@ const handleLogin = async () => {
         localStorage.setItem('tipoLogin', 'farmacia')
         localStorage.setItem('nomeFarmacia', resFarmacia.data.nome)
         toast.success('Login como farmácia')
-        setTimeout(() => {
         navigate('/painel-farmacia')
         window.location.reload()
-          }, 5000)
         return
       } else {
         console.log('Login farmácia falhou:', resFarmacia.data)
