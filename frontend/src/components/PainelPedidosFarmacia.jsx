@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 import {
-  User, CalendarClock, MapPin, MapPinned, PillBottle,
+  User, CalendarClock, MapPin, MapPinned, PillBottle, MapPinHouse,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, FileText
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -80,7 +80,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
               <div className="flex flex-wrap gap-4 flex-1">
                 <div className="pedido-info"><PillBottle size={16} /><span>{p.registro}</span></div>
                 <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
-                <div className="pedido-info"><MapPin size={16} /><span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span></div>
+                <div className="pedido-info"><MapPinHouse size={16} /><span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span></div>
                 <div className="pedido-info"><MapPinned size={16} /><span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span></div>
                 <div className="pedido-info"><CalendarClock size={16} /><span>{new Date(p.previsao_entrega).toLocaleString()}</span></div>
                 {p.receita_arquivo && (
