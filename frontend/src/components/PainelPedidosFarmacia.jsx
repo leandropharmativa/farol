@@ -4,7 +4,8 @@ import api from '../services/api'
 import { toast } from 'react-toastify'
 import {
   User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock,
-  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, FileText
+  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard,
+  FileText, CalendarPlus, CalendarCheck2
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 
@@ -14,15 +15,22 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [etapaSelecionada, setEtapaSelecionada] = useState('')
   const [abrirModal, setAbrirModal] = useState(false)
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
+  const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
 
   const carregarPedidos = async () => {
     try {
       const res = await api.get('/pedidos/listar', {
         params: { farmacia_id: farmaciaId }
       })
-      const diaSelecionado = dataSelecionada.toISOString().slice(0, 10)
-      const pedidosDoDia = res.data.filter(p => p.data_criacao?.slice(0, 10) === diaSelecionado)
-      setPedidos(pedidosDoDia)
+
+      const dataFiltro = dataSelecionada.toISOString().slice(0, 10)
+
+      const pedidosFiltrados = res.data.filter(p => {
+        const campo = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+        return campo?.slice(0, 10) === dataFiltro
+      })
+
+      setPedidos(pedidosFiltrados)
     } catch (err) {
       toast.error('Erro ao carregar pedidos')
     }
@@ -62,7 +70,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
   useEffect(() => {
     if (farmaciaId) carregarPedidos()
-  }, [farmaciaId, dataSelecionada])
+  }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
 
   const formatarData = (data) =>
     data.toLocaleDateString('pt-BR', {
@@ -84,23 +92,32 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4 text-left space-x-2">
-        <span
-          className="cursor-pointer select-none"
-          onClick={() => alterarData('dia', +1)}
-          onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
-        >{dia}</span>
-        <span
-          className="cursor-pointer select-none"
-          onClick={() => alterarData('mes', +1)}
-          onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
-        >{mes}</span>
-        <span
-          className="cursor-pointer select-none"
-          onClick={() => alterarData('ano', +1)}
-          onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
-        >{ano}</span>
-      </h2>
+      <div className="flex items-center gap-2 mb-4">
+        <CalendarPlus className="text-farol-primary" size={20} />
+        <h2 className="text-xl font-bold text-left space-x-2">
+          <span
+            className="cursor-pointer select-none"
+            onClick={() => alterarData('dia', +1)}
+            onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
+          >{dia}</span>{' '}
+          <span
+            className="cursor-pointer select-none"
+            onClick={() => alterarData('mes', +1)}
+            onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
+          >{mes}</span>{' '}
+          <span
+            className="cursor-pointer select-none"
+            onClick={() => alterarData('ano', +1)}
+            onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
+          >{ano}</span>
+        </h2>
+        <CalendarCheck2
+          className={`cursor-pointer ml-2 ${filtroPorPrevisao ? 'text-farol-primary' : 'text-farol-secondary'}`}
+          size={20}
+          title="Alternar entre data de criação e previsão"
+          onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
+        />
+      </div>
 
       <div className="space-y-0">
         {pedidos.map((p, index) => (
