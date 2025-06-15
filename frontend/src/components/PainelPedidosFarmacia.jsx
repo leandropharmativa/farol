@@ -80,12 +80,12 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
 <div className="space-y-0">
   {pedidos.map((p, index) => (
-    <div
-      key={p.id}
-      className={`px-4 py-2 border-b border-dotted ${
-        index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
-      }`}
-    >
+<div
+  key={p.id}
+  className={`pedido-card ${
+    index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'
+  }`}
+>
       <div className="pedido-linha">
         <div className="pedido-conteudo">
           <div className="pedido-info">
