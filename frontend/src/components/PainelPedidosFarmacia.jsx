@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 import {
-  User, CalendarClock, MapPin, MapPinned, PillBottle, MapPinHouse,
+  User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, FileText
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -64,27 +64,47 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
   useEffect(() => {
     if (farmaciaId) {
-      console.log('📦 Farmacia ID:', farmaciaId)
       carregarPedidos()
     }
   }, [farmaciaId])
 
+  const dataHojeFormatada = new Date().toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric'
+  }).toUpperCase().replace(' DE ', ' ').replace(' DE ', ' ') // 15 JUNHO 2025
+
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Pedidos do dia</h2>
+      <h2 className="text-xl font-bold mb-4 text-left">{dataHojeFormatada}</h2>
 
       <div className="space-y-2">
         {pedidos.map(p => (
-          <div key={p.id} className="bg-white rounded-xl shadow px-4 py-3 border border-gray-200">
-            <div className="pedido-linha justify-between">
-              <div className="flex flex-wrap gap-4 flex-1">
-                <div className="pedido-info"><PillBottle size={16} /><span>{p.registro}</span></div>
-                <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
-                <div className="pedido-info"><MapPinHouse size={16} /><span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span></div>
-                <div className="pedido-info"><MapPinned size={16} /><span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span></div>
-                <div className="pedido-info"><CalendarClock size={16} /><span>{new Date(p.previsao_entrega).toLocaleString()}</span></div>
+          <div key={p.id} className="bg-white rounded-xl shadow px-4 py-2 border border-gray-200">
+            <div className="pedido-linha justify-between items-center flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3 items-center text-sm flex-1">
+                <div className="pedido-info flex items-center gap-1">
+                  <PillBottle size={16} />
+                  <span>{p.registro} - {p.numero_itens}</span>
+                </div>
+                <div className="pedido-info flex items-center gap-1">
+                  <User size={16} />
+                  <span>{p.atendente}</span>
+                </div>
+                <div className="pedido-info flex items-center gap-1">
+                  <MapPinHouse size={16} />
+                  <span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span>
+                </div>
+                <div className="pedido-info flex items-center gap-1">
+                  <MapPinned size={16} />
+                  <span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span>
+                </div>
+                <div className="pedido-info flex items-center gap-1">
+                  <CalendarClock size={16} />
+                  <span>{new Date(p.previsao_entrega).toLocaleString()}</span>
+                </div>
                 {p.receita_arquivo && (
-                  <div className="pedido-info text-blue-600">
+                  <div className="pedido-info text-blue-600 flex items-center gap-1">
                     <FileText size={16} />
                     <a
                       href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
@@ -98,7 +118,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
                 )}
               </div>
 
-              <div className="pedido-etapas">
+              <div className="flex items-center gap-2">
                 {etapas.map(et => {
                   const Icone = et.icone
                   const ativo = p[et.campo]
@@ -117,6 +137,15 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
                     </button>
                   )
                 })}
+                {usuarioLogado.email === 'admin@admin.com' && (
+                  <button
+                    title="Editar pedido"
+                    className="text-gray-400 hover:text-blue-500 p-1"
+                    onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
+                  >
+                    <Pencil size={18} />
+                  </button>
+                )}
               </div>
             </div>
           </div>
