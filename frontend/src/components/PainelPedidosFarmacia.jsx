@@ -105,21 +105,20 @@ eventSource.onmessage = (event) => {
     const [ano, mes, dia] = dataStr.split('-')
     const novaData = new Date(`${ano}-${mes}-${dia}T00:00:00`)
 
-    const dataAtualFormatada = dataSelecionada.toISOString().split('T')[0]
-    const novaDataFormatada = novaData.toISOString().split('T')[0]
+    const dataAtualFormatada = dataSelecionada.toDateString()
+    const novaDataFormatada = novaData.toDateString()
 
-    // Se é do mesmo dia, atualiza lista como antes
-if (dataAtualFormatada === novaDataFormatada) {
-  setTimeout(() => {
-    console.log('⏳ Recarregando pedidos após evento SSE...')
-    carregarPedidos()
-  }, 500)
-} else {
-      // ✅ Caso não seja o mesmo dia filtrado, busca o pedido e exibe separado
+    if (dataAtualFormatada === novaDataFormatada) {
+      setTimeout(() => {
+        console.log('⏳ Recarregando pedidos após evento SSE...')
+        carregarPedidos()
+      }, 500)
+    } else {
+      // ✅ Pedido de outra data, buscar manualmente
       api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
         .then(res => {
           const pedidoNovo = res.data.find(p => {
-            const dataCriacao = new Date(p.data_criacao).toISOString().split('T')[0]
+            const dataCriacao = new Date(p.data_criacao).toDateString()
             return dataCriacao === novaDataFormatada
           })
           if (pedidoNovo) {
