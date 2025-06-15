@@ -139,21 +139,21 @@ return (
 
   {/* Totais de pedidos */}
   
-<div className="flex items-center gap-4 text-sm">
+<div className="flex items-center gap-2 text-xs">
   <div className="flex items-center gap-1 text-farol-primary">
-    <Boxes size={16} />
+    <Boxes size={14} />
     <span>{pedidos.length}</span>
   </div>
   <div className="flex items-center gap-1 text-farol-linecolor">
-    <Beaker size={16} />
+    <Beaker size={14} />
     <span>0</span>
   </div>
   <div className="flex items-center gap-1 text-farol-secondary">
-    <Pill size={16} />
+    <Pill size={14} />
     <span>0</span>
   </div>
   <div className="flex items-center gap-1 text-gray-500">
-    <StickyNote size={16} />
+    <StickyNote size={14} />
     <span>0</span>
   </div>
 </div>
