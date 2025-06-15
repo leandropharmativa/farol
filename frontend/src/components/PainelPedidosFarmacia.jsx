@@ -95,33 +95,43 @@ return (
 <div className="flex items-center gap-2 mb-4">
   <button
     onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
-    className="text-farol-primary hover:text-farol-secondary transition"
+    className="text-farol-primary hover:text-farol-secondary transition flex items-center"
     title={
       filtroPorPrevisao
         ? 'Filtrando por data de previsão de entrega'
         : 'Filtrando por data de criação'
     }
   >
-    {filtroPorPrevisao ? <CalendarCheck2 size={20} /> : <CalendarPlus size={20} />}
+    {filtroPorPrevisao ? (
+      <CalendarCheck2 size={20} className="inline-block align-middle" />
+    ) : (
+      <CalendarPlus size={20} className="inline-block align-middle" />
+    )}
   </button>
 
-  <h2 className="text-xl font-bold text-left space-x-2">
+  <div className="flex items-baseline gap-1 text-xl font-bold">
     <span
       className="cursor-pointer select-none"
       onClick={() => alterarData('dia', +1)}
       onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
-    >{dia}</span>{' '}
+    >
+      {dia}
+    </span>
     <span
       className="cursor-pointer select-none"
       onClick={() => alterarData('mes', +1)}
       onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
-    >{mes}</span>{' '}
+    >
+      {mes}
+    </span>
     <span
       className="cursor-pointer select-none"
       onClick={() => alterarData('ano', +1)}
       onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
-    >{ano}</span>
-  </h2>
+    >
+      {ano}
+    </span>
+  </div>
 </div>
     
       <div className="space-y-0">
