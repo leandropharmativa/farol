@@ -410,6 +410,6 @@ p {
 }
 
 .btn-config {
-  @apply text-farol-primary hover:text-farol-secondary pt-[2px];
+  @apply text-farol-primary hover:text-farol-secondary pt-[4px];
 }
 
