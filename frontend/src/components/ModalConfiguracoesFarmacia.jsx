@@ -200,25 +200,31 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
         {/* Usuário */}
         <div>
-          <div className="flex items-center gap-2 mb-2">
-            <h3>Cadastrar ou editar usuário</h3>
-            <button className="btn-config" onClick={salvarUsuario} title={editandoUsuarioId ? 'Salvar' : 'Criar'}>
-              {editandoUsuarioId ? <Save size={20} /> : <UserPlus size={20} />}
-            </button>
-            {editandoUsuarioId && (
-              <button onClick={() => {
-                setNome(''); setSenha(''); setEditandoUsuarioId(null);
-                setPermissoes({
-                  permissao_inclusao: false, permissao_impressao: false,
-                  permissao_conferencia: false, permissao_producao: false,
-                  permissao_despacho: false, permissao_entrega: false,
-                  permissao_registrar_pagamento: false
-                })
-              }} title="Cancelar edição">
-                <CircleX size={20} />
-              </button>
-            )}
-          </div>
+<h3 className="flex items-center gap-2 mb-2">
+  Cadastrar ou editar usuário
+  <button className="btn-config" onClick={salvarUsuario} title={editandoUsuarioId ? 'Salvar' : 'Criar'}>
+    {editandoUsuarioId ? <Save size={20} /> : <UserPlus size={20} />}
+  </button>
+  {editandoUsuarioId && (
+    <button className="btn-config" onClick={() => {
+      setNome('');
+      setSenha('');
+      setEditandoUsuarioId(null);
+      setPermissoes({
+        permissao_inclusao: false,
+        permissao_impressao: false,
+        permissao_conferencia: false,
+        permissao_producao: false,
+        permissao_despacho: false,
+        permissao_entrega: false,
+        permissao_registrar_pagamento: false
+      });
+    }} title="Cancelar edição">
+      <CircleX size={20} />
+    </button>
+  )}
+</h3>
+
 
           <div className="grid grid-cols-2 gap-3">
             <input className="input-config" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
@@ -245,21 +251,25 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           </ul>
         </div>
 
-        <hr className="border-t border-gray-300" />
+        <hr className="my-6 border-t border-gray-300" />
 
         {/* Locais */}
-        <div className="mt-8">
-          <div className="flex items-center gap-2 mb-2">
-            <h3>Cadastrar ou editar loja/cidade</h3>
-            <button className="btn-config" onClick={salvarLocal} title={editandoLocalId ? 'Salvar' : 'Criar'}>
-              {editandoLocalId ? <Save size={20} /> : <MapPinPlus size={20} />}
-            </button>
-            {editandoLocalId && (
-              <button onClick={() => { setLocalNome(''); setIsOrigem(false); setIsDestino(false); setEditandoLocalId(null) }} title="Cancelar edição">
-                <CircleX size={20} />
-              </button>
-            )}
-          </div>
+<h3 className="flex items-center gap-2 mb-2">
+  Cadastrar ou editar loja/cidade
+  <button className="btn-config" onClick={salvarLocal} title={editandoLocalId ? 'Salvar' : 'Criar'}>
+    {editandoLocalId ? <Save size={20} /> : <MapPinPlus size={20} />}
+  </button>
+  {editandoLocalId && (
+    <button className="btn-config" onClick={() => {
+      setLocalNome('');
+      setIsOrigem(false);
+      setIsDestino(false);
+      setEditandoLocalId(null);
+    }} title="Cancelar edição">
+      <CircleX size={20} />
+    </button>
+  )}
+</h3>
 
           <input className="input-config" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
           <div className="flex gap-4 mt-2">
