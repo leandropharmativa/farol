@@ -78,79 +78,84 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
     <div>
       <h2 className="text-xl font-bold mb-4 text-left">{dataHojeFormatada}</h2>
 
-      <div className="space-y-2">
-        {pedidos.map(p => (
-<div key={p.id} className="pedido-card">
-  <div className="pedido-linha">
-    <div className="pedido-conteudo">
-      <div className="pedido-info">
-        <PillBottle size={16} />
-        <span>{p.registro} - {p.numero_itens}</span>
-      </div>
-      <div className="pedido-info">
-        <User size={16} />
-        <span>{p.atendente}</span>
-      </div>
-      <div className="pedido-info">
-        <MapPinHouse size={16} />
-        <span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span>
-      </div>
-      <div className="pedido-info">
-        <MapPinned size={16} />
-        <span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span>
-      </div>
-      <div className="pedido-info">
-        <CalendarClock size={16} />
-        <span>{new Date(p.previsao_entrega).toLocaleString()}</span>
-      </div>
-      {p.receita_arquivo && (
-        <div className="pedido-info">
-          <FileText size={16} />
-          <a
-            href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Receita
-          </a>
-        </div>
-      )}
-    </div>
-
-
-              <div className="flex items-center gap-2">
-                {etapas.map(et => {
-                  const Icone = et.icone
-                  const ativo = p[et.campo]
-                  return (
-                    <button
-                      key={et.campo}
-                      onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
-                      className={`rounded-full p-1 ${
-                        ativo
-                          ? 'text-green-600'
-                          : 'text-gray-400 hover:text-red-500'
-                      }`}
-                      title={et.nome}
-                    >
-                      <Icone size={18} />
-                    </button>
-                  )
-                })}
-                {usuarioLogado.email === 'admin@admin.com' && (
-                  <button
-                    title="Editar pedido"
-                    className="text-gray-400 hover:text-blue-500 p-1"
-                    onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
-                  >
-                    <Pencil size={18} />
-                  </button>
-                )}
-              </div>
-            </div>
+<div className="space-y-0">
+  {pedidos.map((p, index) => (
+    <div
+      key={p.id}
+      className={`px-4 py-2 border-b border-dotted ${
+        index % 2 === 0 ? 'bg-white' : 'bg-gray-50'
+      }`}
+    >
+      <div className="pedido-linha">
+        <div className="pedido-conteudo">
+          <div className="pedido-info">
+            <PillBottle size={16} />
+            <span>{p.registro} - {p.numero_itens}</span>
           </div>
-        ))}
+          <div className="pedido-info">
+            <User size={16} />
+            <span>{p.atendente}</span>
+          </div>
+          <div className="pedido-info">
+            <MapPinHouse size={16} />
+            <span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span>
+          </div>
+          <div className="pedido-info">
+            <MapPinned size={16} />
+            <span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span>
+          </div>
+          <div className="pedido-info">
+            <CalendarClock size={16} />
+            <span>{new Date(p.previsao_entrega).toLocaleString()}</span>
+          </div>
+          {p.receita_arquivo && (
+            <div className="pedido-info">
+              <FileText size={16} />
+              <a
+                href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Receita
+              </a>
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          {etapas.map(et => {
+            const Icone = et.icone
+            const ativo = p[et.campo]
+            return (
+              <button
+                key={et.campo}
+                onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
+                className={`rounded-full p-1 ${
+                  ativo
+                    ? 'text-green-600'
+                    : 'text-gray-400 hover:text-red-500'
+                }`}
+                title={et.nome}
+              >
+                <Icone size={18} />
+              </button>
+            )
+          })}
+          {usuarioLogado.email === 'admin@admin.com' && (
+            <button
+              title="Editar pedido"
+              className="text-gray-400 hover:text-blue-500 p-1"
+              onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
+            >
+              <Pencil size={18} />
+            </button>
+          )}
+        </div>
       </div>
+    </div>
+  ))}
+</div>
+
 
       {abrirModal && (
         <ModalConfirmacao
