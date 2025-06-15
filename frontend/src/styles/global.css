@@ -431,7 +431,7 @@ p {
 }
 
 .pedido-info {
-  @apply flex items-center gap-1 text-sm min-w-[120px];
+  @apply flex items-center gap-1 text-sm min-w-[90px];
 }
 
 .pedido-info a {
