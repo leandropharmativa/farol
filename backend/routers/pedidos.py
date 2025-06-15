@@ -1,3 +1,4 @@
+#backend/routers/pedidos.py
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
@@ -13,6 +14,7 @@ router = APIRouter()
 UPLOAD_DIR = "receitas"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
+# 🔔 Filas ativas para SSE
 clientes_ativos = []
 
 # 📌 Criar pedido
@@ -225,7 +227,7 @@ def listar_pedidos(farmacia_id: UUID):
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
-# 📌 Logs de um pedido
+# 📌 Logs do pedido
 @router.get("/pedidos/{pedido_id}/logs")
 def listar_logs_pedido(pedido_id: int):
     cursor.execute("""
@@ -245,7 +247,7 @@ def listar_logs_pedido(pedido_id: int):
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
-# 📌 SSE: clientes ouvem notificações em tempo real
+# 📌 SSE: stream de novos pedidos
 @router.get("/pedidos/stream")
 async def stream_pedidos(request: Request):
     async def event_generator():
