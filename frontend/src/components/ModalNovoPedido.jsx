@@ -1,4 +1,3 @@
-// frontend/src/components/ModalNovoPedido.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Save } from 'lucide-react'
@@ -21,6 +20,8 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
     if (aberto) {
       carregarUsuarios()
       carregarLocais()
+      setAtendenteId(localStorage.getItem('usuarioId') || '') // ✅ atendente logado
+      setPrevisaoEntrega(gerarDataEntrega()) // ✅ próximo dia às 12h
     }
   }, [aberto])
 
@@ -40,6 +41,14 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
     } catch {
       toast.error('Erro ao carregar locais')
     }
+  }
+
+  const gerarDataEntrega = () => {
+    const agora = new Date()
+    const amanha = new Date(agora)
+    amanha.setDate(amanha.getDate() + 1)
+    amanha.setHours(12, 0, 0, 0)
+    return amanha.toISOString().slice(0, 16) // formato datetime-local
   }
 
   const salvarPedido = async () => {
@@ -75,7 +84,7 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
 
   return createPortal(
     <div className="modal-overlay">
-      <div className="modal-container max-w-xl animate-fade-slide">
+      <div className="modal-container max-w-md animate-fade-slide">
         <button className="btn-fechar" onClick={onClose}><X /></button>
         <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
           Novo Pedido
@@ -114,12 +123,15 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
             {locais.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
           </select>
 
-          <input
-            className="input-config"
-            type="datetime-local"
-            value={previsaoEntrega}
-            onChange={e => setPrevisaoEntrega(e.target.value)}
-          />
+          <div className="col-span-2 flex flex-col gap-1">
+            <label className="text-sm text-gray-600">Previsão de Entrega*</label>
+            <input
+              className="input-config"
+              type="datetime-local"
+              value={previsaoEntrega}
+              onChange={e => setPrevisaoEntrega(e.target.value)}
+            />
+          </div>
 
           <input
             className="input-config col-span-2"
