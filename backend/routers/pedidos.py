@@ -28,7 +28,7 @@ async def criar_pedido(
     if cursor.fetchone():
         return JSONResponse(status_code=400, content={"erro": "Já existe um pedido com este registro."})
 
-    # Continuação normal
+    # Upload da receita (se houver)
     filename = None
     if receita:
         ext = os.path.splitext(receita.filename)[-1].lower()
@@ -36,19 +36,31 @@ async def criar_pedido(
         with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
             f.write(await receita.read())
 
-        cursor.execute("""
-            INSERT INTO farol_farmacia_pedidos (
+    # Inserir pedido com status_inclusao = TRUE
+    cursor.execute("""
+        INSERT INTO farol_farmacia_pedidos (
             farmacia_id, registro, numero_itens, atendente_id,
-            origem_id, destino_id, previsao_entrega, receita_arquivo, data_criacao
-            )
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW())
-        """, (
+            origem_id, destino_id, previsao_entrega, receita_arquivo,
+            data_criacao, status_inclusao
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), TRUE)
+        RETURNING id
+    """, (
         str(farmacia_id), registro, numero_itens, atendente_id,
         origem_id, destino_id, previsao_entrega, filename
     ))
+    pedido_id = cursor.fetchone()[0]
+
+    # Registrar log de inclusão com o próprio atendente como confirmador
+    cursor.execute("""
+        INSERT INTO farol_farmacia_pedido_logs (
+            pedido_id, etapa, usuario_logado_id, usuario_confirmador_id
+        ) VALUES (%s, %s, %s, %s)
+    """, (
+        pedido_id, "Inclusão", atendente_id, atendente_id
+    ))
 
     return {"status": "ok", "mensagem": "Pedido criado com sucesso"}
-
 
 # 📌 Editar pedido
 @router.post("/pedidos/editar/{pedido_id}")
