@@ -92,7 +92,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
 return (
   <div>
-<div className="flex items-center gap-2 mb-4">
+<div className="flex items-center gap-3 mb-4">
   <button
     onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
     className="text-farol-primary hover:text-farol-secondary transition flex items-center"
@@ -132,7 +132,12 @@ return (
       {ano}
     </span>
   </div>
+
+  <span className="text-sm text-gray-500 ml-2">
+    ({pedidos.length} pedidos)
+  </span>
 </div>
+
     
       <div className="space-y-0">
         {pedidos.map((p, index) => (
