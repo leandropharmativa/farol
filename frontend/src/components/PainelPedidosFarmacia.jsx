@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 import {
-  User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil,
+  User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, FileText
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -105,8 +105,8 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
             <span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span>
           </div>
           <div className="pedido-info">
-            <CalendarClock size={16} />
-            <span>{new Date(p.previsao_entrega).getDate()} - {new Date(p.previsao_entrega).getHours()}h</span>
+            <Calendar size={16} />
+            <span>{new Date(p.previsao_entrega).getDate()} <AlarmClock size={16} /> {new Date(p.previsao_entrega).getHours()}h</span>
           </div>
           {p.receita_arquivo && (
             <div className="pedido-info">
