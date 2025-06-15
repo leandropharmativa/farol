@@ -68,9 +68,27 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
     }
   }
 
-  useEffect(() => {
-    if (farmaciaId) carregarPedidos()
-  }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
+useEffect(() => {
+  if (!farmaciaId) return
+
+  carregarPedidos()
+
+  const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
+
+  eventSource.onmessage = (event) => {
+    if (event.data === 'novo_pedido') {
+      carregarPedidos()
+    }
+  }
+
+  eventSource.onerror = () => {
+    eventSource.close()
+  }
+
+  return () => {
+    eventSource.close()
+  }
+}, [farmaciaId, dataSelecionada, filtroPorPrevisao])
 
   const formatarData = (data) =>
     data.toLocaleDateString('pt-BR', {
