@@ -3,6 +3,7 @@ from fastapi import APIRouter, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from db import cursor
 import os
+from uuid import UUID
 
 router = APIRouter()
 UPLOAD_DIR = "receitas"
@@ -11,7 +12,7 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # 📌 Criar pedido
 @router.post("/pedidos/criar")
 async def criar_pedido(
-    farmacia_id: int = Form(...),
+    farmacia_id: UUID = Form(...),
     registro: str = Form(...),
     numero_itens: int = Form(...),
     atendente_id: int = Form(...),
