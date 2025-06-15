@@ -245,6 +245,8 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           </ul>
         </div>
 
+        <hr className="my-6 border-t border-gray-300" />
+
         {/* Locais */}
         <div className="mt-8">
           <div className="flex items-center gap-2 mb-2">
