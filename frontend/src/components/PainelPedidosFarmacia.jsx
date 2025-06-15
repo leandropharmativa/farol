@@ -144,15 +144,15 @@ return (
     <Boxes size={14} />
     <span>{pedidos.length}</span>
   </div>
-  <div className="flex items-center gap-1 text-farol-linecolor">
+  <div className="flex items-center gap-1 text-farol-semisolidos">
     <Beaker size={14} />
     <span>0</span>
   </div>
-  <div className="flex items-center gap-1 text-farol-secondary">
+  <div className="flex items-center gap-1 text-farol-solidos">
     <Pill size={14} />
     <span>0</span>
   </div>
-  <div className="flex items-center gap-1 text-gray-500">
+  <div className="flex items-center gap-1 text-farol-saches">
     <StickyNote size={14} />
     <span>0</span>
   </div>
