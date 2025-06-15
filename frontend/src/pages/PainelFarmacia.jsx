@@ -98,7 +98,7 @@ export default function PainelFarmacia() {
 >
 
         <button
-          className="botao-icone-circular botao-azul"
+          className="botao-icone-circular botao-azul z-index: 60"
           title="Incluir Pedido"
           onClick={() => {
             console.log('🟦 Incluir Pedido (ação futura)')
