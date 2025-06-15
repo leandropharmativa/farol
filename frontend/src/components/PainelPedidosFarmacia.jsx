@@ -1,4 +1,3 @@
-
 // frontend/src/components/PainelPedidosFarmacia.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
@@ -105,7 +104,13 @@ return (
   {/* Seletor de data com ícone */}
   <div className="flex items-center gap-3">
     <button
-      onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
+      onClick={() => {
+        const novoValor = !filtroPorPrevisao
+        setFiltroPorPrevisao(novoValor)
+        if (!novoValor) {
+        setDataSelecionada(new Date()) // volta para hoje se for data de criação
+        }
+      }}
       className="text-farol-primary hover:text-farol-secondary transition flex items-center"
       title={
         filtroPorPrevisao
