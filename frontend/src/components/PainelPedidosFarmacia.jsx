@@ -57,8 +57,11 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   }
 
   useEffect(() => {
-    if (farmaciaId) carregarPedidos()
-  }, [farmaciaId])
+  if (farmaciaId) {
+    console.log('📦 Farmacia ID:', farmaciaId)
+    carregarPedidos()
+  }
+}, [farmaciaId])
 
   return (
     <div className="p-4">
