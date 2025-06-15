@@ -106,7 +106,11 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
           </div>
           <div className="pedido-info">
             <Calendar size={16} />
-            <span>{new Date(p.previsao_entrega).getDate()} <AlarmClock size={16} /> {new Date(p.previsao_entrega).getHours()}h</span>
+            <span>{new Date(p.previsao_entrega).getDate()}</span>
+          </div>
+          <div className="pedido-info">
+            <AlarmClock size={16} />
+            <span>{new Date(p.previsao_entrega).getHours()}h</span>
           </div>
           {p.receita_arquivo && (
             <div className="pedido-info">
