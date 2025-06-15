@@ -106,23 +106,13 @@ eventSource.onmessage = (event) => {
     const farmaciaIdEvento = partes[1]
     const pedidoId = partes[2]
 
-eventSource.onmessage = (event) => {
-  console.log('🔁 Evento SSE recebido:', event.data)
-
-  if (event.data.startsWith('novo_pedido')) {
-    const partes = event.data.split(':')
-    const farmaciaIdEvento = partes[1]
-    const pedidoId = partes[2]
-
     if (farmaciaIdEvento !== farmaciaId) return
 
     setTimeout(() => {
       api.get(`/pedidos/${pedidoId}`)
         .then(res => {
           console.log('✅ Pedido carregado via GET:', res.data)
-
-          // 👉 É aqui que você atualiza o estado para forçar render
-          setPedidoExtra(res.data) // 👈 aqui
+          setPedidoExtra(res.data)
           toast.info('Novo pedido recebido')
         })
         .catch(err => {
