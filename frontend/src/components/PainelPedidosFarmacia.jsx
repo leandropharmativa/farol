@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import {
   User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard,
-  FileText, CalendarPlus, CalendarCheck2
+  FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 
@@ -140,7 +140,7 @@ return (
   {/* Totais de pedidos */}
   <div className="flex items-center gap-4 text-sm text-gray-600">
     <div className="flex items-center gap-1">
-      <Box size={16} className="text-farol-primary" />
+      <Boxes size={16} className="text-farol-primary" />
       <span>{pedidos.length}</span>
     </div>
     <div className="flex items-center gap-1">
