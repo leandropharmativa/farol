@@ -65,6 +65,11 @@ export default function PainelFarmacia() {
     }
   }, [modalConfiguracoesAberto])
 
+  const usuarioLogado = {
+  id: localStorage.getItem('usuarioId'),
+  nome: localStorage.getItem('nomeUsuario')
+  }
+
   return (
     <div className="painel-container">
       <header className="painel-header">
@@ -86,7 +91,7 @@ export default function PainelFarmacia() {
       </div>
 
       {/* Lista de pedidos do dia */}
-      <PainelPedidosFarmacia farmaciaId={farmaciaId} />
+      <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} />
 
       {/* Botão de incluir pedido com transição de subida */}
       <div
