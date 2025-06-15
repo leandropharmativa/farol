@@ -92,52 +92,71 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
 return (
   <div>
-<div className="flex items-center gap-3 mb-4">
-  <button
-    onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
-    className="text-farol-primary hover:text-farol-secondary transition flex items-center"
-    title={
-      filtroPorPrevisao
-        ? 'Filtrando por data de previsão de entrega'
-        : 'Filtrando por data de criação'
-    }
-  >
-    {filtroPorPrevisao ? (
-      <CalendarCheck2 size={20} className="inline-block align-middle" />
-    ) : (
-      <CalendarPlus size={20} className="inline-block align-middle" />
-    )}
-  </button>
+    
+<div className="flex items-center justify-between mb-4">
+  {/* Seletor de data com ícone */}
+  <div className="flex items-center gap-3">
+    <button
+      onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
+      className="text-farol-primary hover:text-farol-secondary transition flex items-center"
+      title={
+        filtroPorPrevisao
+          ? 'Filtrando por data de previsão de entrega'
+          : 'Filtrando por data de criação'
+      }
+    >
+      {filtroPorPrevisao ? (
+        <CalendarCheck2 size={20} className="inline-block align-middle" />
+      ) : (
+        <CalendarPlus size={20} className="inline-block align-middle" />
+      )}
+    </button>
 
-  <div className="flex items-baseline gap-1 text-xl font-bold">
-    <span
-      className="cursor-pointer select-none"
-      onClick={() => alterarData('dia', +1)}
-      onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
-    >
-      {dia}
-    </span>
-    <span
-      className="cursor-pointer select-none"
-      onClick={() => alterarData('mes', +1)}
-      onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
-    >
-      {mes}
-    </span>
-    <span
-      className="cursor-pointer select-none"
-      onClick={() => alterarData('ano', +1)}
-      onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
-    >
-      {ano}
-    </span>
+    <div className="flex items-baseline gap-1 text-xl font-bold">
+      <span
+        className="cursor-pointer select-none"
+        onClick={() => alterarData('dia', +1)}
+        onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
+      >
+        {dia}
+      </span>
+      <span
+        className="cursor-pointer select-none"
+        onClick={() => alterarData('mes', +1)}
+        onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
+      >
+        {mes}
+      </span>
+      <span
+        className="cursor-pointer select-none"
+        onClick={() => alterarData('ano', +1)}
+        onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
+      >
+        {ano}
+      </span>
+    </div>
   </div>
 
-  <span className="text-sm text-gray-500 ml-2">
-    ({pedidos.length} pedidos)
-  </span>
+  {/* Totais de pedidos */}
+  <div className="flex items-center gap-4 text-sm text-gray-600">
+    <div className="flex items-center gap-1">
+      <Box size={16} className="text-farol-primary" />
+      <span>{pedidos.length}</span>
+    </div>
+    <div className="flex items-center gap-1">
+      <Beaker size={16} className="text-farol-secondary" />
+      <span>Semi-sólidos</span>
+    </div>
+    <div className="flex items-center gap-1">
+      <Pill size={16} className="text-farol-secondary" />
+      <span>Sólidos</span>
+    </div>
+    <div className="flex items-center gap-1">
+      <StickyNote size={16} className="text-farol-secondary" />
+      <span>Sachês</span>
+    </div>
+  </div>
 </div>
-
     
       <div className="space-y-0">
         {pedidos.map((p, index) => (
