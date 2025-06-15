@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 import ModalNovoPedido from '../components/ModalNovoPedido'
+import PainelPedidosFarmacia from '../components/PainelPedidosFarmacia'
 
 export default function PainelFarmacia() {
   const navigate = useNavigate()
@@ -84,29 +85,26 @@ export default function PainelFarmacia() {
         </div>
       </div>
 
-      <div className="painel-placeholder">
-        Nenhum pedido encontrado. Use o botão abaixo para incluir um novo.
-      </div>
+      {/* Lista de pedidos do dia */}
+      <PainelPedidosFarmacia farmaciaId={farmaciaId} />
 
       {/* Botão de incluir pedido com transição de subida */}
-<div
-  className={`fixed right-6 z-40 transition-all duration-300 ${
-    menuAberto
-      ? tipoLogin === 'usuario'
-        ? 'bottom-[8.5rem]' // 👤 usuário (sobe menos)
-        : 'bottom-[12rem]' // 🏥 farmácia (sobe mais)
-      : 'bottom-20'   // menu fechado
-  }`}
->
-
-<button
-  className="botao-icone-circular botao-azul z-40"
-  title="Incluir Pedido"
-  onClick={() => setModalPedidoAberto(true)}
->
-  <PackagePlus size={26} />
-</button>
-
+      <div
+        className={`fixed right-6 z-40 transition-all duration-300 ${
+          menuAberto
+            ? tipoLogin === 'usuario'
+              ? 'bottom-[8.5rem]'
+              : 'bottom-[12rem]'
+            : 'bottom-20'
+        }`}
+      >
+        <button
+          className="botao-icone-circular botao-azul z-40"
+          title="Incluir Pedido"
+          onClick={() => setModalPedidoAberto(true)}
+        >
+          <PackagePlus size={26} />
+        </button>
       </div>
 
       {/* Menu flutuante com animação */}
@@ -115,13 +113,12 @@ export default function PainelFarmacia() {
         className="fixed bottom-6 right-6 z-30 flex flex-col items-end gap-2"
       >
         <div className="relative flex flex-col items-end space-y-2">
-          {/* Configurações */}
-          <div
-            className={`transition-all duration-300 transform ${
-              menuAberto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
-            }`}
-          >
-            {tipoLogin === 'farmacia' && (
+          {tipoLogin === 'farmacia' && (
+            <div
+              className={`transition-all duration-300 transform ${
+                menuAberto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+              }`}
+            >
               <button
                 onClick={irParaConfiguracoes}
                 className="botao-icone-circular botao-cinza"
@@ -129,8 +126,8 @@ export default function PainelFarmacia() {
               >
                 <Settings size={20} />
               </button>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Sair */}
           <div
@@ -159,12 +156,11 @@ export default function PainelFarmacia() {
       </div>
 
       <ModalNovoPedido
-      aberto={modalPedidoAberto}
-      onClose={() => setModalPedidoAberto(false)}
-      farmaciaId={farmaciaId}
+        aberto={modalPedidoAberto}
+        onClose={() => setModalPedidoAberto(false)}
+        farmaciaId={farmaciaId}
       />
 
-      {/* Modal de configurações */}
       <ModalConfiguracoesFarmacia
         aberto={modalConfiguracoesAberto}
         onClose={() => setModalConfiguracoesAberto(false)}
