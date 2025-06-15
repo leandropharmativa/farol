@@ -414,16 +414,28 @@ p {
 
 /* lista de pedidos */
 
+.pedido-etapas {
+  @apply flex flex-wrap items-center gap-1 justify-end;
+}
+
+.pedido-card {
+  @apply bg-white rounded-xl shadow border border-gray-200 px-4 py-2;
+}
+
 .pedido-linha {
-  @apply flex flex-wrap items-center gap-2 text-sm;
+  @apply flex flex-wrap justify-between items-center gap-2;
+}
+
+.pedido-conteudo {
+  @apply flex flex-wrap items-center text-sm flex-1;
 }
 
 .pedido-info {
-  @apply flex items-center gap-1 min-w-[120px];
+  @apply flex items-center gap-1 text-sm min-w-[120px];
 }
 
-.pedido-etapas {
-  @apply flex flex-wrap items-center gap-1 justify-end;
+.pedido-info a {
+  @apply underline text-blue-600;
 }
 
 .btn-confirmar {
