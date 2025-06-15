@@ -37,22 +37,7 @@ const carregarPedidos = async () => {
     toast.error('Erro ao carregar pedidos')
   }
 }
-
-const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
-
-const pedidosFiltrados = res.data.filter(p => {
-  const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-  if (!campoOriginal) return false
-  const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
-  return campoData === dataFiltro
-})
-
-      setPedidos(pedidosFiltrados)
-    } catch (err) {
-      toast.error('Erro ao carregar pedidos')
-    }
-  }
-
+  
   const etapas = [
     { campo: 'status_inclusao', nome: 'Inclusão', icone: PackagePlus },
     { campo: 'status_impressao', nome: 'Impressão', icone: Printer },
