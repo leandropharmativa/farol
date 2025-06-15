@@ -1,15 +1,18 @@
-# 📄 backend/routers/pedidos.py
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Request
+from fastapi.responses import JSONResponse, EventSourceResponse
 from db import cursor
 import os
 import uuid
 from uuid import UUID
-from datetime import datetime, date
+from datetime import datetime
+from typing import Optional
+import asyncio
 
 router = APIRouter()
 UPLOAD_DIR = "receitas"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+clientes_ativos = []
 
 # 📌 Criar pedido
 @router.post("/pedidos/criar")
@@ -23,12 +26,10 @@ async def criar_pedido(
     previsao_entrega: str = Form(...),
     receita: UploadFile = File(None)
 ):
-    # Verifica duplicidade
     cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE registro = %s", (registro,))
     if cursor.fetchone():
         return JSONResponse(status_code=400, content={"erro": "Já existe um pedido com este registro."})
 
-    # Upload da receita (se houver)
     filename = None
     if receita:
         ext = os.path.splitext(receita.filename)[-1].lower()
@@ -36,7 +37,6 @@ async def criar_pedido(
         with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
             f.write(await receita.read())
 
-    # Inserir pedido com status_inclusao = TRUE
     cursor.execute("""
         INSERT INTO farol_farmacia_pedidos (
             farmacia_id, registro, numero_itens, atendente_id,
@@ -51,7 +51,6 @@ async def criar_pedido(
     ))
     pedido_id = cursor.fetchone()[0]
 
-    # Registrar log de inclusão com o próprio atendente como confirmador
     cursor.execute("""
         INSERT INTO farol_farmacia_pedido_logs (
             pedido_id, etapa, usuario_logado_id, usuario_confirmador_id
@@ -60,11 +59,13 @@ async def criar_pedido(
         pedido_id, "Inclusão", atendente_id, atendente_id
     ))
 
+    # 🔔 Notificar clientes SSE
+    for q in clientes_ativos:
+        await q.put("novo_pedido")
+
     return {"status": "ok", "mensagem": "Pedido criado com sucesso"}
 
 # 📌 Editar pedido
-from typing import Optional  # ✅ importante
-
 @router.post("/pedidos/editar/{pedido_id}")
 async def editar_pedido(
     pedido_id: int,
@@ -75,8 +76,6 @@ async def editar_pedido(
     destino_id: int = Form(...),
     previsao_entrega: str = Form(...),
     receita: UploadFile = File(None),
-
-    # ✅ novos campos opcionais
     status_inclusao: Optional[bool] = Form(None),
     status_impressao: Optional[bool] = Form(None),
     status_conferencia: Optional[bool] = Form(None),
@@ -122,7 +121,6 @@ async def editar_pedido(
                     {', '.join(status_sql)}
                 WHERE id=%s
             """
-
             cursor.execute(update_sql, (
                 registro, numero_itens, atendente_id,
                 origem_id, destino_id, previsao_dt,
@@ -137,7 +135,6 @@ async def editar_pedido(
                     {', '.join(status_sql)}
                 WHERE id=%s
             """
-
             cursor.execute(update_sql, (
                 registro, numero_itens, atendente_id,
                 origem_id, destino_id, previsao_dt,
@@ -157,8 +154,8 @@ async def excluir_pedido(pedido_id: int):
         return {"status": "ok", "mensagem": "Pedido excluído com sucesso"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao excluir pedido: {str(e)}")
-        
-# registrar log de etapas
+
+# 📌 Registrar etapa
 @router.post("/pedidos/{pedido_id}/registrar-etapa")
 def registrar_etapa(
     pedido_id: int,
@@ -167,14 +164,12 @@ def registrar_etapa(
     codigo_confirmacao: int = Form(...),
     observacao: str = Form("")
 ):
-    # Buscar usuário com esse código
     cursor.execute("SELECT id FROM farol_farmacia_usuarios WHERE codigo = %s", (codigo_confirmacao,))
     row = cursor.fetchone()
     if not row:
         raise HTTPException(status_code=401, detail="Código de confirmação inválido.")
     usuario_confirmador_id = row[0]
 
-    # Insere o log
     cursor.execute("""
         INSERT INTO farol_farmacia_pedido_logs (
             pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
@@ -183,7 +178,6 @@ def registrar_etapa(
         pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
     ))
 
-    # Atualiza status booleano no pedido, se aplicável
     coluna_status = {
         "inclusao": "status_inclusao",
         "producao": "status_producao",
@@ -201,7 +195,7 @@ def registrar_etapa(
 
     return {"status": "ok", "mensagem": f"Etapa '{etapa}' registrada com sucesso"}
 
-# listar pedidos
+# 📌 Listar pedidos
 @router.get("/pedidos/listar")
 def listar_pedidos(farmacia_id: UUID):
     cursor.execute("""
@@ -230,7 +224,7 @@ def listar_pedidos(farmacia_id: UUID):
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
-# listar logs de um pedido
+# 📌 Logs de um pedido
 @router.get("/pedidos/{pedido_id}/logs")
 def listar_logs_pedido(pedido_id: int):
     cursor.execute("""
@@ -250,3 +244,19 @@ def listar_logs_pedido(pedido_id: int):
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
+# 📌 SSE: clientes ouvem notificações em tempo real
+@router.get("/pedidos/stream")
+async def stream_pedidos(request: Request):
+    async def event_generator():
+        queue = asyncio.Queue()
+        clientes_ativos.append(queue)
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+                evento = await queue.get()
+                yield f"data: {evento}\n\n"
+        finally:
+            clientes_ativos.remove(queue)
+
+    return EventSourceResponse(event_generator())
