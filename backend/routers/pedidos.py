@@ -64,7 +64,7 @@ async def criar_pedido(
 
     # 🔔 Notificar clientes SSE com data e farmácia
     hoje_str = datetime.utcnow().date().isoformat()  # yyyy-mm-dd
-    evento = f"novo_pedido:{farmacia_id}:{hoje_str}"
+    evento = f"novo_pedido:{farmacia_id}:{pedido_id}"
     for q in clientes_ativos:
         await q.put(evento)
 
@@ -266,3 +266,33 @@ async def stream_pedidos(request: Request):
             clientes_ativos.remove(queue)
 
     return EventSourceResponse(event_generator())
+
+@router.get("/pedidos/{pedido_id}")
+def obter_pedido(pedido_id: int):
+    cursor.execute("""
+        SELECT 
+            p.id,
+            p.registro,
+            p.numero_itens,
+            p.previsao_entrega,
+            p.data_criacao,
+            p.status_inclusao,
+            p.status_producao,
+            p.status_despacho,
+            p.status_entrega,
+            p.status_pagamento,
+            p.receita_arquivo,
+            u.nome AS atendente,
+            l_origem.nome AS origem_nome,
+            l_destino.nome AS destino_nome
+        FROM farol_farmacia_pedidos p
+        LEFT JOIN farol_farmacia_usuarios u ON p.atendente_id = u.id
+        LEFT JOIN farol_farmacia_locais l_origem ON p.origem_id = l_origem.id
+        LEFT JOIN farol_farmacia_locais l_destino ON p.destino_id = l_destino.id
+        WHERE p.id = %s
+    """, (pedido_id,))
+    row = cursor.fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    colunas = [desc[0] for desc in cursor.description]
+    return dict(zip(colunas, row))
