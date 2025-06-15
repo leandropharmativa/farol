@@ -158,10 +158,11 @@ def registrar_etapa(
 def listar_pedidos(farmacia_id: UUID):
     cursor.execute("""
         SELECT 
-            p.id, p.registro, p.numero_itens, p.previsao_entrega,
-            p.status_inclusao, p.status_producao, p.status_despacho,
-            p.status_entrega, p.status_pagamento,
-            u.nome AS atendente
+          p.id, p.registro, p.numero_itens, p.previsao_entrega,
+          p.status_inclusao, p.status_producao, p.status_despacho,
+          p.status_entrega, p.status_pagamento,
+          p.receita_arquivo,
+          u.nome AS atendente
         FROM farol_farmacia_pedidos p
         LEFT JOIN farol_farmacia_usuarios u ON p.atendente_id = u.id
         WHERE p.farmacia_id = %s
