@@ -245,7 +245,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           </ul>
         </div>
 
-        <hr className="my-6 border-t border-gray-300" />
+        <hr className="border-t border-gray-300" />
 
         {/* Locais */}
         <div className="mt-8">
