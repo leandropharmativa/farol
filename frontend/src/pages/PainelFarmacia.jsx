@@ -16,6 +16,7 @@ export default function PainelFarmacia() {
   const navigate = useNavigate()
   const [menuAberto, setMenuAberto] = useState(false)
   const [modalConfiguracoesAberto, setModalConfiguracoesAberto] = useState(false)
+  const [modalPedidoAberto, setModalPedidoAberto] = useState(false)
   const menuRef = useRef(null)
 
   const emailLogado = (localStorage.getItem('email') || '').trim().toLowerCase()
