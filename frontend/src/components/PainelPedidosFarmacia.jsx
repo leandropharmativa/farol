@@ -75,7 +75,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   }).toUpperCase().replace(' DE ', ' ').replace(' DE ', ' ') // 15 JUNHO 2025
 
   return (
-    <div className="p-4">
+    <div>
       <h2 className="text-xl font-bold mb-4 text-left">{dataHojeFormatada}</h2>
 
       <div className="space-y-2">
