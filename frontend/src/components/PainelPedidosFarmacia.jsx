@@ -17,11 +17,26 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
 
-  const carregarPedidos = async () => {
-    try {
-      const res = await api.get('/pedidos/listar', {
-        params: { farmacia_id: farmaciaId }
-      })
+const carregarPedidos = async () => {
+  try {
+    const res = await api.get('/pedidos/listar', {
+      params: { farmacia_id: farmaciaId }
+    })
+
+    const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
+
+    const pedidosFiltrados = res.data.filter(p => {
+      const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+      if (!campoOriginal) return false
+      const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
+      return campoData === dataFiltro
+    })
+
+    setPedidos(pedidosFiltrados)
+  } catch (err) {
+    toast.error('Erro ao carregar pedidos')
+  }
+}
 
 const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
 
