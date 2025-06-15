@@ -155,7 +155,7 @@ def registrar_etapa(
 
 # listar pedidos
 @router.get("/pedidos/listar")
-def listar_pedidos(farmacia_id: UUID, data: date = Query(default_factory=date.today)):
+def listar_pedidos(farmacia_id: UUID):
     cursor.execute("""
         SELECT 
             p.id, p.registro, p.numero_itens, p.previsao_entrega,
@@ -164,9 +164,9 @@ def listar_pedidos(farmacia_id: UUID, data: date = Query(default_factory=date.to
             u.nome AS atendente
         FROM farol_farmacia_pedidos p
         LEFT JOIN farol_farmacia_usuarios u ON p.atendente_id = u.id
-        WHERE p.farmacia_id = %s AND DATE(p.previsao_entrega) = %s
-        ORDER BY p.previsao_entrega
-    """, (str(farmacia_id), data))
+        WHERE p.farmacia_id = %s
+        ORDER BY p.previsao_entrega DESC
+    """, (str(farmacia_id),))
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
