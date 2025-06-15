@@ -13,17 +13,15 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
   const [etapaSelecionada, setEtapaSelecionada] = useState('')
   const [abrirModal, setAbrirModal] = useState(false)
+  const [dataSelecionada, setDataSelecionada] = useState(new Date())
 
   const carregarPedidos = async () => {
     try {
       const res = await api.get('/pedidos/listar', {
         params: { farmacia_id: farmaciaId }
       })
-      const hoje = new Date().toISOString().slice(0, 10)
-      const pedidosDoDia = res.data.filter(p => {
-        const dataCriacao = p.data_criacao?.slice(0, 10)
-        return dataCriacao === hoje
-      })
+      const diaSelecionado = dataSelecionada.toISOString().slice(0, 10)
+      const pedidosDoDia = res.data.filter(p => p.data_criacao?.slice(0, 10) === diaSelecionado)
       setPedidos(pedidosDoDia)
     } catch (err) {
       toast.error('Erro ao carregar pedidos')
@@ -63,103 +61,102 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   }
 
   useEffect(() => {
-    if (farmaciaId) {
-      carregarPedidos()
-    }
-  }, [farmaciaId])
+    if (farmaciaId) carregarPedidos()
+  }, [farmaciaId, dataSelecionada])
 
-  const dataHojeFormatada = new Date().toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric'
-  }).toUpperCase().replace(' DE ', ' ').replace(' DE ', ' ') // 15 JUNHO 2025
+  const formatarData = (data) =>
+    data.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric'
+    }).toUpperCase().replace(/ DE /g, ' ')
+
+  const alterarData = (tipo, incremento) => {
+    const novaData = new Date(dataSelecionada)
+    if (tipo === 'dia') novaData.setDate(novaData.getDate() + incremento)
+    if (tipo === 'mes') novaData.setMonth(novaData.getMonth() + incremento)
+    if (tipo === 'ano') novaData.setFullYear(novaData.getFullYear() + incremento)
+    setDataSelecionada(novaData)
+  }
+
+  const dataSplit = formatarData(dataSelecionada).split(' ')
+  const [dia, mes, ano] = dataSplit
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4 text-left">{dataHojeFormatada}</h2>
+      <h2 className="text-xl font-bold mb-4 text-left space-x-2">
+        <span
+          className="cursor-pointer select-none"
+          onClick={() => alterarData('dia', +1)}
+          onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
+        >{dia}</span>
+        <span
+          className="cursor-pointer select-none"
+          onClick={() => alterarData('mes', +1)}
+          onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
+        >{mes}</span>
+        <span
+          className="cursor-pointer select-none"
+          onClick={() => alterarData('ano', +1)}
+          onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
+        >{ano}</span>
+      </h2>
 
-<div className="space-y-0">
-  {pedidos.map((p, index) => (
-<div
-  key={p.id}
-  className={`pedido-card ${
-    index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'
-  }`}
->
-      <div className="pedido-linha">
-        <div className="pedido-conteudo">
-          <div className="pedido-info">
-            <PillBottle size={16} />
-            <span>{p.registro} - {p.numero_itens}</span>
-          </div>
-          <div className="pedido-info">
-            <User size={16} />
-            <span>{p.atendente}</span>
-          </div>
-          <div className="pedido-info">
-            <MapPinHouse size={16} />
-            <span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span>
-          </div>
-          <div className="pedido-info">
-            <MapPinned size={16} />
-            <span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span>
-          </div>
-          <div className="pedido-info">
-            <Calendar size={16} />
-            <span>{new Date(p.previsao_entrega).getDate()}</span>
-          </div>
-          <div className="pedido-info">
-            <AlarmClock size={16} />
-            <span>{new Date(p.previsao_entrega).getHours()}h</span>
-          </div>
-          {p.receita_arquivo && (
-            <div className="pedido-info">
-              <FileText size={16} />
-              <a
-                href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Receita
-              </a>
+      <div className="space-y-0">
+        {pedidos.map((p, index) => (
+          <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
+            <div className="pedido-linha">
+              <div className="pedido-conteudo">
+                <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
+                <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
+                <div className="pedido-info"><MapPinHouse size={16} /><span>{p.origem_nome || p.origem?.nome || 'Origem não informada'}</span></div>
+                <div className="pedido-info"><MapPinned size={16} /><span>{p.destino_nome || p.destino?.nome || 'Destino não informada'}</span></div>
+                <div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
+                <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
+                {p.receita_arquivo && (
+                  <div className="pedido-info text-blue-600">
+                    <FileText size={16} />
+                    <a
+                      href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Receita
+                    </a>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                {etapas.map(et => {
+                  const Icone = et.icone
+                  const ativo = p[et.campo]
+                  return (
+                    <button
+                      key={et.campo}
+                      onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
+                      className={`rounded-full p-1 ${ativo ? 'text-green-600' : 'text-gray-400 hover:text-red-500'}`}
+                      title={et.nome}
+                    >
+                      <Icone size={18} />
+                    </button>
+                  )
+                })}
+                {usuarioLogado.email === 'admin@admin.com' && (
+                  <button
+                    title="Editar pedido"
+                    className="text-gray-400 hover:text-blue-500 p-1"
+                    onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
+                  >
+                    <Pencil size={18} />
+                  </button>
+                )}
+              </div>
             </div>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          {etapas.map(et => {
-            const Icone = et.icone
-            const ativo = p[et.campo]
-            return (
-              <button
-                key={et.campo}
-                onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
-                className={`rounded-full p-1 ${
-                  ativo
-                    ? 'text-green-600'
-                    : 'text-gray-400 hover:text-red-500'
-                }`}
-                title={et.nome}
-              >
-                <Icone size={18} />
-              </button>
-            )
-          })}
-          {usuarioLogado.email === 'admin@admin.com' && (
-            <button
-              title="Editar pedido"
-              className="text-gray-400 hover:text-blue-500 p-1"
-              onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
-            >
-              <Pencil size={18} />
-            </button>
-          )}
-        </div>
+          </div>
+        ))}
       </div>
-    </div>
-  ))}
-</div>
-
 
       {abrirModal && (
         <ModalConfirmacao
