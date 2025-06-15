@@ -91,6 +91,13 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
+  const corLocalClasse = (nome) => {
+  if (!nome) return 'bg-gray-300 text-gray-800'
+  const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
+  const indice = (hash % 6) + 1 // loc1 até loc6
+  return `bg-farol-loc${indice} text-white`
+}
+
 return (
   <div>
     
