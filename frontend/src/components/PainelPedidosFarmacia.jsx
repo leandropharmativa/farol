@@ -74,6 +74,7 @@ useEffect(() => {
   const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
   eventSource.onmessage = (event) => {
+    console.log('🔁 Evento SSE recebido:', event.data)
     if (event.data === 'novo_pedido') {
       carregarPedidos()
     }
