@@ -439,7 +439,7 @@ p {
 }
 
 .pedido-info {
-  @apply flex items-center text-sm min-w-[90px];
+  @apply flex items-center text-sm min-w-[100px];
 }
 
 .pedido-info a {
