@@ -96,39 +96,37 @@ useEffect(() => {
 
   const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
-  eventSource.onmessage = (event) => {
-    console.log('🔁 Evento SSE recebido:', event.data)
+eventSource.onmessage = (event) => {
+  console.log('🔁 Evento SSE recebido:', event.data)
 
-    if (event.data.startsWith('novo_pedido')) {
-      const partes = event.data.split(':')
-      const dataStr = partes[2] || new Date().toISOString().split('T')[0]
-      const [ano, mes, dia] = dataStr.split('-')
-      const novaData = new Date(`${ano}-${mes}-${dia}T00:00:00`)
+  // Ex: novo_pedido:123e4567-e89b-12d3-a456-426614174000:2025-06-15
+  if (event.data.startsWith('novo_pedido')) {
+    const partes = event.data.split(':')
+    const dataStr = partes[2] || new Date().toISOString().split('T')[0]
+    const [ano, mes, dia] = dataStr.split('-')
+    const novaData = new Date(`${ano}-${mes}-${dia}T00:00:00`)
 
-      const dataAtualFormatada = dataSelecionada.toISOString().split('T')[0]
-      const novaDataFormatada = novaData.toISOString().split('T')[0]
+    // força data sem hora para evitar erro de comparação
+    const dataAtualFormatada = dataSelecionada.toISOString().split('T')[0]
+    const novaDataFormatada = novaData.toISOString().split('T')[0]
 
-      if (dataAtualFormatada === novaDataFormatada) {
-        carregarPedidosComData(novaData)
-      }
+    if (dataAtualFormatada === novaDataFormatada) {
+    carregarPedidosComData(novaData)
     }
   }
-
-  useEffect(() => {
-  if (farmaciaId) {
-    carregarPedidos()
-  }
-}, [farmaciaId, dataSelecionada, filtroPorPrevisao])
-
+}
 
   eventSource.onerror = () => {
-    console.warn('🔌 SSE desconectado')
     eventSource.close()
   }
 
   return () => {
     eventSource.close()
   }
+}, [farmaciaId]) 
+
+useEffect(() => {
+  if (farmaciaId) carregarPedidos()
 }, [farmaciaId, dataSelecionada, filtroPorPrevisao]) // 🔁 carrega nos filtros
 
   useEffect(() => {
