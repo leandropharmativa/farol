@@ -102,19 +102,18 @@ useEffect(() => {
     console.log('🔁 Evento SSE recebido:', event.data)
 
 if (event.data.startsWith('novo_pedido')) {
-  api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
+  const partes = event.data.split(':')
+  const pedidoId = partes[1]
+
+  api.get(`/pedidos/${pedidoId}`)
     .then(res => {
-      const pedidosOrdenados = res.data.sort((a, b) =>
-        new Date(b.data_criacao) - new Date(a.data_criacao)
-      )
-      const maisRecente = pedidosOrdenados[0]
-      pedidoExtraRef.current = { ...maisRecente }
-      setPedidos(prev => [...prev]) // força re-render
-      toast.info('Novo pedido recebido')
-    })
-    .catch(() => toast.error('Erro ao buscar novo pedido'))
-}
+    pedidoExtraRef.current = { ...res.data }
+    setPedidos(prev => [...prev]) // força re-render
+    toast.info('Novo pedido recebido')
+  })
+  .catch(() => toast.error('Erro ao buscar novo pedido'))
   }
+ }
 
   eventSource.onerror = () => {
     eventSource.close()
