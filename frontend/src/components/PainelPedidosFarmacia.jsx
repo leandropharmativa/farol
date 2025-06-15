@@ -75,62 +75,49 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
       <div className="space-y-2">
         {pedidos.map(p => (
-          <div key={p.id} className="bg-white rounded-xl shadow px-4 py-3 flex justify-between items-center gap-4 border border-gray-200">
-            <div className="flex flex-col gap-1 text-sm flex-1">
-              <div className="flex items-center gap-2">
-                <PillBottle size={16} />
-                <span>{p.registro}</span>
+          <div key={p.id} className="bg-white rounded-xl shadow px-4 py-3 border border-gray-200">
+            <div className="pedido-linha justify-between">
+              <div className="flex flex-wrap gap-4 flex-1">
+                <div className="pedido-info"><PillBottle size={16} /><span>{p.registro}</span></div>
+                <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
+                <div className="pedido-info"><MapPin size={16} /><span>{p.origem_nome || '-'}</span></div>
+                <div className="pedido-info"><MapPinned size={16} /><span>{p.destino_nome || '-'}</span></div>
+                <div className="pedido-info"><CalendarClock size={16} /><span>{new Date(p.previsao_entrega).toLocaleString()}</span></div>
+                {p.receita_arquivo && (
+                  <div className="pedido-info text-blue-600">
+                    <FileText size={16} />
+                    <a
+                      href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
+                    >
+                      Receita
+                    </a>
+                  </div>
+                )}
               </div>
-              <div className="flex items-center gap-2">
-                <User size={16} />
-                <span>{p.atendente}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin size={16} />
-                <span>{p.origem_nome}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPinned size={16} />
-                <span>{p.destino_nome}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CalendarClock size={16} />
-                <span>{new Date(p.previsao_entrega).toLocaleString()}</span>
-              </div>
-              {p.receita_arquivo && (
-                <div className="flex items-center gap-1 text-blue-600">
-                  <FileText size={16} />
-                  <a
-                    href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="underline"
-                  >
-                    Receita
-                  </a>
-                </div>
-              )}
-            </div>
 
-            <div className="flex gap-2 items-center">
-              {etapas.map(et => {
-                const Icone = et.icone
-                const ativo = p[et.campo]
-                return (
-                  <button
-                    key={et.campo}
-                    onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
-                    className={`rounded-full p-2 border ${
-                      ativo
-                        ? 'bg-green-100 text-green-600 border-green-300'
-                        : 'bg-red-100 text-red-600 border-red-300 hover:bg-red-200'
-                    }`}
-                    title={et.nome}
-                  >
-                    <Icone size={18} />
-                  </button>
-                )
-              })}
+              <div className="pedido-etapas">
+                {etapas.map(et => {
+                  const Icone = et.icone
+                  const ativo = p[et.campo]
+                  return (
+                    <button
+                      key={et.campo}
+                      onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
+                      className={`rounded-full p-1 ${
+                        ativo
+                          ? 'text-green-600'
+                          : 'text-gray-400 hover:text-red-500'
+                      }`}
+                      title={et.nome}
+                    >
+                      <Icone size={18} />
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
         ))}
