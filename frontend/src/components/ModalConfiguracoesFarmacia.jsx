@@ -1,4 +1,5 @@
 // 📄 frontend/src/components/ModalConfiguracoesFarmacia.jsx
+// 📄 frontend/src/components/ModalConfiguracoesFarmacia.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
@@ -72,6 +73,11 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   }
 
   const salvarUsuario = async () => {
+    if (!nome.trim() || !senha.trim()) {
+      toast.warning('Preencha todos os campos para salvar o usuário')
+      return
+    }
+
     try {
       if (editandoUsuarioId) {
         await api.put(`/usuarios/${editandoUsuarioId}`, {
@@ -130,6 +136,11 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   }
 
   const salvarLocal = async () => {
+    if (!localNome.trim()) {
+      toast.warning('Informe o nome do local')
+      return
+    }
+
     try {
       if (editandoLocalId) {
         await api.put(`/locais/${editandoLocalId}`, {
@@ -206,8 +217,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
           <X />
         </button>
 
-        <h2>Configurações da Farmácia</h2>
-
         {/* Usuário */}
         <div>
           <h3>Cadastrar ou editar usuário</h3>
@@ -263,9 +272,11 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
                 <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800">
                   <UserRoundPen size={16} />
                 </button>
-                <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800">
-                  <Trash size={16} />
-                </button>
+                {!editandoUsuarioId && (
+                  <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800">
+                    <Trash size={16} />
+                  </button>
+                )}
               </li>
             ))}
           </ul>
@@ -313,9 +324,11 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
                 <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800">
                   <LocationEdit size={16} />
                 </button>
-                <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800">
-                  <Trash size={16} />
-                </button>
+                {!editandoLocalId && (
+                  <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800">
+                    <Trash size={16} />
+                  </button>
+                )}
               </li>
             ))}
           </ul>
