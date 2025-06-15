@@ -109,9 +109,12 @@ eventSource.onmessage = (event) => {
     const novaDataFormatada = novaData.toISOString().split('T')[0]
 
     // Se é do mesmo dia, atualiza lista como antes
-    if (dataAtualFormatada === novaDataFormatada) {
-      carregarPedidos()
-    } else {
+if (dataAtualFormatada === novaDataFormatada) {
+  setTimeout(() => {
+    console.log('⏳ Recarregando pedidos após evento SSE...')
+    carregarPedidos()
+  }, 500)
+} else {
       // ✅ Caso não seja o mesmo dia filtrado, busca o pedido e exibe separado
       api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
         .then(res => {
