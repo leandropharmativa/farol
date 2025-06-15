@@ -427,7 +427,7 @@ p {
 }
 
 .btn-confirmar {
-  @apply bg-farol-primary hover:bg-farol-primaryfocus text-white px-4 py-2 rounded transition;
+  @apply bg-farol-primary hover:bg-farol-secondary text-white px-4 py-2 rounded transition;
 }
 
 
