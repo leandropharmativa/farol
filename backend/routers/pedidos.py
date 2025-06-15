@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Request
-from fastapi.responses import JSONResponse, EventSourceResponse
+from fastapi.responses import JSONResponse
+from sse_starlette.sse import EventSourceResponse
 from db import cursor
 import os
 import uuid
