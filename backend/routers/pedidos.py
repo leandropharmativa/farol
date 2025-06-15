@@ -63,6 +63,8 @@ async def criar_pedido(
     return {"status": "ok", "mensagem": "Pedido criado com sucesso"}
 
 # 📌 Editar pedido
+from typing import Optional  # ✅ importante
+
 @router.post("/pedidos/editar/{pedido_id}")
 async def editar_pedido(
     pedido_id: int,
@@ -72,11 +74,38 @@ async def editar_pedido(
     origem_id: int = Form(...),
     destino_id: int = Form(...),
     previsao_entrega: str = Form(...),
-    receita: UploadFile = File(None)
+    receita: UploadFile = File(None),
+
+    # ✅ novos campos opcionais
+    status_inclusao: Optional[bool] = Form(None),
+    status_impressao: Optional[bool] = Form(None),
+    status_conferencia: Optional[bool] = Form(None),
+    status_producao: Optional[bool] = Form(None),
+    status_despacho: Optional[bool] = Form(None),
+    status_entrega: Optional[bool] = Form(None),
+    status_pagamento: Optional[bool] = Form(None)
 ):
     try:
         previsao_dt = datetime.fromisoformat(previsao_entrega)
         filename = None
+
+        campos_status = {
+            "status_inclusao": status_inclusao,
+            "status_impressao": status_impressao,
+            "status_conferencia": status_conferencia,
+            "status_producao": status_producao,
+            "status_despacho": status_despacho,
+            "status_entrega": status_entrega,
+            "status_pagamento": status_pagamento
+        }
+
+        status_sql = []
+        status_values = []
+
+        for campo, valor in campos_status.items():
+            if valor is not None:
+                status_sql.append(f"{campo} = %s")
+                status_values.append(valor)
 
         if receita:
             ext = os.path.splitext(receita.filename)[-1].lower()
@@ -84,34 +113,41 @@ async def editar_pedido(
             with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
                 f.write(await receita.read())
 
-            cursor.execute("""
+            update_sql = f"""
                 UPDATE farol_farmacia_pedidos SET
                     registro=%s, numero_itens=%s, atendente_id=%s,
                     origem_id=%s, destino_id=%s, previsao_entrega=%s,
                     receita_arquivo=%s
+                    {',' if status_sql else ''}
+                    {', '.join(status_sql)}
                 WHERE id=%s
-            """, (
+            """
+
+            cursor.execute(update_sql, (
                 registro, numero_itens, atendente_id,
                 origem_id, destino_id, previsao_dt,
-                filename, pedido_id
+                filename, *status_values, pedido_id
             ))
         else:
-            cursor.execute("""
+            update_sql = f"""
                 UPDATE farol_farmacia_pedidos SET
                     registro=%s, numero_itens=%s, atendente_id=%s,
                     origem_id=%s, destino_id=%s, previsao_entrega=%s
+                    {',' if status_sql else ''}
+                    {', '.join(status_sql)}
                 WHERE id=%s
-            """, (
+            """
+
+            cursor.execute(update_sql, (
                 registro, numero_itens, atendente_id,
                 origem_id, destino_id, previsao_dt,
-                pedido_id
+                *status_values, pedido_id
             ))
 
         return {"status": "ok", "mensagem": "Pedido atualizado com sucesso"}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao editar pedido: {str(e)}")
-
 
 # 📌 Excluir pedido
 @router.delete("/pedidos/excluir/{pedido_id}")
