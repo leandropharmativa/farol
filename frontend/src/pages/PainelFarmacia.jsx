@@ -65,6 +65,12 @@ export default function PainelFarmacia() {
     }
   }, [modalConfiguracoesAberto])
 
+  useEffect(() => {
+  const atualizarLocal = () => carregarPedidos()
+  window.addEventListener("novoPedidoCriado", atualizarLocal)
+  return () => window.removeEventListener("novoPedidoCriado", atualizarLocal)
+  }, [])
+
   const usuarioLogado = {
   id: localStorage.getItem('usuarioId'),
   nome: localStorage.getItem('nomeUsuario')
