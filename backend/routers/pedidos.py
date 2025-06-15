@@ -36,13 +36,13 @@ async def criar_pedido(
         with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
             f.write(await receita.read())
 
-    cursor.execute("""
-        INSERT INTO farol_farmacia_pedidos (
+        cursor.execute("""
+            INSERT INTO farol_farmacia_pedidos (
             farmacia_id, registro, numero_itens, atendente_id,
-            origem_id, destino_id, previsao_entrega, receita_arquivo
-        )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    """, (
+            origem_id, destino_id, previsao_entrega, receita_arquivo, data_criacao
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW())
+        """, (
         str(farmacia_id), registro, numero_itens, atendente_id,
         origem_id, destino_id, previsao_entrega, filename
     ))
@@ -159,6 +159,7 @@ def listar_pedidos(farmacia_id: UUID):
     cursor.execute("""
         SELECT 
           p.id, p.registro, p.numero_itens, p.previsao_entrega,
+          p.data_criacao,
           p.status_inclusao, p.status_producao, p.status_despacho,
           p.status_entrega, p.status_pagamento,
           p.receita_arquivo,
