@@ -104,12 +104,15 @@ eventSource.onmessage = (event) => {
     const partes = event.data.split(':')
     const dataStr = partes[2] || new Date().toISOString().split('T')[0]
     const [ano, mes, dia] = dataStr.split('-')
-    const novaData = new Date(`${ano}-${mes}-${dia}`)
+    const novaData = new Date(`${ano}-${mes}-${dia}T00:00:00`)
 
-    setDataSelecionada(novaData)
-    carregarPedidosComData(novaData)
+    // força data sem hora para evitar erro de comparação
+    const dataAtualFormatada = dataSelecionada.toISOString().split('T')[0]
+    const novaDataFormatada = novaData.toISOString().split('T')[0]
+  
+  if (dataAtualFormatada === novaDataFormatada) {
+  carregarPedidosComData(novaData)
   }
-}
 
   eventSource.onerror = () => {
     eventSource.close()
