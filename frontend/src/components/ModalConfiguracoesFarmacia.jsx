@@ -200,32 +200,30 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
         {/* Usuário */}
         <div>
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-2 mb-2">
             <h3>Cadastrar ou editar usuário</h3>
-            <div className="flex gap-2">
-              <button onClick={salvarUsuario} title={editandoUsuarioId ? 'Salvar' : 'Criar'}>
-                {editandoUsuarioId ? <Save size={20} /> : <UserPlus size={20} />}
+            <button onClick={salvarUsuario} title={editandoUsuarioId ? 'Salvar' : 'Criar'}>
+              {editandoUsuarioId ? <Save size={20} /> : <UserPlus size={20} />}
+            </button>
+            {editandoUsuarioId && (
+              <button onClick={() => {
+                setNome(''); setSenha(''); setEditandoUsuarioId(null);
+                setPermissoes({
+                  permissao_inclusao: false, permissao_impressao: false,
+                  permissao_conferencia: false, permissao_producao: false,
+                  permissao_despacho: false, permissao_entrega: false,
+                  permissao_registrar_pagamento: false
+                })
+              }} title="Cancelar edição">
+                <CircleX size={20} />
               </button>
-              {editandoUsuarioId && (
-                <button onClick={() => {
-                  setNome(''); setSenha(''); setEditandoUsuarioId(null);
-                  setPermissoes({
-                    permissao_inclusao: false, permissao_impressao: false,
-                    permissao_conferencia: false, permissao_producao: false,
-                    permissao_despacho: false, permissao_entrega: false,
-                    permissao_registrar_pagamento: false
-                  })
-                }} title="Cancelar edição">
-                  <CircleX size={20} />
-                </button>
-              )}
-            </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <input className="input" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
-            <input className="input" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
-            <input className="input col-span-2" disabled value={`Código: ${codigo}`} />
+            <input className="input-config" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
+            <input className="input-config" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
+            <input className="input-config col-span-2" disabled value={`Código: ${codigo}`} />
           </div>
 
           <div className="lista-permissoes mt-2">
@@ -240,7 +238,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
             {usuarios.map(u => (
               <li key={u.id} className="flex items-center gap-2">
                 <span>{u.nome} (código: {u.codigo})</span>
-                <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800"><UserRoundPen size={16} /></button>
+                {!editandoUsuarioId && <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800"><UserRoundPen size={16} /></button>}
                 {!editandoUsuarioId && <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800"><Trash size={16} /></button>}
               </li>
             ))}
@@ -249,21 +247,19 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 
         {/* Locais */}
         <div className="mt-8">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex items-center gap-2 mb-2">
             <h3>Cadastrar ou editar loja/cidade</h3>
-            <div className="flex gap-2">
-              <button onClick={salvarLocal} title={editandoLocalId ? 'Salvar' : 'Criar'}>
-                {editandoLocalId ? <Save size={20} /> : <MapPinPlus size={20} />}
+            <button onClick={salvarLocal} title={editandoLocalId ? 'Salvar' : 'Criar'}>
+              {editandoLocalId ? <Save size={20} /> : <MapPinPlus size={20} />}
+            </button>
+            {editandoLocalId && (
+              <button onClick={() => { setLocalNome(''); setIsOrigem(false); setIsDestino(false); setEditandoLocalId(null) }} title="Cancelar edição">
+                <CircleX size={20} />
               </button>
-              {editandoLocalId && (
-                <button onClick={() => { setLocalNome(''); setIsOrigem(false); setIsDestino(false); setEditandoLocalId(null) }} title="Cancelar edição">
-                  <CircleX size={20} />
-                </button>
-              )}
-            </div>
+            )}
           </div>
 
-          <input className="input" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
+          <input className="input-config" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
           <div className="flex gap-4 mt-2">
             <label><input type="checkbox" checked={isOrigem} onChange={(e) => setIsOrigem(e.target.checked)} /> Origem</label>
             <label><input type="checkbox" checked={isDestino} onChange={(e) => setIsDestino(e.target.checked)} /> Destino</label>
@@ -273,7 +269,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
             {locais.map(l => (
               <li key={l.id} className="flex items-center gap-2">
                 <span>{l.nome} ({l.origem ? 'Origem' : ''}{l.origem && l.destino ? ' / ' : ''}{l.destino ? 'Destino' : ''})</span>
-                <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800"><LocationEdit size={16} /></button>
+                {!editandoLocalId && <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800"><LocationEdit size={16} /></button>}
                 {!editandoLocalId && <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800"><Trash size={16} /></button>}
               </li>
             ))}
