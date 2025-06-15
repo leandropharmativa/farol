@@ -71,8 +71,6 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 useEffect(() => {
   if (!farmaciaId) return
 
-  carregarPedidos()
-
   const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
   eventSource.onmessage = (event) => {
@@ -88,7 +86,11 @@ useEffect(() => {
   return () => {
     eventSource.close()
   }
-}, [farmaciaId, dataSelecionada, filtroPorPrevisao])
+}, [farmaciaId]) 
+
+useEffect(() => {
+  if (farmaciaId) carregarPedidos()
+}, [farmaciaId, dataSelecionada, filtroPorPrevisao]) // 🔁 carrega nos filtros
 
   const formatarData = (data) =>
     data.toLocaleDateString('pt-BR', {
