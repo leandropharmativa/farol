@@ -92,6 +92,12 @@ useEffect(() => {
   if (farmaciaId) carregarPedidos()
 }, [farmaciaId, dataSelecionada, filtroPorPrevisao]) // 🔁 carrega nos filtros
 
+  useEffect(() => {
+  const atualizarLocal = () => carregarPedidos()
+  window.addEventListener("novoPedidoCriado", atualizarLocal)
+  return () => window.removeEventListener("novoPedidoCriado", atualizarLocal)
+  }, [])
+
   const formatarData = (data) =>
     data.toLocaleDateString('pt-BR', {
       day: '2-digit',
