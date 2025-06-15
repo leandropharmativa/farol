@@ -106,7 +106,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
           </div>
           <div className="pedido-info">
             <CalendarClock size={16} />
-            <span>{new Date(p.previsao_entrega).toLocaleString()}</span>
+            <span>{new Date(p.previsao_entrega).getDate()} - {new Date(p.previsao_entrega).getHours()}h</span>
           </div>
           {p.receita_arquivo && (
             <div className="pedido-info">
