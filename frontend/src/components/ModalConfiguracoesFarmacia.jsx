@@ -221,9 +221,9 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div>
           <h3>Cadastrar ou editar usuário</h3>
           <div className="grid grid-cols-2 gap-3">
-            <input className="input" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
-            <input className="input" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
-            <input className="input col-span-2" disabled value={`Código: ${codigo}`} />
+            <input className="input-config" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
+            <input className="input-config" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
+            <input className="input-config col-span-2" disabled value={`Código: ${codigo}`} />
           </div>
           <div className="lista-permissoes mt-2">
             {Object.entries(permissoes).map(([campo, ativo]) => (
@@ -286,7 +286,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
         <div>
           <h3>Cadastrar ou editar loja/cidade</h3>
           <input
-            className="input"
+            className="input-config"
             placeholder="Nome do local"
             value={localNome}
             onChange={(e) => setLocalNome(e.target.value)}
