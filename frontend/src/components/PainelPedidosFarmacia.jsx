@@ -17,6 +17,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [abrirModal, setAbrirModal] = useState(false)
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
+  const [pedidoExtra, setPedidoExtra] = useState(null)
 
 const carregarPedidos = async () => {
   try {
@@ -105,30 +106,27 @@ eventSource.onmessage = (event) => {
     const farmaciaIdEvento = partes[1]
     const pedidoId = partes[2]
 
-    console.log('🧪 Dados recebidos do evento:', { farmaciaIdEvento, pedidoId })
+eventSource.onmessage = (event) => {
+  console.log('🔁 Evento SSE recebido:', event.data)
 
-    if (farmaciaIdEvento !== farmaciaId) {
-      console.warn('⛔ Ignorado: evento de outra farmácia')
-      return
-    }
+  if (event.data.startsWith('novo_pedido')) {
+    const partes = event.data.split(':')
+    const farmaciaIdEvento = partes[1]
+    const pedidoId = partes[2]
+
+    if (farmaciaIdEvento !== farmaciaId) return
 
     setTimeout(() => {
       api.get(`/pedidos/${pedidoId}`)
         .then(res => {
           console.log('✅ Pedido carregado via GET:', res.data)
 
-          if (!res.data || !res.data.id) {
-            console.warn('⚠️ Dados incompletos recebidos. Abortando.')
-            return
-          }
-
-          pedidoExtraRef.current = res.data
-          console.log('🚀 pedidoExtraRef atualizado:', pedidoExtraRef.current)
-          setPedidos(prev => [...prev]) // força re-render
+          // 👉 É aqui que você atualiza o estado para forçar render
+          setPedidoExtra(res.data) // 👈 aqui
           toast.info('Novo pedido recebido')
         })
         .catch(err => {
-          console.error('❌ Erro no GET /pedidos/:id:', err)
+          console.error('❌ Erro ao buscar novo pedido:', err)
           toast.error('Erro ao buscar novo pedido')
         })
     }, 300)
@@ -268,23 +266,27 @@ return (
 
     <div className="space-y-0">
       {/* Novo pedido destacado (caso exista) */}
-      {pedidoExtraRef.current && (
-        <div className="pedido-card border-2 border-farol-primary bg-yellow-50">
-          <div className="pedido-linha">
-            <div className="pedido-conteudo">
-              <div className="pedido-info">
-                <PillBottle size={16} />
-                <span>{pedidoExtraRef.current.registro} - {pedidoExtraRef.current.numero_itens}</span>
-              </div>
-              <div className="pedido-info">
-                <User size={16} />
-                <span>{pedidoExtraRef.current.atendente}</span>
-              </div>
-              <div className="pedido-info text-sm text-gray-500 italic">Novo pedido recebido...</div>
-            </div>
-          </div>
+
+  {pedidoExtra && (
+  <div className="pedido-card border-2 border-farol-primary bg-yellow-50">
+    <div className="pedido-linha">
+      <div className="pedido-conteudo">
+        <div className="pedido-info">
+          <PillBottle size={16} />
+          <span>{pedidoExtra.registro} - {pedidoExtra.numero_itens}</span>
         </div>
-      )}
+        <div className="pedido-info">
+          <User size={16} />
+          <span>{pedidoExtra.atendente}</span>
+        </div>
+        <div className="pedido-info text-sm text-gray-500 italic">
+          Novo pedido recebido...
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Lista de pedidos filtrados */}
       {pedidos.map((p, index) => (
