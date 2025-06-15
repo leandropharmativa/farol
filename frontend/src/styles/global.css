@@ -419,15 +419,15 @@ p {
 }
 
 .pedido-card {
-  @apply px-4 py-2 border-b border-dotted;
+  @apply px-4 py-2 border-b border-dotted transition-colors duration-200;
 }
 
 .pedido-card-branco {
-  @apply bg-white border-gray-300;
+  @apply bg-white border-farol-primary hover:bg-farol-focus;
 }
 
 .pedido-card-cinza {
-  @apply bg-gray-100 border-gray-400;
+  @apply bg-gray-100 border-farol-primary hover:bg-farol-focus;
 }
 
 .pedido-linha {
