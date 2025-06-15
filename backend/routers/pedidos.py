@@ -62,9 +62,12 @@ async def criar_pedido(
         pedido_id, "Inclusão", atendente_id, atendente_id
     ))
 
-    # 🔔 Notificar clientes SSE
+    # 🔔 Notificar clientes SSE com data e farmácia
+    hoje_str = datetime.utcnow().date().isoformat()  # yyyy-mm-dd
+    evento = f"novo_pedido:{farmacia_id}:{hoje_str}"
     for q in clientes_ativos:
-        await q.put("novo_pedido")
+        await q.put(evento)
+
 
     return {"status": "ok", "mensagem": "Pedido criado com sucesso"}
 
