@@ -21,7 +21,7 @@ module.exports = {
           loc3:'#bfe1f6',
 	  loc4:'#ffe5a0',
 	  loc5:'#e6cff2',
-	  loc5:'#d4edbc',
+	  loc6:'#d4edbc',
         },
       },
       fontFamily: {
