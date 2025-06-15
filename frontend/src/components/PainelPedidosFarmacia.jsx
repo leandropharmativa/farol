@@ -90,35 +90,40 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
-  return (
-    <div>
-      <div className="flex items-center gap-2 mb-4">
-        <CalendarPlus className="text-farol-primary" size={20} />
-        <h2 className="text-xl font-bold text-left space-x-2">
-          <span
-            className="cursor-pointer select-none"
-            onClick={() => alterarData('dia', +1)}
-            onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
-          >{dia}</span>{' '}
-          <span
-            className="cursor-pointer select-none"
-            onClick={() => alterarData('mes', +1)}
-            onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
-          >{mes}</span>{' '}
-          <span
-            className="cursor-pointer select-none"
-            onClick={() => alterarData('ano', +1)}
-            onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
-          >{ano}</span>
-        </h2>
-        <CalendarCheck2
-          className={`cursor-pointer ml-2 ${filtroPorPrevisao ? 'text-farol-primary' : 'text-farol-secondary'}`}
-          size={20}
-          title="Alternar entre data de criação e previsão"
-          onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
-        />
-      </div>
+return (
+  <div>
+    <div className="flex items-center gap-2 mb-4">
+      <button
+        onClick={() => setFiltroPorPrevisao(!filtroPorPrevisao)}
+        className="text-farol-primary hover:text-farol-secondary transition"
+        title={
+          filtroPorPrevisao
+            ? 'Filtrando por data de previsão de entrega'
+            : 'Filtrando por data de criação'
+        }
+      >
+        {filtroPorPrevisao ? <CalendarCheck2 size={20} /> : <CalendarPlus size={20} />}
+      </button>
 
+      <h2 className="text-xl font-bold text-left space-x-2">
+        <span
+          className="cursor-pointer select-none"
+          onClick={() => alterarData('dia', +1)}
+          onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
+        >{dia}</span>{' '}
+        <span
+          className="cursor-pointer select-none"
+          onClick={() => alterarData('mes', +1)}
+          onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
+        >{mes}</span>{' '}
+        <span
+          className="cursor-pointer select-none"
+          onClick={() => alterarData('ano', +1)}
+          onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
+        >{ano}</span>
+      </h2>
+    </div>
+    
       <div className="space-y-0">
         {pedidos.map((p, index) => (
           <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
