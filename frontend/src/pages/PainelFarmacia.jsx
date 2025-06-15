@@ -88,7 +88,7 @@ export default function PainelFarmacia() {
 
       {/* Botão de incluir pedido com transição de subida */}
 <div
-  className={`fixed right-6 z-20 transition-all duration-300 ${
+  className={`fixed right-6 z-40 transition-all duration-300 ${
     menuAberto
       ? tipoLogin === 'usuario'
         ? 'bottom-[8.5rem]' // 👤 usuário (sobe menos)
