@@ -21,9 +21,11 @@ const carregarPedidos = async () => {
     })
 
     const hoje = new Date().toISOString().slice(0, 10)
-    const pedidosDoDia = res.data.filter(p => 
-      p.previsao_entrega?.slice(0, 10) === hoje
-    )
+    const pedidosDoDia = res.data.filter(p => {
+    const dataEntrega = p.previsao_entrega?.slice(0, 10)
+    return dataEntrega === hoje
+    })
+
 
     setPedidos(pedidosDoDia)
   } catch (err) {
@@ -79,6 +81,8 @@ const carregarPedidos = async () => {
             <div className="flex-1">
               <div><span className="font-semibold">Registro:</span> {p.registro}</div>
               <div><span className="font-semibold">Atendente:</span> {p.atendente}</div>
+              <div><span className="font-semibold">Origem:</span> {p.origem_nome}</div>
+              <div><span className="font-semibold">Destino:</span> {p.destino_nome}</div>
               <div><span className="font-semibold">Previsão:</span> {new Date(p.previsao_entrega).toLocaleString()}</div>
               <div className="text-sm text-gray-500 flex gap-2 mt-1">
                 {p.receita_arquivo && (
