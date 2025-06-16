@@ -96,14 +96,8 @@ const salvarPedido = async () => {
   if (!modalRoot) return null
 
 return createPortal(
-  <div
-    className="modal-overlay right-align modal-novo-pedido"
-    onClick={onClose}
-  >
-    <div
-      className="modal-novo-pedido animate-fadeIn"
-      onClick={(e) => e.stopPropagation()}
-    >
+  <div className="modal-overlay right-align modal-novo-pedido">
+    <div className="modal-novo-pedido animate-fadeIn">
       <div className="flex flex-col gap-2">
         <input
           className="modal-novo-pedido-input"
@@ -151,6 +145,7 @@ return createPortal(
               <option key={l.id} value={l.id}>{l.nome}</option>
             ))}
         </select>
+
         <label className="text-white text-sm">Previsão de Entrega*</label>
         <input
           className="modal-novo-pedido-input"
@@ -158,6 +153,7 @@ return createPortal(
           value={previsaoEntrega}
           onChange={e => setPrevisaoEntrega(e.target.value)}
         />
+
         <input
           className="modal-novo-pedido-input"
           type="file"
