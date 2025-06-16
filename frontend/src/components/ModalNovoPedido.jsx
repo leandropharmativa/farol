@@ -1,7 +1,7 @@
-//frontend/src/components/ModalNovoPedido.jsx
+// frontend/src/components/ModalNovoPedido.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { X, Save } from 'lucide-react'
+import { CircleX, Save } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 
@@ -21,8 +21,8 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
     if (aberto) {
       carregarUsuarios()
       carregarLocais()
-      setAtendenteId(localStorage.getItem('usuarioId') || '') // ✅ atendente logado
-      setPrevisaoEntrega(gerarDataEntrega()) // ✅ próximo dia às 12h
+      setAtendenteId(localStorage.getItem('usuarioId') || '')
+      setPrevisaoEntrega(gerarDataEntrega())
     }
   }, [aberto])
 
@@ -49,47 +49,45 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
     const amanha = new Date(agora)
     amanha.setDate(amanha.getDate() + 1)
     amanha.setHours(12, 0, 0, 0)
-    return amanha.toISOString().slice(0, 16) // formato datetime-local
+    return amanha.toISOString().slice(0, 16)
   }
 
-const salvarPedido = async () => {
-  if (!registro || !numeroItens || !atendenteId || !origemId || !destinoId || !previsaoEntrega) {
-    toast.warning('Preencha todos os campos obrigatórios')
-    return
-  }
-
-  try {
-    const formData = new FormData()
-    formData.append('farmacia_id', farmaciaId)
-    formData.append('registro', registro)
-    formData.append('numero_itens', numeroItens)
-    formData.append('atendente_id', atendenteId)
-    formData.append('origem_id', origemId)
-    formData.append('destino_id', destinoId)
-    formData.append('previsao_entrega', previsaoEntrega)
-    if (receita) formData.append('receita', receita)
-
-    const res = await api.post('/pedidos/criar', formData)
-    if (res.data?.pedido_id) {
-      localStorage.setItem('ultimoPedidoCriadoId', res.data.pedido_id)
-      localStorage.setItem('ultimoPedidoCriadoRegistro', registro)
+  const salvarPedido = async () => {
+    if (!registro || !numeroItens || !atendenteId || !origemId || !destinoId || !previsaoEntrega) {
+      toast.warning('Preencha todos os campos obrigatórios')
+      return
     }
 
-    toast.success('Pedido criado com sucesso')
+    try {
+      const formData = new FormData()
+      formData.append('farmacia_id', farmaciaId)
+      formData.append('registro', registro)
+      formData.append('numero_itens', numeroItens)
+      formData.append('atendente_id', atendenteId)
+      formData.append('origem_id', origemId)
+      formData.append('destino_id', destinoId)
+      formData.append('previsao_entrega', previsaoEntrega)
+      if (receita) formData.append('receita', receita)
 
-    // Resetar formulário
-    setRegistro('')
-    setNumeroItens('')
-    setOrigemId('')
-    setDestinoId('')
-    setReceita(null)
+      const res = await api.post('/pedidos/criar', formData)
+      if (res.data?.pedido_id) {
+        localStorage.setItem('ultimoPedidoCriadoId', res.data.pedido_id)
+        localStorage.setItem('ultimoPedidoCriadoRegistro', registro)
+      }
 
-    window.dispatchEvent(new Event("novoPedidoCriado"))
-    onClose()
-  } catch {
-    toast.error('Erro ao salvar pedido')
+      toast.success('Pedido criado com sucesso')
+      setRegistro('')
+      setNumeroItens('')
+      setOrigemId('')
+      setDestinoId('')
+      setReceita(null)
+
+      window.dispatchEvent(new Event("novoPedidoCriado"))
+      onClose()
+    } catch {
+      toast.error('Erro ao salvar pedido')
+    }
   }
-}
 
   if (!aberto) return null
   const modalRoot = document.getElementById('modal-root')
@@ -97,14 +95,17 @@ const salvarPedido = async () => {
 
   return createPortal(
     <div className="modal-overlay">
-      <div className="modal-container max-w-md animate-fade-slide">
-        <button className="btn-fechar" onClick={onClose}><X /></button>
-        <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
-          Novo Pedido
-          <button className="btn-config" onClick={salvarPedido} title="Salvar Pedido">
+      <div className="modal-container max-w-md animate-fade-slide bg-farol-primary text-white">
+        <div className="flex justify-end gap-2 mb-2">
+          <button onClick={salvarPedido} title="Salvar Pedido" className="text-white hover:text-gray-200">
             <Save size={20} />
           </button>
-        </h2>
+          <button onClick={onClose} title="Fechar" className="text-white hover:text-gray-300">
+            <CircleX size={20} />
+          </button>
+        </div>
+
+        <h2 className="text-lg font-semibold mb-4">Novo Pedido</h2>
 
         <div className="grid grid-cols-2 gap-4">
           <input
@@ -137,7 +138,7 @@ const salvarPedido = async () => {
           </select>
 
           <div className="col-span-2 flex flex-col gap-1">
-            <label className="text-sm text-gray-600">Previsão de Entrega*</label>
+            <label className="text-sm text-white">Previsão de Entrega*</label>
             <input
               className="input-config"
               type="datetime-local"
