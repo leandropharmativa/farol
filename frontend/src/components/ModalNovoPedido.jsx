@@ -67,13 +67,22 @@ const salvarPedido = async () => {
     formData.append('origem_id', origemId)
     formData.append('destino_id', destinoId)
     formData.append('previsao_entrega', previsaoEntrega)
-    if (receita) {
-      formData.append('receita', receita)
+    if (receita) formData.append('receita', receita)
+
+    const res = await api.post('/pedidos/criar', formData)
+    if (res.data?.pedido_id) {
+      localStorage.setItem('ultimoPedidoCriado', String(res.data.pedido_id))
     }
 
-    const res = await api.post('/pedidos/criar', formData) // ✅ agora sim
-    localStorage.setItem('ultimoPedidoCriado', String(res.data.pedido_id || '')) // ✅ salvar corretamente
     toast.success('Pedido criado com sucesso')
+
+    // Resetar formulário
+    setRegistro('')
+    setNumeroItens('')
+    setOrigemId('')
+    setDestinoId('')
+    setReceita(null)
+
     window.dispatchEvent(new Event("novoPedidoCriado"))
     onClose()
   } catch {
