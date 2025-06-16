@@ -444,7 +444,7 @@ p {
   @apply rounded-full bg-farol-primary text-white shadow-md hover:bg-farol-secondary transition p-3;
 }
 .botao-principal {
-  @apply rounded-full bg-farol-linecolor text-white hover:bg-farol-focus shadow-md transition p-3;
+  @apply rounded-full bg-farol-linecolor text-white hover:bg-farol-secondary shadow-md transition p-3;
 }
 
 
