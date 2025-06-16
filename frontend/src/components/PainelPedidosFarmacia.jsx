@@ -17,30 +17,28 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [abrirModal, setAbrirModal] = useState(false)
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
-  const [pedidoExtra, setPedidoExtra] = useState(null)
-  const [forcarRender, setForcarRender] = useState(0)
 
-const carregarPedidos = async () => {
-  try {
-    const res = await api.get('/pedidos/listar', {
-      params: { farmacia_id: farmaciaId }
-    })
+  const carregarPedidos = async () => {
+    try {
+      const res = await api.get('/pedidos/listar', {
+        params: { farmacia_id: farmaciaId }
+      })
 
-    const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
+      const dataFiltro = new Date(dataSelecionada).toISOString().split('T')[0]
 
-    const pedidosFiltrados = res.data.filter(p => {
-      const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-      if (!campoOriginal) return false
-      const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
-      return campoData === dataFiltro
-    })
+      const pedidosFiltrados = res.data.filter(p => {
+        const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+        if (!campoOriginal) return false
+        const campoData = new Date(campoOriginal).toISOString().split('T')[0]
+        return campoData === dataFiltro
+      })
 
-    setPedidos(pedidosFiltrados)
-  } catch (err) {
-    toast.error('Erro ao carregar pedidos')
+      setPedidos(pedidosFiltrados)
+    } catch (err) {
+      toast.error('Erro ao carregar pedidos')
+    }
   }
-}
-  
+
   const etapas = [
     { campo: 'status_inclusao', nome: 'Inclusão', icone: PackagePlus },
     { campo: 'status_impressao', nome: 'Impressão', icone: Printer },
@@ -56,10 +54,6 @@ const carregarPedidos = async () => {
     setEtapaSelecionada(etapa)
     setAbrirModal(true)
   }
-
-  const incluirPedidoNaLista = (novo) => {
-  setPedidos(prev => [...prev, { ...novo, destaque: true }])
-}
 
   const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
     try {
@@ -77,91 +71,16 @@ const carregarPedidos = async () => {
     }
   }
 
-const carregarPedidosComData = async (dataRef) => {
-  try {
-    const res = await api.get('/pedidos/listar', {
-      params: { farmacia_id: farmaciaId }
+  const incluirPedidoNaLista = (novo) => {
+    setPedidos(prev => {
+      const jaExiste = prev.some(p => p.id === novo.id)
+      return jaExiste ? prev : [...prev, { ...novo, destaque: true }]
     })
-
-    const dataFiltro = dataRef.toISOString().split('T')[0]
-
-    const pedidosFiltrados = res.data.filter(p => {
-      const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-      if (!campoOriginal) return false
-      const campoData = new Date(campoOriginal).toISOString().split('T')[0]
-      return campoData === dataFiltro
-    })
-
-    setPedidos(pedidosFiltrados)
-  } catch (err) {
-    toast.error('Erro ao carregar pedidos')
   }
-}
-
-useEffect(() => {
-  if (!farmaciaId) return
-
-  const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
-
-eventSource.onmessage = (event) => {
-  console.log('🔁 Evento SSE recebido:', event.data)
-
-  if (event.data.startsWith('novo_pedido')) {
-    const partes = event.data.split(':')
-    const farmaciaIdEvento = partes[1]
-    const pedidoId = partes[2]
-
-    if (farmaciaIdEvento !== farmaciaId) return
-
-    api.get(`/pedidos/${pedidoId}`)
-      .then(res => {
-        const pedidoNovo = res.data
-        const dataPedido = new Date(pedidoNovo.data_criacao).toISOString().split('T')[0]
-        const dataAtual = new Date(dataSelecionada).toISOString().split('T')[0]
-
-if (dataPedido === dataAtual) {
-  setPedidos(prev => {
-    const jaExiste = prev.some(p => p.id === pedidoNovo.id)
-    return jaExiste ? prev : [...prev, { ...pedidoNovo, destaque: true }]
-  })
-} else {
-  toast.info('Novo pedido de outra data')
-}
-
-      })
-      .catch(() => toast.error('Erro ao buscar novo pedido'))
-  }
-}
-
-  eventSource.onerror = () => {
-    eventSource.close()
-  }
-
-  return () => {
-    eventSource.close()
-  }
-}, [farmaciaId])
 
   useEffect(() => {
-  if (pedidos.length > 0 && pedidos[0].destaque) {
-    const timer = setTimeout(() => {
-      setPedidos(prev =>
-        prev.map(p => ({ ...p, destaque: false }))
-      )
-    }, 3000)
-    return () => clearTimeout(timer)
-  }
-}, [pedidos])
-
-useEffect(() => {
-  if (farmaciaId) carregarPedidos()
-}, [farmaciaId, dataSelecionada, filtroPorPrevisao, forcarRender]) // 🔁 carrega nos filtros
-
-  useEffect(() => {
-  const atualizarLocal = () => carregarPedidos()
-  window.addEventListener("novoPedidoCriado", atualizarLocal)
-  return () => window.removeEventListener("novoPedidoCriado", atualizarLocal)
-  }, [])
+    if (farmaciaId) carregarPedidos()
+  }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
 
   const formatarData = (data) =>
     data.toLocaleDateString('pt-BR', {
@@ -181,172 +100,118 @@ useEffect(() => {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
-const corLocalClasse = (nome) => {
-  if (!nome) return 'bg-gray-300 text-gray-800'
-  const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
-  const indice = (hash % 6) + 1
-  return `bg-farol-loc${indice} text-white`
-}
+  const corLocalClasse = (nome) => {
+    if (!nome) return 'bg-gray-300 text-gray-800'
+    const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
+    const indice = (hash % 6) + 1
+    return `bg-farol-loc${indice} text-white`
+  }
 
-return (
-  <div>
-    <div className="flex items-center justify-between mb-4">
-      {/* Seletor de data com ícone */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => {
-            const novoValor = !filtroPorPrevisao
-            setFiltroPorPrevisao(novoValor)
-            if (!novoValor) {
-              setDataSelecionada(new Date()) // volta para hoje se for data de criação
-            }
-          }}
-          className="text-farol-primary hover:text-farol-secondary transition flex items-center"
-          title={
-            filtroPorPrevisao
-              ? 'Filtrando por data de previsão de entrega'
-              : 'Filtrando por data de criação'
-          }
-        >
-          {filtroPorPrevisao ? (
-            <CalendarCheck2 size={20} className="inline-block align-middle" />
-          ) : (
-            <CalendarPlus size={20} className="inline-block align-middle" />
-          )}
-        </button>
-
-        <div className="flex items-baseline gap-1 text-xl font-bold">
-          <span
-            className="cursor-pointer select-none"
-            onClick={() => alterarData('dia', +1)}
-            onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              const novoValor = !filtroPorPrevisao
+              setFiltroPorPrevisao(novoValor)
+              if (!novoValor) setDataSelecionada(new Date())
+            }}
+            className="text-farol-primary hover:text-farol-secondary transition flex items-center"
+            title={filtroPorPrevisao ? 'Filtrando por data de previsão de entrega' : 'Filtrando por data de criação'}
           >
-            {dia}
-          </span>
-          <span
-            className="cursor-pointer select-none"
-            onClick={() => alterarData('mes', +1)}
-            onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
-          >
-            {mes}
-          </span>
-          <span
-            className="cursor-pointer select-none"
-            onClick={() => alterarData('ano', +1)}
-            onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
-          >
-            {ano}
-          </span>
+            {filtroPorPrevisao
+              ? <CalendarCheck2 size={20} className="inline-block align-middle" />
+              : <CalendarPlus size={20} className="inline-block align-middle" />}
+          </button>
+          <div className="flex items-baseline gap-1 text-xl font-bold">
+            <span className="cursor-pointer" onClick={() => alterarData('dia', +1)} onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}>{dia}</span>
+            <span className="cursor-pointer" onClick={() => alterarData('mes', +1)} onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}>{mes}</span>
+            <span className="cursor-pointer" onClick={() => alterarData('ano', +1)} onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}>{ano}</span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-1 text-farol-primary"><Boxes size={14} /><span>{pedidos.length}</span></div>
+          <div className="flex items-center gap-1 text-farol-semisolidos"><Beaker size={14} /><span>0</span></div>
+          <div className="flex items-center gap-1 text-farol-solidos"><Pill size={14} /><span>0</span></div>
+          <div className="flex items-center gap-1 text-farol-saches"><StickyNote size={14} /><span>0</span></div>
         </div>
       </div>
 
-      {/* Totais de pedidos */}
-      <div className="flex items-center gap-2 text-xs">
-        <div className="flex items-center gap-1 text-farol-primary">
-          <Boxes size={14} />
-          <span>{pedidos.length}</span>
-        </div>
-        <div className="flex items-center gap-1 text-farol-semisolidos">
-          <Beaker size={14} />
-          <span>0</span>
-        </div>
-        <div className="flex items-center gap-1 text-farol-solidos">
-          <Pill size={14} />
-          <span>0</span>
-        </div>
-        <div className="flex items-center gap-1 text-farol-saches">
-          <StickyNote size={14} />
-          <span>0</span>
-        </div>
-      </div>
-    </div>
+      <div className="space-y-0">
+        <PedidosRecentesFarmacia
+          farmaciaId={farmaciaId}
+          dataSelecionada={dataSelecionada}
+          onIncluirPedido={incluirPedidoNaLista}
+        />
 
-    <div className="space-y-0">
-
-      
-      <PedidosRecentesFarmacia
-        farmaciaId={farmaciaId}
-        dataSelecionada={dataSelecionada}
-        onIncluirPedido={incluirPedidoNaLista}
-      />
-
-          {pedidos.map((p, index) => (
-            <div
-              key={p.id}
-              className={`pedido-card ${
-                p.destaque
-                  ? 'border-2 border-farol-primary bg-yellow-50'
-                  : index % 2 === 0
-                    ? 'pedido-card-branco'
-                    : 'pedido-card-cinza'
-              }`}
-            >
-              <div className="pedido-linha">
-                <div className="pedido-conteudo">
-                  <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
-                  <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
-                  <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
-                    <MapPinHouse size={14} className="mr-1" />
-                    <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
-                  </div>
-                  <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
-                    <MapPinned size={14} className="mr-1" />
-                    <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
-                  </div>
-                  <div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
-                  <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
-                  {p.receita_arquivo && (
-                    <div className="pedido-info text-blue-600">
-                      <FileText size={16} />
-                      <a
-                        href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="underline"
-                      >
-                        Receita
-                      </a>
-                    </div>
-                  )}
+        {pedidos.map((p, index) => (
+          <div key={p.id} className={`pedido-card ${p.destaque ? 'border-2 border-farol-primary bg-yellow-50' : index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
+            <div className="pedido-linha">
+              <div className="pedido-conteudo">
+                <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
+                <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
+                <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
+                  <MapPinHouse size={14} className="mr-1" />
+                  <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  {etapas.map(et => {
-                    const Icone = et.icone
-                    const ativo = p[et.campo]
-                    return (
-                      <button
-                        key={et.campo}
-                        onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
-                        className={`rounded-full p-1 ${ativo ? 'text-green-600' : 'text-gray-400 hover:text-red-500'}`}
-                        title={et.nome}
-                      >
-                        <Icone size={18} />
-                      </button>
-                    )
-                  })}
-                  {usuarioLogado.email === 'admin@admin.com' && (
-                    <button
-                      title="Editar pedido"
-                      className="text-gray-400 hover:text-blue-500 p-1"
-                      onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
+                <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
+                  <MapPinned size={14} className="mr-1" />
+                  <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
+                </div>
+                <div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
+                <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
+                {p.receita_arquivo && (
+                  <div className="pedido-info text-blue-600">
+                    <FileText size={16} />
+                    <a
+                      href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline"
                     >
-                      <Pencil size={18} />
+                      Receita
+                    </a>
+                  </div>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                {etapas.map(et => {
+                  const Icone = et.icone
+                  const ativo = p[et.campo]
+                  return (
+                    <button
+                      key={et.campo}
+                      onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
+                      className={`rounded-full p-1 ${ativo ? 'text-green-600' : 'text-gray-400 hover:text-red-500'}`}
+                      title={et.nome}
+                    >
+                      <Icone size={18} />
                     </button>
-                  )}
-                </div>
+                  )
+                })}
+                {usuarioLogado.email === 'admin@admin.com' && (
+                  <button
+                    title="Editar pedido"
+                    className="text-gray-400 hover:text-blue-500 p-1"
+                    onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
+                  >
+                    <Pencil size={18} />
+                  </button>
+                )}
               </div>
             </div>
-          ))}
-        </>
-      )}
+          </div>
+        ))}
 
-      {abrirModal && (
-        <ModalConfirmacao
-          titulo={`Confirmar etapa "${etapaSelecionada}"`}
-          onConfirmar={confirmarEtapa}
-          onCancelar={() => setAbrirModal(false)}
-        />
-      )}
+        {abrirModal && (
+          <ModalConfirmacao
+            titulo={`Confirmar etapa "${etapaSelecionada}"`}
+            onConfirmar={confirmarEtapa}
+            onCancelar={() => setAbrirModal(false)}
+          />
+        )}
+      </div>
     </div>
-  </div>
-)}
+  )
+}
