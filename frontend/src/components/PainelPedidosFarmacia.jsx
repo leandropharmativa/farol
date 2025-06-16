@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 
-export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
+export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtroRegistro = '' }) {
   const [pedidos, setPedidos] = useState([])
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
   const [etapaSelecionada, setEtapaSelecionada] = useState('')
@@ -126,6 +126,10 @@ const corLocalClasse = (nome) => {
   return `bg-farol-loc${indice} text-white`
 }
 
+const pedidosFiltrados = pedidos.filter(p =>
+p.registro?.toLowerCase().includes(filtroRegistro.toLowerCase())
+)
+
 return (
   <div>
     
@@ -204,7 +208,7 @@ return (
 </div>
     
       <div className="space-y-0">
-        {pedidos.map((p, index) => (
+        {pedidosFiltrados.map((p, index) => (
           <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
             <div className="pedido-linha">
               <div className="pedido-conteudo">
