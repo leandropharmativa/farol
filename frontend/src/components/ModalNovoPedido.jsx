@@ -97,7 +97,7 @@ const salvarPedido = async () => {
   if (!modalRoot) return null
 
   return createPortal(
-    <div className="modal-overlay">
+    <div className="modal-novo-pedido">
       <div className="modal-container max-w-md animate-fade-slide">
         <button className="btn-fechar" onClick={onClose}><X /></button>
         <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
@@ -109,29 +109,29 @@ const salvarPedido = async () => {
 
         <div className="grid grid-cols-2 gap-4">
           <input
-            className="input-config col-span-2"
+            className=""
             placeholder="Registro*"
             value={registro}
             onChange={e => setRegistro(e.target.value)}
           />
           <input
-            className="input-config col-span-2"
+            className=""
             placeholder="Nº de Itens*"
             value={numeroItens}
             onChange={e => setNumeroItens(e.target.value)}
           />
 
-          <select className="input-config" value={atendenteId} onChange={e => setAtendenteId(e.target.value)}>
+          <select className="" value={atendenteId} onChange={e => setAtendenteId(e.target.value)}>
             <option value="">Selecione um atendente*</option>
             {usuarios.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
           </select>
 
-          <select className="input-config" value={origemId} onChange={e => setOrigemId(e.target.value)}>
+          <select className="" value={origemId} onChange={e => setOrigemId(e.target.value)}>
             <option value="">Origem*</option>
             {locais.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
           </select>
 
-          <select className="input-config" value={destinoId} onChange={e => setDestinoId(e.target.value)}>
+          <select className="" value={destinoId} onChange={e => setDestinoId(e.target.value)}>
             <option value="">Destino*</option>
             {locais.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
           </select>
@@ -139,7 +139,7 @@ const salvarPedido = async () => {
           <div className="col-span-2 flex flex-col gap-1">
             <label className="text-sm text-gray-600">Previsão de Entrega*</label>
             <input
-              className="input-config"
+              className=""
               type="datetime-local"
               value={previsaoEntrega}
               onChange={e => setPrevisaoEntrega(e.target.value)}
@@ -147,7 +147,7 @@ const salvarPedido = async () => {
           </div>
 
           <input
-            className="input-config col-span-2"
+            className=""
             type="file"
             accept=".pdf,.png,.jpg,.jpeg"
             onChange={e => setReceita(e.target.files[0])}
