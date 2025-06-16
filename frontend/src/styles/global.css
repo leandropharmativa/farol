@@ -402,11 +402,7 @@ p {
 }
 
 .btn-config2 {
-  @apply text-farol-linecolor hover:text-farol-focus pt-[4px];
-}
-
-.btn-config2 {
-  @apply text-farol-linecolor hover:text-farol-focus;
+  @apply w-full bg-white text-sm text-farol-primary font-semibold mt-2 py-2 px-4 rounded-md hover:bg-farol-focus transition;
 }
 
 /* lista de pedidos */
