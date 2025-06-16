@@ -477,7 +477,7 @@ p {
 
 /* ====== MODAL NOVO PEDIDO ====== */
 .modal-novo-pedido {
-  @apply bg-farol-primary text-white max-w-xs w-full p-4 rounded-lg shadow-md animate-fadeIn;
+  @apply bg-farol-primary text-white max-w-xs w-full p-4 shadow-md animate-fadeIn;
 }
 
 .modal-novo-pedido input,
