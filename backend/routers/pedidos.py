@@ -180,6 +180,25 @@ def registrar_etapa(
         raise HTTPException(status_code=401, detail="Código de confirmação inválido.")
     usuario_confirmador_id = row[0]
 
+    # 🔐 Verifica permissão para etapa
+    coluna_permissao = {
+        "impressao": "permissao_impressao",
+        "conferencia": "permissao_conferencia",
+        "producao": "permissao_producao",
+        "despacho": "permissao_despacho",
+        "entrega": "permissao_entrega",
+        "pagamento": "permissao_registrar_pagamento"
+    }.get(etapa.lower())
+
+    if coluna_permissao:
+        cursor.execute(
+            f"SELECT {coluna_permissao} FROM farol_farmacia_usuarios WHERE id = %s",
+            (usuario_confirmador_id,)
+        )
+        permitido = cursor.fetchone()
+        if not permitido or not permitido[0]:
+            raise HTTPException(status_code=403, detail="Usuário não tem permissão para essa etapa.")
+
     cursor.execute("""
         INSERT INTO farol_farmacia_pedido_logs (
             pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
@@ -189,7 +208,8 @@ def registrar_etapa(
     ))
 
     coluna_status = {
-        "inclusao": "status_inclusao",
+        "impressao": "status_impressao",
+        "conferencia": "status_conferencia",
         "producao": "status_producao",
         "despacho": "status_despacho",
         "entrega": "status_entrega",
