@@ -76,7 +76,18 @@ def login_usuario(dados: dict = Body(...)):
         raise HTTPException(status_code=400, detail="Código e senha são obrigatórios.")
 
     cursor.execute("""
-        SELECT u.id, u.farmacia_id, u.nome, f.nome AS nome_farmacia
+        SELECT 
+            u.id, 
+            u.farmacia_id, 
+            u.nome, 
+            f.nome AS nome_farmacia,
+            u.permissao_inclusao,
+            u.permissao_impressao,
+            u.permissao_conferencia,
+            u.permissao_producao,
+            u.permissao_despacho,
+            u.permissao_entrega,
+            u.permissao_registrar_pagamento
         FROM farol_farmacia_usuarios u
         JOIN farol_farmacias f ON f.id = u.farmacia_id
         WHERE u.codigo = %s AND u.senha = %s
@@ -89,7 +100,14 @@ def login_usuario(dados: dict = Body(...)):
             "usuarioId": usuario[0],
             "farmaciaId": usuario[1],
             "nome": usuario[2],
-            "nomeFarmacia": usuario[3]  # ✅ Aqui está o nome da farmácia
+            "nomeFarmacia": usuario[3],
+            "permissao_inclusao": usuario[4],
+            "permissao_impressao": usuario[5],
+            "permissao_conferencia": usuario[6],
+            "permissao_producao": usuario[7],
+            "permissao_despacho": usuario[8],
+            "permissao_entrega": usuario[9],
+            "permissao_registrar_pagamento": usuario[10],
         }
     else:
         return {"status": "erro", "mensagem": "Credenciais inválidas"}
