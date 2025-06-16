@@ -71,17 +71,12 @@ const salvarPedido = async () => {
       formData.append('receita', receita)
     }
 
-    const res = await api.post('/pedidos/criar', formData)
-
-    if (res?.data?.pedido_id) {
-      localStorage.setItem('ultimoPedidoCriado', String(res.data.pedido_id))
-    }
-
+    const res = await api.post('/pedidos/criar', formData) // ✅ agora sim
+    localStorage.setItem('ultimoPedidoCriado', String(res.data.pedido_id || '')) // ✅ salvar corretamente
     toast.success('Pedido criado com sucesso')
     window.dispatchEvent(new Event("novoPedidoCriado"))
     onClose()
-  } catch (err) {
-    console.error('Erro ao salvar pedido:', err)
+  } catch {
     toast.error('Erro ao salvar pedido')
   }
 }
