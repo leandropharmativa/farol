@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import {
   User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard,
-  FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote
+  FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine,
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 
@@ -39,7 +39,6 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
   }
 
   const etapas = [
-    { campo: 'status_inclusao', nome: 'Inclusão', icone: PackagePlus },
     { campo: 'status_impressao', nome: 'Impressão', icone: Printer },
     { campo: 'status_conferencia', nome: 'Conferência', icone: FileCheck2 },
     { campo: 'status_producao', nome: 'Produção', icone: CircleCheckBig },
@@ -260,7 +259,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
                     className="text-gray-400 hover:text-blue-500 p-1"
                     onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
                   >
-                    <Pencil size={18} />
+                    <FilePenLine size={18} />
                   </button>
                 )}
               </div>
