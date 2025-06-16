@@ -240,7 +240,7 @@ const etapas = [
                 {etapas.map(et => {
                   const Icone = et.icone
                   const ativo = p[et.campo]
-                  const podeExecutar = usuarioLogado?.[et.permissao] === true
+                  const podeExecutar = String(usuarioLogado?.[et.permissao]) === 'true'
     
                   if (!podeExecutar) return null
   
@@ -257,7 +257,7 @@ const etapas = [
                 })}
 
                 {/* Exibe botão de edição apenas se email for o da farmácia */}
-                {usuarioLogado.email === emailFarmacia && (
+                {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
                   <button
                     title="Editar pedido"
                     className="text-gray-400 hover:text-blue-500 p-1"
