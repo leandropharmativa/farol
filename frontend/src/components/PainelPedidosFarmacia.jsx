@@ -18,27 +18,6 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
 
-  const carregarPedidos = async () => {
-    try {
-      const res = await api.get('/pedidos/listar', {
-        params: { farmacia_id: farmaciaId }
-      })
-
-      const dataFiltro = new Date(dataSelecionada).toISOString().split('T')[0]
-
-      const pedidosFiltrados = res.data.filter(p => {
-        const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-        if (!campoOriginal) return false
-        const campoData = new Date(campoOriginal).toISOString().split('T')[0]
-        return campoData === dataFiltro
-      })
-
-      setPedidos(pedidosFiltrados)
-    } catch (err) {
-      toast.error('Erro ao carregar pedidos')
-    }
-  }
-
   const etapas = [
     { campo: 'status_inclusao', nome: 'Inclusão', icone: PackagePlus },
     { campo: 'status_impressao', nome: 'Impressão', icone: Printer },
@@ -49,10 +28,42 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
     { campo: 'status_pagamento', nome: 'Pagamento', icone: CreditCard }
   ]
 
-  const solicitarConfirmacao = (pedidoId, etapa) => {
-    setPedidoSelecionado(pedidoId)
-    setEtapaSelecionada(etapa)
-    setAbrirModal(true)
+  const carregarPedidos = async () => {
+    try {
+      const res = await api.get('/pedidos/listar', {
+        params: { farmacia_id: farmaciaId }
+      })
+      const dataFiltro = new Date(dataSelecionada).toISOString().split('T')[0]
+
+      const pedidosFiltrados = res.data.filter(p => {
+        const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+        if (!campoOriginal) return false
+        const campoData = new Date(campoOriginal).toISOString().split('T')[0]
+        return campoData === dataFiltro
+      })
+
+      setPedidos(pedidosFiltrados)
+    } catch {
+      toast.error('Erro ao carregar pedidos')
+    }
+  }
+
+  const incluirPedidoNaLista = async (novoId) => {
+    try {
+      const res = await api.get(`/pedidos/${novoId}`)
+      const novo = res.data
+      const dataPedido = new Date(novo.data_criacao).toISOString().split('T')[0]
+      const dataAtual = new Date(dataSelecionada).toISOString().split('T')[0]
+
+      if (dataPedido === dataAtual) {
+        setPedidos(prev => {
+          const jaExiste = prev.some(p => p.id === novo.id)
+          return jaExiste ? prev : [...prev, { ...novo, destaque: true }]
+        })
+      }
+    } catch {
+      toast.error('Erro ao buscar novo pedido')
+    }
   }
 
   const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
@@ -71,16 +82,21 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
     }
   }
 
-  const incluirPedidoNaLista = (novo) => {
-    setPedidos(prev => {
-      const jaExiste = prev.some(p => p.id === novo.id)
-      return jaExiste ? prev : [...prev, { ...novo, destaque: true }]
-    })
-  }
-
   useEffect(() => {
     if (farmaciaId) carregarPedidos()
   }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
+
+  useEffect(() => {
+    const atualizarLocal = (e) => {
+      if (!e?.detail?.id) return
+      incluirPedidoNaLista(e.detail.id)
+    }
+
+    const handler = (e) => atualizarLocal(e)
+
+    window.addEventListener("novoPedidoCriado", handler)
+    return () => window.removeEventListener("novoPedidoCriado", handler)
+  }, [dataSelecionada])
 
   const formatarData = (data) =>
     data.toLocaleDateString('pt-BR', {
@@ -109,6 +125,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
 
   return (
     <div>
+      {/* Header com data */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <button
@@ -139,12 +156,6 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
       </div>
 
       <div className="space-y-0">
-        <PedidosRecentesFarmacia
-          farmaciaId={farmaciaId}
-          dataSelecionada={dataSelecionada}
-          onIncluirPedido={incluirPedidoNaLista}
-        />
-
         {pedidos.map((p, index) => (
           <div key={p.id} className={`pedido-card ${p.destaque ? 'border-2 border-farol-primary bg-yellow-50' : index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
             <div className="pedido-linha">
@@ -203,15 +214,15 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
             </div>
           </div>
         ))}
-
-        {abrirModal && (
-          <ModalConfirmacao
-            titulo={`Confirmar etapa "${etapaSelecionada}"`}
-            onConfirmar={confirmarEtapa}
-            onCancelar={() => setAbrirModal(false)}
-          />
-        )}
       </div>
+
+      {abrirModal && (
+        <ModalConfirmacao
+          titulo={`Confirmar etapa "${etapaSelecionada}"`}
+          onConfirmar={confirmarEtapa}
+          onCancelar={() => setAbrirModal(false)}
+        />
+      )}
     </div>
   )
 }
