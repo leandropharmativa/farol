@@ -12,6 +12,7 @@ import {
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 import ModalNovoPedido from '../components/ModalNovoPedido'
 import PainelPedidosFarmacia from '../components/PainelPedidosFarmacia'
+import NovosPedidosStream from '../components/NovosPedidosStream'
 
 export default function PainelFarmacia() {
   const navigate = useNavigate()
@@ -91,6 +92,7 @@ export default function PainelFarmacia() {
       </div>
 
       {/* Lista de pedidos do dia */}
+      <NovosPedidosStream farmaciaId={farmaciaId} />
       <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} />
 
       {/* Botão de incluir pedido com transição de subida */}
