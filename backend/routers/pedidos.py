@@ -236,6 +236,8 @@ def listar_pedidos(farmacia_id: UUID):
             p.previsao_entrega,
             p.data_criacao,
             p.status_inclusao,
+            p.status_impressao,
+            p.status_conferencia,
             p.status_producao,
             p.status_despacho,
             p.status_entrega,
