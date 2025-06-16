@@ -8,6 +8,8 @@ import {
   FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine,
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
+import Tippy from '@tippyjs/react'
+import 'tippy.js/dist/tippy.css'
 
 export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtroRegistro = '', emailFarmacia }) {
   const [pedidos, setPedidos] = useState([])
@@ -260,29 +262,44 @@ function corLocalClasse(nome) {
               </div>
 
               <div className="flex items-center gap-2">
-                {etapas.map(et => {
-                  const Icone = et.icone
-                  const ativo = p[et.campo]
-                  const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
 
-                  return (
-                  <button
-                    key={et.campo}
-                    onClick={() => {
-                    if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
-                  }}
-                    disabled={!podeExecutar || ativo}
-                    className={`
-                    rounded-full p-1
-                    ${ativo ? 'text-green-600' : 'text-gray-400'}
-                    ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}
-                  `}
-                  title={et.nome}
-                >
-                <Icone size={18} />
-              </button>
-              )
-              })}
+  {etapas.map(et => {
+  const Icone = et.icone
+  const ativo = p[et.campo]
+  const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
+
+  const logs = logsPorPedido[p.id] || []
+  const logEtapa = logs.find(l => l.etapa.toLowerCase() === et.nome.toLowerCase())
+
+  const tooltip = logEtapa
+    ? `<strong>${et.nome}</strong><br>${logEtapa.usuario_confirmador}<br><small>${new Date(logEtapa.data_hora).toLocaleDateString('pt-BR')} ${new Date(logEtapa.data_hora).toLocaleTimeString('pt-BR').slice(0, 5)}</small>`
+    : et.nome
+
+  return (
+    <Tippy
+      key={et.campo}
+      content={<span dangerouslySetInnerHTML={{ __html: tooltip }} />}
+      delay={[200, 0]}
+      placement="top-end"
+      animation="shift-away"
+      theme="light-border"
+    >
+      <button
+        onClick={() => {
+          if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
+        }}
+        disabled={!podeExecutar || ativo}
+        className={`
+          rounded-full p-1
+          ${ativo ? 'text-green-600' : 'text-gray-400'}
+          ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}
+        `}
+      >
+        <Icone size={18} />
+      </button>
+    </Tippy>
+  )
+})}
 
                 {/* Exibe botão de edição apenas se email for o da farmácia */}
                 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
