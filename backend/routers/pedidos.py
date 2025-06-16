@@ -46,7 +46,7 @@ async def criar_pedido(
             origem_id, destino_id, previsao_entrega, receita_arquivo,
             data_criacao, status_inclusao
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW(), TRUE)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW() AT TIME ZONE 'America/Sao_Paulo', TRUE)
         RETURNING id
     """, (
         str(farmacia_id), registro, numero_itens, atendente_id,
