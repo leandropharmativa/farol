@@ -476,21 +476,16 @@ p {
 }
 
 /* ====== MODAL NOVO PEDIDO ====== */
+.modal-overlay.right-align {
+  justify-content: flex-end !important;
+}
+
 .modal-novo-pedido {
-  @apply bg-farol-primary max-w-xs w-full p-4 shadow-md animate-fadeIn;
+  @apply bg-farol-primary max-w-xs w-full p-4;
 }
 
-.modal-novo-pedido input,
-.modal-novo-pedido select {
-  @apply border w-full border-farol-primary bg-white text-farol-secondary placeholder-farol-secondary rounded-md text-sm px-3 py-1.5 w-full mb-2 focus:outline-none focus:ring-1 focus:ring-farol-linecolor;
-}
-
-.modal-novo-pedido label {
-  @apply text-sm font-medium mb-1;
-}
-
-.modal-novo-pedido .top-icons {
-  @apply flex justify-end gap-2 mb-2;
+.modal-novo-pedido-input {
+  @apply border w-full border-farol-primary bg-white text-farol-secondary placeholder-farol-secondary rounded-md text-sm px-3 py-1.5 mb-2 focus:outline-none focus:ring-1 focus:ring-farol-linecolor;
 }
 
 .modal-overlay.right-align {
