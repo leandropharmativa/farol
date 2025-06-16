@@ -492,3 +492,7 @@ p {
 .modal-novo-pedido .top-icons {
   @apply flex justify-end gap-2 mb-2;
 }
+
+.modal-overlay.right-align {
+  justify-content: flex-end;
+}
