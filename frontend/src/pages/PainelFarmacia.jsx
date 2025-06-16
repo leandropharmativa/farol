@@ -180,11 +180,21 @@ const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getI
         </button>
       </div>
 
+{modalPedidoAberto && (
+  <div
+    className="modal-overlay right-align"
+    onClick={() => setModalPedidoAberto(false)}
+  >
+    <div onClick={e => e.stopPropagation()}>
       <ModalNovoPedido
         aberto={modalPedidoAberto}
         onClose={() => setModalPedidoAberto(false)}
         farmaciaId={farmaciaId}
       />
+    </div>
+  </div>
+)}
+
 
       <ModalConfiguracoesFarmacia
         aberto={modalConfiguracoesAberto}
