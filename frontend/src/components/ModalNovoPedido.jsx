@@ -1,4 +1,3 @@
-
 //frontend/src/components/ModalNovoPedido.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -97,7 +96,7 @@ const salvarPedido = async () => {
   if (!modalRoot) return null
 
   return createPortal(
-    <div className="modal-novo-pedido">
+    <div className="modal-overlay">
       <div className="modal-container max-w-md animate-fade-slide">
         <button className="btn-fechar" onClick={onClose}><X /></button>
         <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
