@@ -82,7 +82,16 @@ const handleLogin = async () => {
         localStorage.setItem('nomeUsuario', resUsuario.data.nome)
         localStorage.setItem('nomeFarmacia', resUsuario.data.nomeFarmacia)
         localStorage.setItem('tipoLogin', 'usuario')
+        localStorage.setItem('emailFarmacia', resUsuario.data.emailFarmacia)
+        // Salva permissões
+        localStorage.setItem('permissao_impressao', resUsuario.data.permissao_impressao)
+        localStorage.setItem('permissao_conferencia', resUsuario.data.permissao_conferencia)
+        localStorage.setItem('permissao_producao', resUsuario.data.permissao_producao)
+        localStorage.setItem('permissao_despacho', resUsuario.data.permissao_despacho)
+        localStorage.setItem('permissao_entrega', resUsuario.data.permissao_entrega)
+        localStorage.setItem('permissao_registrar_pagamento', resUsuario.data.permissao_registrar_pagamento)
         toast.success('Login como usuário')
+        
         navigate('/painel-farmacia')
         window.location.reload()
         return
