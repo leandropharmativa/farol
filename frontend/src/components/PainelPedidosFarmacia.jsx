@@ -276,7 +276,7 @@ const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
 
       {abrirModal && (
         <ModalConfirmacao
-          titulo={`Confirmar etapa "${etapaSelecionada}"`}
+          titulo={`Confirmar "${etapaSelecionada}"`}
           onConfirmar={confirmarEtapa}
           onCancelar={() => setAbrirModal(false)}
         />
