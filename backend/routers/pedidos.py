@@ -69,8 +69,11 @@ async def criar_pedido(
         await q.put(evento)
 
 
-    return {"status": "ok", "mensagem": "Pedido criado com sucesso"}
-    "pedido_id": pedido_i
+    return {
+    "status": "ok",
+    "mensagem": "Pedido criado com sucesso",
+    "pedido_id": pedido_id
+    }
 
 # 📌 Editar pedido
 @router.post("/pedidos/editar/{pedido_id}")
