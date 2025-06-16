@@ -457,5 +457,22 @@ p {
   appearance: none;
 }
 
+/* ====== MODAL CONFIRMAÇÃO DE ETAPA ====== */
+.modal-confirmacao-input {
+  @apply w-full text-sm px-3 py-1 rounded border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-farol-primary;
+}
+
+.modal-confirmacao-label {
+  @apply block text-sm font-medium mb-1 text-gray-700;
+}
+
+.modal-confirmacao-botao {
+  @apply flex items-center gap-2 bg-farol-primary hover:bg-farol-primaryfocus text-white px-4 py-1.5 rounded-full transition;
+}
+
+.modal-confirmacao-cancelar {
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-1.5 rounded-full transition;
+}
+
 
 
