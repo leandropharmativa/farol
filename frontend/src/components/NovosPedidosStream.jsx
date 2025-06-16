@@ -53,16 +53,22 @@ eventSource.onmessage = async (event) => {
     return
   }
 
-  try {
-    console.log('[SSE] 📡 Buscando pedido...')
-    const res = await api.get(`/pedidos/${pedidoId}`)
-    console.log('[SSE] ✅ Pedido carregado:', res.data)
-    setNovosPedidos(prev => [res.data, ...prev])
-  } catch (err) {
-    console.error('[SSE] ❗ Erro ao buscar pedido:', err)
-  }
-}
+try {
+  console.log('[SSE] 📡 Buscando pedido...')
+  const res = await api.get(`/pedidos/${pedidoId}`)
+  console.log('[SSE] ✅ Pedido carregado:', res.data)
 
+  setNovosPedidos(prev => [res.data, ...prev])
+
+  // ⏳ Migrar para lista principal após 15 segundos
+  setTimeout(() => {
+    console.log(`[SSE] ⏳ Pedido ${res.data.id} será migrado para lista principal`)
+    window.dispatchEvent(new CustomEvent('novoPedidoCriado'))
+    setNovosPedidos(prev => prev.filter(p => p.id !== res.data.id))
+  }, 3000)
+} catch (err) {
+  console.error('[SSE] ❗ Erro ao buscar pedido:', err)
+}
 
     eventSource.onerror = (err) => {
       console.error('[SSE] 🔌 Erro na conexão. Fechando stream...', err)
