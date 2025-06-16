@@ -115,7 +115,7 @@ const salvarPedido = async () => {
             onChange={e => setRegistro(e.target.value)}
           />
           <input
-            className="input-config"
+            className="input-config col-span-2"
             placeholder="Nº de Itens*"
             value={numeroItens}
             onChange={e => setNumeroItens(e.target.value)}
