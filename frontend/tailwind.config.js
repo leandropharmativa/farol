@@ -31,6 +31,10 @@ module.exports = {
           loc4:'#ffe5a0',
           loc5:'#e6cff2',
           loc6:'#d4edbc',
+          loc7:'#6aa84f',
+          loc8:'#6fa8dc',
+          loc9:'#f9cb9c',
+          loc10:'#dd7e6b',
         },
       },
       fontFamily: {
