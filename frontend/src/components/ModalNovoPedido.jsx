@@ -96,7 +96,7 @@ const salvarPedido = async () => {
   if (!modalRoot) return null
 
 return createPortal(
-  <div className="modal-overlay right-align">
+  <div className="modal-overlay right-align modal-novo-pedido">
     <div className="modal-novo-pedido rounded-lg shadow-md animate-fadeIn">
       <div className="top-icons">
         <button className="btn-config" onClick={salvarPedido} title="Salvar Pedido">
