@@ -1,7 +1,7 @@
 //frontend/src/components/ModalNovoPedido.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { CircleX, Save } from 'lucide-react'
+import { SquareX, Save } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 
@@ -163,7 +163,7 @@ return createPortal(
           <Save size={20} />
         </button>
         <button className="btn-config2" onClick={onClose} title="Fechar">
-          <CircleX size={20} />
+          <SquareX size={20} />
         </button>
       </div>
       
