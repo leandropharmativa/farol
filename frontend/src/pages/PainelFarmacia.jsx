@@ -94,7 +94,7 @@ export default function PainelFarmacia() {
 
       {tipoLogin === 'usuario' && (
       <p className="text-sm text-gray-600 flex items-center gap-1">
-      <User size={16} /> {nomeUsuario}
+      <UserRound size={16} /> {nomeUsuario}
       </p>
       )}
       </header>
