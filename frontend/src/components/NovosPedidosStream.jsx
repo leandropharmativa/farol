@@ -68,13 +68,6 @@ export default function NovosPedidosStream({ farmaciaId }) {
         console.log('[SSE] ✅ Pedido carregado:', res.data)
 
         setNovosPedidos(prev => [res.data, ...prev])
-
-        // ⏳ Migrar para lista principal após 3 segundos
-        setTimeout(() => {
-          console.log(`[SSE] ⏳ Pedido ${res.data.id} será migrado para lista principal`)
-          window.dispatchEvent(new CustomEvent('novoPedidoCriado'))
-          setNovosPedidos(prev => prev.filter(p => p.id !== res.data.id))
-        }, 7000)
       } catch (err) {
         console.error('[SSE] ❗ Erro ao buscar pedido:', err)
       }
@@ -98,8 +91,10 @@ export default function NovosPedidosStream({ farmaciaId }) {
 
   return (
     <div className="mb-4">
-      <div className="flex items-center justify-between mb-1">
-        <span className="text-sm font-semibold text-farol-primary">NOVOS PEDIDOS</span>
+
+    <div className="flex items-center justify-between mb-1">
+      <span className="text-sm font-semibold text-farol-primary flex items-center gap-2">
+        NOVOS PEDIDOS
         <button
         onClick={() => {
         console.log('[SSE] 🔽 Descendo pedidos novos para a lista principal...')
@@ -108,9 +103,10 @@ export default function NovosPedidosStream({ farmaciaId }) {
         }}
         title="Mover todos para a lista principal"
         className="text-farol-primary hover:text-farol-secondary transition p-1"
-      >
-      <ListRestart size={18} />
-      </button>
+        >
+        <ListRestart size={18} />
+        </button>
+      </span>
     </div>
 
       {novosPedidos.map(p => (
