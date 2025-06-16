@@ -8,7 +8,6 @@ import {
   FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
-import PedidosRecentesFarmacia from './PedidosRecentesFarmacia'
 
 export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [pedidos, setPedidos] = useState([])
@@ -17,6 +16,25 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [abrirModal, setAbrirModal] = useState(false)
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
+
+  const carregarPedidos = async () => {
+    try {
+      const res = await api.get('/pedidos/listar', {
+        params: { farmacia_id: farmaciaId }
+      })
+
+      const dataFiltro = dataSelecionada.toISOString().slice(0, 10)
+
+      const pedidosFiltrados = res.data.filter(p => {
+        const campo = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+        return campo?.slice(0, 10) === dataFiltro
+      })
+
+      setPedidos(pedidosFiltrados)
+    } catch (err) {
+      toast.error('Erro ao carregar pedidos')
+    }
+  }
 
   const etapas = [
     { campo: 'status_inclusao', nome: 'Inclusão', icone: PackagePlus },
@@ -28,52 +46,10 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
     { campo: 'status_pagamento', nome: 'Pagamento', icone: CreditCard }
   ]
 
-  const carregarPedidos = async () => {
-    try {
-      const res = await api.get('/pedidos/listar', {
-        params: { farmacia_id: farmaciaId }
-      })
-      const dataFiltro = new Date(dataSelecionada).toISOString().split('T')[0]
-
-      const pedidosFiltrados = res.data.filter(p => {
-        const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-        if (!campoOriginal) return false
-        const campoData = new Date(campoOriginal).toISOString().split('T')[0]
-        return campoData === dataFiltro
-      })
-
-      setPedidos(pedidosFiltrados)
-    } catch {
-      toast.error('Erro ao carregar pedidos')
-    }
-  }
-
-  const incluirPedidoNaLista = async (novoId) => {
-    try {
-      const res = await api.get(`/pedidos/${novoId}`)
-      const novo = res.data
-      const mesmaData = (a, b) =>
-      a.getDate() === b.getDate() &&
-      a.getMonth() === b.getMonth() &&
-      a.getFullYear() === b.getFullYear()
-      const dataPedido = new Date(novo.data_criacao)
-      const dataAtual = new Date(dataSelecionada)
-  
-      if (mesmaData(dataPedido, dataAtual)) {
-      setPedidos(prev => {
-      const jaExiste = prev.some(p => p.id === novo.id)
-      return jaExiste ? prev : [...prev, { ...novo, destaque: true }]
-      })
-    }
-    if (dataPedido === dataAtual) {
-        setPedidos(prev => {
-          const jaExiste = prev.some(p => p.id === novo.id)
-          return jaExiste ? prev : [...prev, { ...novo, destaque: true }]
-        })
-      }
-    } catch {
-      toast.error('Erro ao buscar novo pedido')
-    }
+  const solicitarConfirmacao = (pedidoId, etapa) => {
+    setPedidoSelecionado(pedidoId)
+    setEtapaSelecionada(etapa)
+    setAbrirModal(true)
   }
 
   const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
@@ -96,18 +72,6 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
     if (farmaciaId) carregarPedidos()
   }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
 
-  useEffect(() => {
-    const atualizarLocal = (e) => {
-      if (!e?.detail?.id) return
-      incluirPedidoNaLista(e.detail.id)
-    }
-
-    const handler = (e) => atualizarLocal(e)
-
-    window.addEventListener("novoPedidoCriado", handler)
-    return () => window.removeEventListener("novoPedidoCriado", handler)
-  }, [dataSelecionada])
-
   const formatarData = (data) =>
     data.toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -126,60 +90,108 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
-  const corLocalClasse = (nome) => {
-    if (!nome) return 'bg-gray-300 text-gray-800'
-    const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
-    const indice = (hash % 6) + 1
-    return `bg-farol-loc${indice} text-white`
-  }
+const corLocalClasse = (nome) => {
+  if (!nome) return 'bg-gray-300 text-gray-800'
+  const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
+  const indice = (hash % 6) + 1
+  return `bg-farol-loc${indice} text-white`
+}
 
-  return (
-    <div>
-      {/* Header com data */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => {
-              const novoValor = !filtroPorPrevisao
-              setFiltroPorPrevisao(novoValor)
-              if (!novoValor) setDataSelecionada(new Date())
-            }}
-            className="text-farol-primary hover:text-farol-secondary transition flex items-center"
-            title={filtroPorPrevisao ? 'Filtrando por data de previsão de entrega' : 'Filtrando por data de criação'}
-          >
-            {filtroPorPrevisao
-              ? <CalendarCheck2 size={20} className="inline-block align-middle" />
-              : <CalendarPlus size={20} className="inline-block align-middle" />}
-          </button>
-          <div className="flex items-baseline gap-1 text-xl font-bold">
-            <span className="cursor-pointer" onClick={() => alterarData('dia', +1)} onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}>{dia}</span>
-            <span className="cursor-pointer" onClick={() => alterarData('mes', +1)} onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}>{mes}</span>
-            <span className="cursor-pointer" onClick={() => alterarData('ano', +1)} onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}>{ano}</span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1 text-farol-primary"><Boxes size={14} /><span>{pedidos.length}</span></div>
-          <div className="flex items-center gap-1 text-farol-semisolidos"><Beaker size={14} /><span>0</span></div>
-          <div className="flex items-center gap-1 text-farol-solidos"><Pill size={14} /><span>0</span></div>
-          <div className="flex items-center gap-1 text-farol-saches"><StickyNote size={14} /><span>0</span></div>
-        </div>
-      </div>
+return (
+  <div>
+    
+<div className="flex items-center justify-between mb-4">
+  {/* Seletor de data com ícone */}
+  <div className="flex items-center gap-3">
+    <button
+      onClick={() => {
+        const novoValor = !filtroPorPrevisao
+        setFiltroPorPrevisao(novoValor)
+        if (!novoValor) {
+        setDataSelecionada(new Date()) // volta para hoje se for data de criação
+        }
+      }}
+      className="text-farol-primary hover:text-farol-secondary transition flex items-center"
+      title={
+        filtroPorPrevisao
+          ? 'Filtrando por data de previsão de entrega'
+          : 'Filtrando por data de criação'
+      }
+    >
+      {filtroPorPrevisao ? (
+        <CalendarCheck2 size={20} className="inline-block align-middle" />
+      ) : (
+        <CalendarPlus size={20} className="inline-block align-middle" />
+      )}
+    </button>
 
+    <div className="flex items-baseline gap-1 text-xl font-bold">
+      <span
+        className="cursor-pointer select-none"
+        onClick={() => alterarData('dia', +1)}
+        onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
+      >
+        {dia}
+      </span>
+      <span
+        className="cursor-pointer select-none"
+        onClick={() => alterarData('mes', +1)}
+        onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
+      >
+        {mes}
+      </span>
+      <span
+        className="cursor-pointer select-none"
+        onClick={() => alterarData('ano', +1)}
+        onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
+      >
+        {ano}
+      </span>
+    </div>
+  </div>
+
+  {/* Totais de pedidos */}
+  
+<div className="flex items-center gap-2 text-xs">
+  <div className="flex items-center gap-1 text-farol-primary">
+    <Boxes size={14} />
+    <span>{pedidos.length}</span>
+  </div>
+  <div className="flex items-center gap-1 text-farol-semisolidos">
+    <Beaker size={14} />
+    <span>0</span>
+  </div>
+  <div className="flex items-center gap-1 text-farol-solidos">
+    <Pill size={14} />
+    <span>0</span>
+  </div>
+  <div className="flex items-center gap-1 text-farol-saches">
+    <StickyNote size={14} />
+    <span>0</span>
+  </div>
+</div>
+
+
+</div>
+    
       <div className="space-y-0">
         {pedidos.map((p, index) => (
-          <div key={p.id} className={`pedido-card ${p.destaque ? 'border-2 border-farol-primary bg-yellow-50' : index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
+          <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
             <div className="pedido-linha">
               <div className="pedido-conteudo">
                 <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
                 <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
-                <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
-                  <MapPinHouse size={14} className="mr-1" />
-                  <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
-                </div>
-                <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
-                  <MapPinned size={14} className="mr-1" />
-                  <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
-                </div>
+                
+<div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
+  <MapPinHouse size={14} className="mr-1" />
+  <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
+</div>
+
+<div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
+  <MapPinned size={14} className="mr-1" />
+  <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
+</div>
+                
                 <div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
                 <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
                 {p.receita_arquivo && (
@@ -196,6 +208,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
                   </div>
                 )}
               </div>
+
               <div className="flex items-center gap-2">
                 {etapas.map(et => {
                   const Icone = et.icone
