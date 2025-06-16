@@ -71,7 +71,14 @@ export default function PainelFarmacia() {
 
   const usuarioLogado = {
   id: localStorage.getItem('usuarioId'),
-  nome: localStorage.getItem('nomeUsuario')
+  nome: localStorage.getItem('nomeUsuario'),
+  email: localStorage.getItem('email'),
+  permissao_impressao: localStorage.getItem('permissao_impressao') === 'true',
+  permissao_conferencia: localStorage.getItem('permissao_conferencia') === 'true',
+  permissao_producao: localStorage.getItem('permissao_producao') === 'true',
+  permissao_despacho: localStorage.getItem('permissao_despacho') === 'true',
+  permissao_entrega: localStorage.getItem('permissao_entrega') === 'true',
+  permissao_registrar_pagamento: localStorage.getItem('permissao_registrar_pagamento') === 'true',
   }
 
   return (
