@@ -255,7 +255,7 @@ return (
 
     <div className="space-y-0">
       {forcarRender > -1 && (
-        <div className="space-y-0">
+        <>
           {pedidoExtra && (
             <div className="pedido-card border-2 border-farol-primary bg-yellow-50">
               <div className="pedido-linha">
@@ -360,7 +360,7 @@ return (
               </div>
             </div>
           ))}
-        </div>
+        </>
       )}
 
       {abrirModal && (
@@ -373,3 +373,4 @@ return (
     </div>
   </div>
 )
+
