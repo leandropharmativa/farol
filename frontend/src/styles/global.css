@@ -449,6 +449,9 @@ p {
 .btn-confirmar {
   @apply bg-farol-primary hover:bg-farol-secondary text-white px-4 py-2 rounded transition;
 }
+.botao-azul {
+  @apply rounded-full bg-farol-primary text-white shadow-md hover:bg-farol-secondary transition p-3;
+}
 
 
 
