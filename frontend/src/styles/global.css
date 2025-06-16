@@ -474,5 +474,22 @@ p {
   @apply bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-1.5 rounded-full transition;
 }
 
+/* ====== MODAL NOVO PEDIDO ====== */
+.modal-novo-pedido {
+  @apply bg-farol-primary text-white max-w-xs w-full p-4 rounded-lg shadow-md animate-fadeIn;
+}
+
+.modal-novo-pedido input,
+.modal-novo-pedido select {
+  @apply border border-white bg-white text-black placeholder-gray-400 rounded-md text-sm px-3 py-1.5 w-full mb-2 focus:outline-none focus:ring-2 focus:ring-farol-linecolor;
+}
+
+.modal-novo-pedido label {
+  @apply text-sm font-medium text-white mb-1;
+}
+
+.modal-novo-pedido .top-icons {
+  @apply flex justify-end gap-2 mb-2;
+}
 
 
