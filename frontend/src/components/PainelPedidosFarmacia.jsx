@@ -16,6 +16,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [abrirModal, setAbrirModal] = useState(false)
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
+  const [pedidoExtra, setPedidoExtra] = useState(null)
 
 const carregarPedidos = async () => {
   try {
@@ -108,15 +109,15 @@ eventSource.onmessage = (event) => {
 
     api.get(`/pedidos/${pedidoId}`)
       .then(res => {
-        const novoPedido = res.data
+        const pedidoNovo = res.data
+        const dataPedido = new Date(pedidoNovo.data_criacao).toISOString().split('T')[0]
+        const dataAtual = new Date(dataSelecionada).toISOString().split('T')[0]
 
-        setPedidos(prev => {
-          const jaExiste = prev.some(p => p.id === novoPedido.id)
-          if (jaExiste) return prev
-          return [{ ...novoPedido, destaque: true }, ...prev]
-        })
-
-        toast.info('Novo pedido recebido')
+        if (dataPedido === dataAtual) {
+          setPedidoExtra(pedidoNovo)
+        } else {
+          toast.info('Novo pedido de outra data')
+        }
       })
       .catch(() => toast.error('Erro ao buscar novo pedido'))
   }
@@ -255,6 +256,50 @@ return (
 </div>
     
       <div className="space-y-0">
+
+        {pedidoExtra && (
+  <div className="pedido-card border-2 border-farol-primary bg-yellow-50">
+    <div className="pedido-linha">
+      <div className="pedido-conteudo">
+        <div className="pedido-info"><PillBottle size={16} /><span>{pedidoExtra.registro} - {pedidoExtra.numero_itens}</span></div>
+        <div className="pedido-info"><User size={16} /><span>{pedidoExtra.atendente}</span></div>
+
+        {/* origem */}
+        <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(pedidoExtra.origem_nome)}`}>
+          <MapPinHouse size={14} className="mr-1" />
+          <span>{pedidoExtra.origem_nome || 'Origem'}</span>
+        </div>
+
+        {/* destino */}
+        <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(pedidoExtra.destino_nome)}`}>
+          <MapPinned size={14} className="mr-1" />
+          <span>{pedidoExtra.destino_nome || 'Destino'}</span>
+        </div>
+
+        <div className="pedido-info"><Calendar size={16} /><span>{new Date(pedidoExtra.previsao_entrega).getDate()}</span></div>
+        <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(pedidoExtra.previsao_entrega).getHours()}h</span></div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        {etapas.map(et => {
+          const Icone = et.icone
+          const ativo = pedidoExtra[et.campo]
+          return (
+            <button
+              key={et.campo}
+              disabled
+              className={`rounded-full p-1 ${ativo ? 'text-green-600' : 'text-gray-300'}`}
+              title={et.nome}
+            >
+              <Icone size={18} />
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  </div>
+)}
+
         {pedidos.map((p, index) => (
           <div
             key={p.id}
