@@ -264,20 +264,25 @@ function corLocalClasse(nome) {
                   const Icone = et.icone
                   const ativo = p[et.campo]
                   const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
-    
-                  if (!podeExecutar) return null
-  
+
                   return (
                   <button
                     key={et.campo}
-                    onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
-                    className={`rounded-full p-1 ${ativo ? 'text-green-600' : 'text-gray-400 hover:text-red-500'}`}
-                    title={et.nome}
-                    >
-                    <Icone size={18} />
-                  </button>
-                  )
-                })}
+                    onClick={() => {
+                    if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
+                  }}
+                    disabled={!podeExecutar || ativo}
+                    className={`
+                    rounded-full p-1
+                    ${ativo ? 'text-green-600' : 'text-gray-400'}
+                    ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}
+                  `}
+                  title={et.nome}
+                >
+                <Icone size={18} />
+              </button>
+              )
+              })}
 
                 {/* Exibe botão de edição apenas se email for o da farmácia */}
                 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
