@@ -55,9 +55,13 @@ export default function NovosPedidosStream({ farmaciaId }) {
       }
 
       // 🚫 Ignora pedidos criados por este próprio usuário
+      const pedido = res.data
+      const ultimoId = localStorage.getItem('ultimoPedidoCriadoId')
       const ultimoRegistro = localStorage.getItem('ultimoPedidoCriadoRegistro')
-      if (res.data.registro === ultimoRegistro) {
-      console.log(`[SSE] 🙈 Ignorando pedido local com registro (${res.data.registro})`)
+
+      if (pedido.id == ultimoId || pedido.registro === ultimoRegistro) {
+      console.log(`[SSE] 🙈 Ignorando pedido local (${pedido.id})`)
+      localStorage.removeItem('ultimoPedidoCriadoId')
       localStorage.removeItem('ultimoPedidoCriadoRegistro')
       return
       }
