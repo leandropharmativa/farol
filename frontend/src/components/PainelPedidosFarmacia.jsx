@@ -17,6 +17,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
   const [pedidoExtra, setPedidoExtra] = useState(null)
+  const [forcarRender, setForcarRender] = useState(0)
 
 const carregarPedidos = async () => {
   try {
@@ -115,6 +116,7 @@ eventSource.onmessage = (event) => {
 
         if (dataPedido === dataAtual) {
           setPedidoExtra(pedidoNovo)
+          setForcarRender(prev => prev + 1)
         } else {
           toast.info('Novo pedido de outra data')
         }
@@ -145,7 +147,7 @@ eventSource.onmessage = (event) => {
 
 useEffect(() => {
   if (farmaciaId) carregarPedidos()
-}, [farmaciaId, dataSelecionada, filtroPorPrevisao]) // 🔁 carrega nos filtros
+}, [farmaciaId, dataSelecionada, filtroPorPrevisao, forcarRender]) // 🔁 carrega nos filtros
 
   useEffect(() => {
   const atualizarLocal = () => carregarPedidos()
@@ -257,6 +259,8 @@ return (
     
       <div className="space-y-0">
 
+        {forcarRender > -1 && (
+  <>
         {pedidoExtra && (
   <div className="pedido-card border-2 border-farol-primary bg-yellow-50">
     <div className="pedido-linha">
