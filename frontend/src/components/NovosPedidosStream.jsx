@@ -1,3 +1,4 @@
+//frontend/src/components/NovosPedidosStream.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
 import { User, MapPinHouse, MapPinned, PillBottle, Calendar, AlarmClock, FileText } from 'lucide-react'
@@ -13,32 +14,68 @@ export default function NovosPedidosStream({ farmaciaId }) {
   }
 
   useEffect(() => {
-    if (!farmaciaId) return
+    if (!farmaciaId) {
+      console.log('[SSE] 🚫 Nenhum farmaciaId disponível, abortando conexão SSE')
+      return
+    }
 
+    console.log('[SSE] 🔌 Conectando à stream...')
     const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
+    eventSource.onopen = () => {
+      console.log('[SSE] ✅ Conexão aberta com sucesso')
+    }
+
     eventSource.onmessage = async (event) => {
-      if (!event.data.startsWith('novo_pedido')) return
+      console.log('[SSE] 📩 Mensagem recebida:', event.data)
+
+      if (!event.data.startsWith('novo_pedido')) {
+        console.log('[SSE] ⚠️ Evento ignorado (não é novo_pedido)')
+        return
+      }
 
       const partes = event.data.split(':')
+      if (partes.length < 3) {
+        console.warn('[SSE] ❌ Formato de evento inválido:', event.data)
+        return
+      }
+
       const farmaciaEvento = partes[1]
       const pedidoId = partes[2]
 
-      if (farmaciaEvento !== farmaciaId) return
+      console.log(`[SSE] 🎯 Evento recebido para farmácia: ${farmaciaEvento}, pedidoId: ${pedidoId}`)
+
+      if (farmaciaEvento !== farmaciaId) {
+        console.log(`[SSE] 🔕 Evento ignorado. Farmácia (${farmaciaEvento}) ≠ (${farmaciaId})`)
+        return
+      }
 
       try {
+        console.log('[SSE] 📡 Buscando dados do novo pedido...')
         const res = await api.get(`/pedidos/${pedidoId}`)
+        console.log('[SSE] ✅ Pedido carregado:', res.data)
+
         setNovosPedidos(prev => [res.data, ...prev])
       } catch (err) {
-        console.warn('Erro ao buscar novo pedido:', err)
+        console.error('[SSE] ❗ Erro ao buscar novo pedido:', err)
       }
     }
 
-    eventSource.onerror = () => eventSource.close()
-    return () => eventSource.close()
+    eventSource.onerror = (err) => {
+      console.error('[SSE] 🔌 Erro na conexão. Fechando stream...', err)
+      eventSource.close()
+    }
+
+    return () => {
+      console.log('[SSE] 🔒 Encerrando conexão SSE')
+      eventSource.close()
+    }
   }, [farmaciaId])
 
-  if (novosPedidos.length === 0) return null
+  if (novosPedidos.length === 0) {
+    console.log('[UI] 📭 Nenhum novo pedido para exibir')
+    return null
+  }
 
   return (
     <div className="mb-4">
