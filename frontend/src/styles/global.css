@@ -272,7 +272,7 @@ p {
 
 /* ====== MODAL CONFIGURAÇÕES ====== */
 .modal-container {
-  /*background: white;*/
+  background: white;
   width: 100%;
   max-width: 520px;
   border-radius: 8px;
