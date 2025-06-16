@@ -52,34 +52,39 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
     return amanha.toISOString().slice(0, 16) // formato datetime-local
   }
 
-  const salvarPedido = async () => {
-    if (!registro || !numeroItens || !atendenteId || !origemId || !destinoId || !previsaoEntrega) {
-      toast.warning('Preencha todos os campos obrigatórios')
-      return
-    }
-
-    try {
-      const formData = new FormData()
-      formData.append('farmacia_id', farmaciaId)
-      formData.append('registro', registro)
-      formData.append('numero_itens', numeroItens)
-      formData.append('atendente_id', atendenteId)
-      formData.append('origem_id', origemId)
-      formData.append('destino_id', destinoId)
-      formData.append('previsao_entrega', previsaoEntrega)
-      if (receita) {
-        formData.append('receita', receita)
-      }
-
-      await api.post('/pedidos/criar', formData)
-      localStorage.setItem('ultimoPedidoCriado', String(res.data.pedido_id || ''))
-      toast.success('Pedido criado com sucesso')
-      window.dispatchEvent(new Event("novoPedidoCriado"))
-      onClose()
-    } catch {
-      toast.error('Erro ao salvar pedido')
-    }
+const salvarPedido = async () => {
+  if (!registro || !numeroItens || !atendenteId || !origemId || !destinoId || !previsaoEntrega) {
+    toast.warning('Preencha todos os campos obrigatórios')
+    return
   }
+
+  try {
+    const formData = new FormData()
+    formData.append('farmacia_id', farmaciaId)
+    formData.append('registro', registro)
+    formData.append('numero_itens', numeroItens)
+    formData.append('atendente_id', atendenteId)
+    formData.append('origem_id', origemId)
+    formData.append('destino_id', destinoId)
+    formData.append('previsao_entrega', previsaoEntrega)
+    if (receita) {
+      formData.append('receita', receita)
+    }
+
+    const res = await api.post('/pedidos/criar', formData)
+
+    if (res?.data?.pedido_id) {
+      localStorage.setItem('ultimoPedidoCriado', String(res.data.pedido_id))
+    }
+
+    toast.success('Pedido criado com sucesso')
+    window.dispatchEvent(new Event("novoPedidoCriado"))
+    onClose()
+  } catch (err) {
+    console.error('Erro ao salvar pedido:', err)
+    toast.error('Erro ao salvar pedido')
+  }
+}
 
   if (!aberto) return null
   const modalRoot = document.getElementById('modal-root')
