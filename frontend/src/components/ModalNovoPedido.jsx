@@ -95,7 +95,17 @@ const salvarPedido = async () => {
   const modalRoot = document.getElementById('modal-root')
   if (!modalRoot) return null
 
-return createPortal(  
+return createPortal(
+  <div className="modal-overlay right-align modal-novo-pedido">
+    <div className="modal-novo-pedido animate-fadeIn">
+      <div className="top-icons">
+        <button className="btn-config2" onClick={salvarPedido} title="Salvar Pedido">
+          <Save size={20} />
+        </button>
+        <button className="btn-config2" onClick={onClose} title="Fechar">
+          <X size={20} />
+        </button>
+      </div>
 
       <div className="flex flex-col gap-2">
         <input
@@ -155,17 +165,6 @@ return createPortal(
           accept=".pdf,.png,.jpg,.jpeg"
           onChange={e => setReceita(e.target.files[0])}
         />
-      </div>
-
-    <div className="modal-overlay right-align modal-novo-pedido">
-    <div className="modal-novo-pedido animate-fadeIn">
-      <div className="top-icons">
-        <button className="btn-config2" onClick={salvarPedido} title="Salvar Pedido">
-          <Save size={20} />
-        </button>
-        <button className="btn-config2" onClick={onClose} title="Fechar">
-          <X size={20} />
-        </button>
       </div>
     </div>
   </div>,
