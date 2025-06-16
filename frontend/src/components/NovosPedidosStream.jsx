@@ -45,12 +45,21 @@ export default function NovosPedidosStream({ farmaciaId }) {
 
       const farmaciaEvento = partes[1]
       const pedidoId = partes[2]
+      
 
       console.log(`[SSE] 🎯 Evento para farmácia: ${farmaciaEvento}, pedidoId: ${pedidoId}`)
 
       if (farmaciaEvento !== farmaciaId) {
         console.log(`[SSE] 🔕 Farmácia (${farmaciaEvento}) ≠ (${farmaciaId})`)
         return
+      }
+
+      // 🚫 Ignora pedidos criados por este próprio usuário
+      const ultimoLocal = localStorage.getItem('ultimoPedidoCriado')
+      if (pedidoId === ultimoLocal) {
+      console.log(`[SSE] 🙈 Ignorando pedido local (${pedidoId})`)
+      localStorage.removeItem('ultimoPedidoCriado')
+      return
       }
 
       try {
@@ -65,7 +74,7 @@ export default function NovosPedidosStream({ farmaciaId }) {
           console.log(`[SSE] ⏳ Pedido ${res.data.id} será migrado para lista principal`)
           window.dispatchEvent(new CustomEvent('novoPedidoCriado'))
           setNovosPedidos(prev => prev.filter(p => p.id !== res.data.id))
-        }, 3000)
+        }, 7000)
       } catch (err) {
         console.error('[SSE] ❗ Erro ao buscar pedido:', err)
       }
