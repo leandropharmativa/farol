@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 
-export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtroRegistro = '' }) {
+export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtroRegistro = '', emailFarmacia }) {
   const [pedidos, setPedidos] = useState([])
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
   const [etapaSelecionada, setEtapaSelecionada] = useState('')
@@ -17,27 +17,27 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
 
-const carregarPedidos = async () => {
-  try {
-    const res = await api.get('/pedidos/listar', {
-      params: { farmacia_id: farmaciaId }
-    })
+  const carregarPedidos = async () => {
+    try {
+      const res = await api.get('/pedidos/listar', {
+        params: { farmacia_id: farmaciaId }
+      })
 
-    const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
+      const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
 
-    const pedidosFiltrados = res.data.filter(p => {
-      const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-      if (!campoOriginal) return false
-      const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
-      return campoData === dataFiltro
-    })
+      const pedidosFiltrados = res.data.filter(p => {
+        const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+        if (!campoOriginal) return false
+        const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
+        return campoData === dataFiltro
+      })
 
-    setPedidos(pedidosFiltrados)
-  } catch (err) {
-    toast.error('Erro ao carregar pedidos')
+      setPedidos(pedidosFiltrados)
+    } catch (err) {
+      toast.error('Erro ao carregar pedidos')
+    }
   }
-}
-  
+
   const etapas = [
     { campo: 'status_inclusao', nome: 'Inclusão', icone: PackagePlus },
     { campo: 'status_impressao', nome: 'Impressão', icone: Printer },
@@ -70,35 +70,35 @@ const carregarPedidos = async () => {
     }
   }
 
-const carregarPedidosComData = async (dataRef) => {
-  try {
-    const res = await api.get('/pedidos/listar', {
-      params: { farmacia_id: farmaciaId }
-    })
+  const carregarPedidosComData = async (dataRef) => {
+    try {
+      const res = await api.get('/pedidos/listar', {
+        params: { farmacia_id: farmaciaId }
+      })
 
-    const dataFiltro = dataRef.toISOString().split('T')[0]
+      const dataFiltro = dataRef.toISOString().split('T')[0]
 
-    const pedidosFiltrados = res.data.filter(p => {
-      const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-      if (!campoOriginal) return false
-      const campoData = new Date(campoOriginal).toISOString().split('T')[0]
-      return campoData === dataFiltro
-    })
+      const pedidosFiltrados = res.data.filter(p => {
+        const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+        if (!campoOriginal) return false
+        const campoData = new Date(campoOriginal).toISOString().split('T')[0]
+        return campoData === dataFiltro
+      })
 
-    setPedidos(pedidosFiltrados)
-  } catch (err) {
-    toast.error('Erro ao carregar pedidos')
+      setPedidos(pedidosFiltrados)
+    } catch (err) {
+      toast.error('Erro ao carregar pedidos')
+    }
   }
-}
-
-useEffect(() => {
-  if (farmaciaId) carregarPedidos()
-}, [farmaciaId, dataSelecionada, filtroPorPrevisao]) // 🔁 carrega nos filtros
 
   useEffect(() => {
-  const atualizarLocal = () => carregarPedidos()
-  window.addEventListener("novoPedidoCriado", atualizarLocal)
-  return () => window.removeEventListener("novoPedidoCriado", atualizarLocal)
+    if (farmaciaId) carregarPedidos()
+  }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
+
+  useEffect(() => {
+    const atualizarLocal = () => carregarPedidos()
+    window.addEventListener("novoPedidoCriado", atualizarLocal)
+    return () => window.removeEventListener("novoPedidoCriado", atualizarLocal)
   }, [])
 
   const formatarData = (data) =>
@@ -119,94 +119,88 @@ useEffect(() => {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
-const corLocalClasse = (nome) => {
-  if (!nome) return 'bg-gray-300 text-gray-800'
-  const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
-  const indice = (hash % 6) + 1
-  return `bg-farol-loc${indice} text-white`
-}
+  const corLocalClasse = (nome) => {
+    if (!nome) return 'bg-gray-300 text-gray-800'
+    const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
+    const indice = (hash % 6) + 1
+    return `bg-farol-loc${indice} text-white`
+  }
 
-const pedidosFiltrados = pedidos.filter(p =>
-p.registro?.toLowerCase().includes(filtroRegistro.toLowerCase())
-)
+  const pedidosFiltrados = pedidos.filter(p =>
+    p.registro?.toLowerCase().includes(filtroRegistro.toLowerCase())
+  )
 
-return (
-  <div>
-    
-<div className="flex items-center justify-between mb-4">
-  {/* Seletor de data com ícone */}
-  <div className="flex items-center gap-3">
-    <button
-      onClick={() => {
-        const novoValor = !filtroPorPrevisao
-        setFiltroPorPrevisao(novoValor)
-        if (!novoValor) {
-        setDataSelecionada(new Date()) // volta para hoje se for data de criação
-        }
-      }}
-      className="text-farol-primary hover:text-farol-secondary transition flex items-center"
-      title={
-        filtroPorPrevisao
-          ? 'Filtrando por data de previsão de entrega'
-          : 'Filtrando por data de criação'
-      }
-    >
-      {filtroPorPrevisao ? (
-        <CalendarCheck2 size={20} className="inline-block align-middle" />
-      ) : (
-        <CalendarPlus size={20} className="inline-block align-middle" />
-      )}
-    </button>
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => {
+              const novoValor = !filtroPorPrevisao
+              setFiltroPorPrevisao(novoValor)
+              if (!novoValor) {
+                setDataSelecionada(new Date())
+              }
+            }}
+            className="text-farol-primary hover:text-farol-secondary transition flex items-center"
+            title={
+              filtroPorPrevisao
+                ? 'Filtrando por data de previsão de entrega'
+                : 'Filtrando por data de criação'
+            }
+          >
+            {filtroPorPrevisao ? (
+              <CalendarCheck2 size={20} className="inline-block align-middle" />
+            ) : (
+              <CalendarPlus size={20} className="inline-block align-middle" />
+            )}
+          </button>
 
-    <div className="flex items-baseline gap-1 text-xl font-bold">
-      <span
-        className="cursor-pointer select-none"
-        onClick={() => alterarData('dia', +1)}
-        onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
-      >
-        {dia}
-      </span>
-      <span
-        className="cursor-pointer select-none"
-        onClick={() => alterarData('mes', +1)}
-        onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
-      >
-        {mes}
-      </span>
-      <span
-        className="cursor-pointer select-none"
-        onClick={() => alterarData('ano', +1)}
-        onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
-      >
-        {ano}
-      </span>
-    </div>
-  </div>
+          <div className="flex items-baseline gap-1 text-xl font-bold">
+            <span
+              className="cursor-pointer select-none"
+              onClick={() => alterarData('dia', +1)}
+              onContextMenu={(e) => { e.preventDefault(); alterarData('dia', -1) }}
+            >
+              {dia}
+            </span>
+            <span
+              className="cursor-pointer select-none"
+              onClick={() => alterarData('mes', +1)}
+              onContextMenu={(e) => { e.preventDefault(); alterarData('mes', -1) }}
+            >
+              {mes}
+            </span>
+            <span
+              className="cursor-pointer select-none"
+              onClick={() => alterarData('ano', +1)}
+              onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
+            >
+              {ano}
+            </span>
+          </div>
+        </div>
 
-  {/* Totais de pedidos */}
-  
-<div className="flex items-center gap-2 text-xs">
-  <div className="flex items-center gap-1 text-farol-primary">
-    <Boxes size={14} />
-    <span>{pedidos.length}</span>
-  </div>
-  <div className="flex items-center gap-1 text-farol-semisolidos">
-    <Beaker size={14} />
-    <span>0</span>
-  </div>
-  <div className="flex items-center gap-1 text-farol-solidos">
-    <Pill size={14} />
-    <span>0</span>
-  </div>
-  <div className="flex items-center gap-1 text-farol-saches">
-    <StickyNote size={14} />
-    <span>0</span>
-  </div>
-</div>
+        <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-1 text-farol-primary">
+            <Boxes size={14} />
+            <span>{pedidos.length}</span>
+          </div>
+          <div className="flex items-center gap-1 text-farol-semisolidos">
+            <Beaker size={14} />
+            <span>0</span>
+          </div>
+          <div className="flex items-center gap-1 text-farol-solidos">
+            <Pill size={14} />
+            <span>0</span>
+          </div>
+          <div className="flex items-center gap-1 text-farol-saches">
+            <StickyNote size={14} />
+            <span>0</span>
+          </div>
+        </div>
+      </div>
 
-
-</div>
-    
       <div className="space-y-0">
         {pedidosFiltrados.map((p, index) => (
           <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
@@ -214,19 +208,20 @@ return (
               <div className="pedido-conteudo">
                 <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
                 <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
-                
-<div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
-  <MapPinHouse size={14} className="mr-1" />
-  <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
-</div>
 
-<div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
-  <MapPinned size={14} className="mr-1" />
-  <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
-</div>
-                
+                <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
+                  <MapPinHouse size={14} className="mr-1" />
+                  <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
+                </div>
+
+                <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
+                  <MapPinned size={14} className="mr-1" />
+                  <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
+                </div>
+
                 <div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
                 <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
+
                 {p.receita_arquivo && (
                   <div className="pedido-info text-blue-600">
                     <FileText size={16} />
@@ -257,7 +252,9 @@ return (
                     </button>
                   )
                 })}
-                {usuarioLogado.email === 'admin@admin.com' && (
+
+                {/* Exibe botão de edição apenas se email for o da farmácia */}
+                {usuarioLogado.email === emailFarmacia && (
                   <button
                     title="Editar pedido"
                     className="text-gray-400 hover:text-blue-500 p-1"
