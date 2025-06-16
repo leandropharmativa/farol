@@ -72,6 +72,7 @@ export default function ModalNovoPedido({ aberto, onClose, farmaciaId }) {
       }
 
       await api.post('/pedidos/criar', formData)
+      localStorage.setItem('ultimoPedidoCriado', String(res.data.pedido_id || ''))
       toast.success('Pedido criado com sucesso')
       window.dispatchEvent(new Event("novoPedidoCriado"))
       onClose()
