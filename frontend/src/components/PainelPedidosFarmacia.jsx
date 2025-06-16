@@ -120,14 +120,32 @@ const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
+const coresDisponiveis = [
+  'bg-farol-loc1 text-white',
+  'bg-farol-loc2 text-white',
+  'bg-farol-loc3 text-white',
+  'bg-farol-loc4 text-white',
+  'bg-farol-loc5 text-white',
+  'bg-farol-loc6 text-white',
+  'bg-farol-loc7 text-white',
+  'bg-farol-loc8 text-white',
+  'bg-farol-loc9 text-white',
+  'bg-farol-loc10 text-white'
+]
+
+const corCache = new Map()
+
 const corLocalClasse = (nome) => {
   if (!nome) return 'bg-gray-300 text-gray-800'
-  let hash = 0
-  for (let i = 0; i < nome.length; i++) {
-    hash = (hash * 31 + nome.charCodeAt(i)) % 1000
-  }
-  const indice = (hash % 6) + 1
-  return `bg-farol-loc${indice} text-white`
+
+  if (corCache.has(nome)) return corCache.get(nome)
+
+  // Gera índice baseado na soma dos códigos de caractere com multiplicação
+  const hash = [...nome].reduce((acc, c, i) => acc + c.charCodeAt(0) * (i + 1), 0)
+  const indice = hash % coresDisponiveis.length
+  const cor = coresDisponiveis[indice]
+  corCache.set(nome, cor)
+  return cor
 }
 
   const pedidosFiltrados = pedidos.filter(p =>
