@@ -95,65 +95,80 @@ const salvarPedido = async () => {
   const modalRoot = document.getElementById('modal-root')
   if (!modalRoot) return null
 
-  return createPortal(
-    <div className="modal-overlay right-align modal-novo-pedido">
-      <div className="modal-container max-w-md animate-fade-slide">
-        <button className="btn-fechar" onClick={onClose}><X /></button>
-        <h2 className="flex items-center gap-2 mb-4 text-xl font-semibold">
-          Novo Pedido
-          <button className="btn-config" onClick={salvarPedido} title="Salvar Pedido">
-            <Save size={20} />
-          </button>
-        </h2>
-
-        <div className="grid grid-cols-2 gap-4">
-          <input
-            className="modal-novo-pedido-input"
-            placeholder="Registro*"
-            value={registro}
-            onChange={e => setRegistro(e.target.value)}
-          />
-          <input
-            className="modal-novo-pedido-input"
-            placeholder="Nº de Itens*"
-            value={numeroItens}
-            onChange={e => setNumeroItens(e.target.value)}
-          />
-
-          <select className="modal-novo-pedido-input" value={atendenteId} onChange={e => setAtendenteId(e.target.value)}>
-            <option value="">Selecione um atendente*</option>
-            {usuarios.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
-          </select>
-
-          <select className="modal-novo-pedido-input" value={origemId} onChange={e => setOrigemId(e.target.value)}>
-            <option value="">Origem*</option>
-            {locais.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
-          </select>
-
-          <select className="modal-novo-pedido-input" value={destinoId} onChange={e => setDestinoId(e.target.value)}>
-            <option value="">Destino*</option>
-            {locais.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
-          </select>
-
-          <div className="col-span-2 flex flex-col gap-1">
-            <label className="text-sm text-gray-600">Previsão de Entrega*</label>
-            <input
-              className="modal-novo-pedido-input"
-              type="datetime-local"
-              value={previsaoEntrega}
-              onChange={e => setPrevisaoEntrega(e.target.value)}
-            />
-          </div>
-
-          <input
-            className="modal-novo-pedido-input"
-            type="file"
-            accept=".pdf,.png,.jpg,.jpeg"
-            onChange={e => setReceita(e.target.files[0])}
-          />
-        </div>
+return createPortal(
+  <div className="modal-overlay right-align">
+    <div className="modal-novo-pedido rounded-lg shadow-md animate-fadeIn">
+      <div className="top-icons">
+        <button className="btn-config" onClick={salvarPedido} title="Salvar Pedido">
+          <Save size={20} />
+        </button>
+        <button className="btn-config" onClick={onClose} title="Fechar">
+          <X size={20} />
+        </button>
       </div>
-    </div>,
-    modalRoot
-  )
-}
+
+      <h2 className="text-white text-xl font-semibold mb-4">Novo Pedido</h2>
+
+      <div className="flex flex-col gap-2">
+        <input
+          className="modal-novo-pedido-input"
+          placeholder="Registro*"
+          value={registro}
+          onChange={e => setRegistro(e.target.value)}
+        />
+        <input
+          className="modal-novo-pedido-input"
+          placeholder="Nº de Itens*"
+          value={numeroItens}
+          onChange={e => setNumeroItens(e.target.value)}
+        />
+        <select
+          className="modal-novo-pedido-input"
+          value={atendenteId}
+          onChange={e => setAtendenteId(e.target.value)}
+        >
+          <option value="">Selecione um atendente*</option>
+          {usuarios.map(u => (
+            <option key={u.id} value={u.id}>{u.nome}</option>
+          ))}
+        </select>
+        <select
+          className="modal-novo-pedido-input"
+          value={origemId}
+          onChange={e => setOrigemId(e.target.value)}
+        >
+          <option value="">Origem*</option>
+          {locais.map(l => (
+            <option key={l.id} value={l.id}>{l.nome}</option>
+          ))}
+        </select>
+        <select
+          className="modal-novo-pedido-input"
+          value={destinoId}
+          onChange={e => setDestinoId(e.target.value)}
+        >
+          <option value="">Destino*</option>
+          {locais.map(l => (
+            <option key={l.id} value={l.id}>{l.nome}</option>
+          ))}
+        </select>
+
+        <label className="text-white text-sm">Previsão de Entrega*</label>
+        <input
+          className="modal-novo-pedido-input"
+          type="datetime-local"
+          value={previsaoEntrega}
+          onChange={e => setPrevisaoEntrega(e.target.value)}
+        />
+
+        <input
+          className="modal-novo-pedido-input"
+          type="file"
+          accept=".pdf,.png,.jpg,.jpeg"
+          onChange={e => setReceita(e.target.files[0])}
+        />
+      </div>
+    </div>
+  </div>,
+  modalRoot
+)
