@@ -402,7 +402,7 @@ p {
 }
 
 .btn-config2 {
-  @apply text-sm text-white rounded-full hover:text-farol-secondary transition;
+  @apply text-sm text-white mt-2 rounded-full hover:text-farol-secondary transition;
 }
 
 /* lista de pedidos */
