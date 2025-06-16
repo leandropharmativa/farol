@@ -1,7 +1,7 @@
 //frontend/src/components/NovosPedidosStream.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
-import { User, MapPinHouse, MapPinned, PillBottle, Calendar, AlarmClock, FileText } from 'lucide-react'
+import { User, MapPinHouse, MapPinned, PillBottle, Calendar, AlarmClock, FileText, ListRestart } from 'lucide-react'
 
 export default function NovosPedidosStream({ farmaciaId }) {
   const [novosPedidos, setNovosPedidos] = useState([])
@@ -98,7 +98,21 @@ export default function NovosPedidosStream({ farmaciaId }) {
 
   return (
     <div className="mb-4">
-      <div className="text-sm font-semibold text-farol-primary mb-1">NOVOS PEDIDOS</div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-sm font-semibold text-farol-primary">NOVOS PEDIDOS</span>
+        <button
+        onClick={() => {
+        console.log('[SSE] 🔽 Descendo pedidos novos para a lista principal...')
+        setNovosPedidos([])
+        window.dispatchEvent(new CustomEvent('novoPedidoCriado'))
+        }}
+        title="Mover todos para a lista principal"
+        className="text-farol-primary hover:text-farol-secondary transition p-1"
+      >
+      <ListRestart size={18} />
+      </button>
+    </div>
+
       {novosPedidos.map(p => (
         <div key={p.id} className="pedido-card border-l-4 border-farol-primary bg-farol-focus">
           <div className="pedido-linha">
