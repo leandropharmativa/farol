@@ -28,6 +28,8 @@ export default function PainelFarmacia() {
   const nomeFarmacia = localStorage.getItem('nomeFarmacia') || 'Painel da Farmácia'
   const nomeUsuario = localStorage.getItem('nomeUsuario') || ''
 
+  const [filtroRegistro, setFiltroRegistro] = useState('')
+
   const handleLogout = () => {
     localStorage.clear()
     setModalConfiguracoesAberto(false)
@@ -76,6 +78,15 @@ export default function PainelFarmacia() {
     <div className="painel-container">
       <header className="painel-header">
         <h1 className="painel-titulo fonte-pacifico">{nomeFarmacia}</h1>
+        <div className="flex justify-center my-4">
+          <input
+            type="text"
+            value={filtroRegistro}
+            onChange={(e) => setFiltroRegistro(e.target.value)}
+            placeholder="Buscar por registro..."
+            className="w-full max-w-md px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-farol-primary text-sm"
+          />
+        </div>
         {tipoLogin === 'usuario' && (
           <p className="text-sm text-gray-600 mt-1 text-center flex items-center justify-center gap-1">
             <UserRound size={16} /> {nomeUsuario}
@@ -96,7 +107,7 @@ export default function PainelFarmacia() {
 
       {/* Lista de pedidos do dia */}
       <NovosPedidosStream farmaciaId={farmaciaId} />
-      <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} />
+      <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} filtroRegistro={filtroRegistro} />
 
       {/* Botão de incluir pedido com transição de subida */}
       <div
