@@ -402,7 +402,7 @@ p {
 }
 
 .btn-config2 {
-  @apply w-full bg-white text-sm text-farol-primary font-semibold mt-2 py-2 px-4 rounded-md hover:bg-farol-focus transition;
+  @apply w-full bg-white text-sm text-farol-primary p-2 rounded-full hover:bg-farol-focus transition;
 }
 
 /* lista de pedidos */
