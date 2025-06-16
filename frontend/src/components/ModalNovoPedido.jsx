@@ -71,7 +71,7 @@ const salvarPedido = async () => {
 
     const res = await api.post('/pedidos/criar', formData)
     if (res.data?.pedido_id) {
-      localStorage.setItem('ultimoPedidoCriado', String(res.data.pedido_id))
+      localStorage.setItem('ultimoPedidoCriadoRegistro', registro)
     }
 
     toast.success('Pedido criado com sucesso')
