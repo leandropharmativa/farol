@@ -9,6 +9,10 @@ from uuid import UUID
 from datetime import datetime
 from typing import Optional
 import asyncio
+import unicodedata
+
+def remover_acentos(texto):
+    return ''.join(c for c in unicodedata.normalize('NFD', texto) if unicodedata.category(c) != 'Mn')
 
 router = APIRouter()
 UPLOAD_DIR = "receitas"
@@ -180,7 +184,8 @@ def registrar_etapa(
         raise HTTPException(status_code=401, detail="Código de confirmação inválido.")
     usuario_confirmador_id = row[0]
 
-    # 🔐 Verifica permissão para etapa
+    etapa_normalizada = remover_acentos(etapa.lower())
+
     coluna_permissao = {
         "impressao": "permissao_impressao",
         "conferencia": "permissao_conferencia",
@@ -188,7 +193,7 @@ def registrar_etapa(
         "despacho": "permissao_despacho",
         "entrega": "permissao_entrega",
         "pagamento": "permissao_registrar_pagamento"
-    }.get(etapa.lower())
+    }.get(etapa_normalizada)
 
     if coluna_permissao:
         cursor.execute(
@@ -214,7 +219,7 @@ def registrar_etapa(
         "despacho": "status_despacho",
         "entrega": "status_entrega",
         "pagamento": "status_pagamento"
-    }.get(etapa.lower())
+    }.get(etapa_normalizada)
 
     if coluna_status:
         cursor.execute(f"""
