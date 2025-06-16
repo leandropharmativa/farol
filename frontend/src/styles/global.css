@@ -486,7 +486,7 @@ p {
 }
 
 .modal-novo-pedido {
-  @apply farol-primary max-w-xs w-full p-4;
+  @apply bg-farol-primary max-w-xs w-full p-4;
 }
 
 .modal-novo-pedido-input {
