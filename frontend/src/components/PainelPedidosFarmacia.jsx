@@ -128,11 +128,7 @@ const coresDisponiveis = [
   'bg-farol-loc3 text-white',
   'bg-farol-loc4 text-white',
   'bg-farol-loc5 text-white',
-  'bg-farol-loc6 text-white',
-  'bg-farol-loc7 text-white',
-  'bg-farol-loc8 text-white',
-  'bg-farol-loc9 text-white',
-  'bg-farol-loc10 text-white'
+  'bg-farol-loc6 text-white'
 ]
 let indiceCorAtual = 0
 
