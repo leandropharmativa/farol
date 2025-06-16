@@ -22,7 +22,7 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
             <label className="block font-medium mb-1">Código de Usuário</label>
             <input
               type="text"
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
               value={codigo}
               onChange={e => setCodigo(e.target.value)}
             />
@@ -32,7 +32,7 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
             <label className="block font-medium mb-1">Observação (opcional)</label>
             <input
               type="text"
-              className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm"
+              className="w-full border border-gray-300 rounded px-3 py-1 text-sm"
               value={observacao}
               onChange={e => setObservacao(e.target.value)}
             />
