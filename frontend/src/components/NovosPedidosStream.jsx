@@ -1,7 +1,10 @@
 //frontend/src/components/NovosPedidosStream.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
-import { User, MapPinHouse, MapPinned, PillBottle, Calendar, AlarmClock, FileText, ListRestart } from 'lucide-react'
+import {
+  User, MapPinHouse, MapPinned, PillBottle, Calendar,
+  AlarmClock, FileText, ListRestart
+} from 'lucide-react'
 
 export default function NovosPedidosStream({ farmaciaId }) {
   const [novosPedidos, setNovosPedidos] = useState([])
@@ -45,7 +48,6 @@ export default function NovosPedidosStream({ farmaciaId }) {
 
       const farmaciaEvento = partes[1]
       const pedidoId = partes[2]
-      
 
       console.log(`[SSE] 🎯 Evento para farmácia: ${farmaciaEvento}, pedidoId: ${pedidoId}`)
 
@@ -54,28 +56,28 @@ export default function NovosPedidosStream({ farmaciaId }) {
         return
       }
 
-      // 🚫 Ignora pedidos criados por este próprio usuário
-try {
-  console.log('[SSE] 📡 Buscando pedido...')
-  const res = await api.get(`/pedidos/${pedidoId}`)
-  console.log('[SSE] ✅ Pedido carregado:', res.data)
+      try {
+        console.log('[SSE] 📡 Buscando pedido...')
+        const res = await api.get(`/pedidos/${pedidoId}`)
+        const pedido = res.data
+        console.log('[SSE] ✅ Pedido carregado:', pedido)
 
-  const pedido = res.data
-  const ultimoId = localStorage.getItem('ultimoPedidoCriadoId')
-  const ultimoRegistro = localStorage.getItem('ultimoPedidoCriadoRegistro')
+        // 🚫 Ignora pedidos criados por este próprio usuário
+        const ultimoId = localStorage.getItem('ultimoPedidoCriadoId')
+        const ultimoRegistro = localStorage.getItem('ultimoPedidoCriadoRegistro')
 
-  if (String(pedido.id) === ultimoId || pedido.registro === ultimoRegistro) {
-    console.log(`[SSE] 🙈 Ignorando pedido local (${pedido.id})`)
-    localStorage.removeItem('ultimoPedidoCriadoId')
-    localStorage.removeItem('ultimoPedidoCriadoRegistro')
-    return
-  }
+        if (String(pedido.id) === ultimoId || pedido.registro === ultimoRegistro) {
+          console.log(`[SSE] 🙈 Ignorando pedido local (${pedido.id})`)
+          localStorage.removeItem('ultimoPedidoCriadoId')
+          localStorage.removeItem('ultimoPedidoCriadoRegistro')
+          return
+        }
 
-  setNovosPedidos(prev => [pedido, ...prev])
-} catch (err) {
-  console.error('[SSE] ❗ Erro ao buscar pedido:', err)
-}
-
+        setNovosPedidos(prev => [pedido, ...prev])
+      } catch (err) {
+        console.error('[SSE] ❗ Erro ao buscar pedido:', err)
+      }
+    }
 
     eventSource.onerror = (err) => {
       console.error('[SSE] 🔌 Erro na conexão. Fechando stream...', err)
@@ -95,23 +97,22 @@ try {
 
   return (
     <div className="mb-4">
-
-    <div className="flex items-center justify-between mb-1">
-      <span className="text-sm font-semibold text-farol-primary flex items-center gap-2">
-        NOVOS PEDIDOS
-        <button
-        onClick={() => {
-        console.log('[SSE] 🔽 Descendo pedidos novos para a lista principal...')
-        setNovosPedidos([])
-        window.dispatchEvent(new CustomEvent('novoPedidoCriado'))
-        }}
-        title="Mover todos para a lista principal"
-        className="text-farol-primary hover:text-farol-secondary transition p-1"
-        >
-        <ListRestart size={18} />
-        </button>
-      </span>
-    </div>
+      <div className="flex items-center justify-between mb-1">
+        <span className="text-sm font-semibold text-farol-primary flex items-center gap-2">
+          NOVOS PEDIDOS
+          <button
+            onClick={() => {
+              console.log('[SSE] 🔽 Descendo pedidos novos para a lista principal...')
+              setNovosPedidos([])
+              window.dispatchEvent(new CustomEvent('novoPedidoCriado'))
+            }}
+            title="Mover todos para a lista principal"
+            className="text-farol-primary hover:text-farol-secondary transition p-1"
+          >
+            <ListRestart size={18} />
+          </button>
+        </span>
+      </div>
 
       {novosPedidos.map(p => (
         <div key={p.id} className="pedido-card border-l-4 border-farol-primary bg-farol-focus">
