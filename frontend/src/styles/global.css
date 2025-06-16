@@ -467,7 +467,7 @@ p {
 }
 
 .modal-confirmacao-botao {
-  @apply flex items-center gap-2 bg-farol-primary hover:bg-farol-primaryfocus text-white px-4 py-1.5 rounded-full transition;
+  @apply flex items-center gap-2 bg-farol-primary hover:bg-farol-secondary text-white px-4 py-1.5 rounded-full transition;
 }
 
 .modal-confirmacao-cancelar {
