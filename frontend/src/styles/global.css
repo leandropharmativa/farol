@@ -259,14 +259,7 @@ p {
 
 /* ====== MODAL ====== */
 .modal-overlay {
-  position: fixed;
-  top: 0; bottom: 0; left: 0; right: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow-y: auto;
-  padding: 1rem;
+@apply bg-farol-primary text-white max-w-xs w-full p-4 rounded-lg shadow-md animate-fadeIn;
 }
 
 /* ====== MODAL CONFIGURAÇÕES ====== */
