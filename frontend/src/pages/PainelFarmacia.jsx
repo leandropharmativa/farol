@@ -87,7 +87,7 @@ export default function PainelFarmacia() {
     placeholder="Buscar por registro..."
     value={filtroRegistro}
     onChange={e => setFiltroRegistro(e.target.value)}
-    className="bg-transparent text-sm w-40 border-none focus:outline-none focus:ring-0"
+    className="bg-transparent w-40 text-sm border-none outline-none focus:ring-0"
   />
 </div>
 
