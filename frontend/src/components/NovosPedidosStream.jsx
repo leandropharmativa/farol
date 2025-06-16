@@ -26,40 +26,43 @@ export default function NovosPedidosStream({ farmaciaId }) {
       console.log('[SSE] ✅ Conexão aberta com sucesso')
     }
 
-    eventSource.onmessage = async (event) => {
-      console.log('[SSE] 📩 Mensagem recebida:', event.data)
+eventSource.onmessage = async (event) => {
+  const rawData = event.data || ''
+  const cleaned = rawData.replace(/^data:\s*/, '').trim()
 
-      if (!event.data.startsWith('novo_pedido')) {
-        console.log('[SSE] ⚠️ Evento ignorado (não é novo_pedido)')
-        return
-      }
+  console.log('[SSE] 📩 Mensagem recebida (limpa):', cleaned)
 
-      const partes = event.data.split(':')
-      if (partes.length < 3) {
-        console.warn('[SSE] ❌ Formato de evento inválido:', event.data)
-        return
-      }
+  if (!cleaned.startsWith('novo_pedido')) {
+    console.log('[SSE] ⚠️ Evento ignorado (não é novo_pedido)')
+    return
+  }
 
-      const farmaciaEvento = partes[1]
-      const pedidoId = partes[2]
+  const partes = cleaned.split(':')
+  if (partes.length < 3) {
+    console.warn('[SSE] ❌ Formato de evento inválido:', cleaned)
+    return
+  }
 
-      console.log(`[SSE] 🎯 Evento recebido para farmácia: ${farmaciaEvento}, pedidoId: ${pedidoId}`)
+  const farmaciaEvento = partes[1]
+  const pedidoId = partes[2]
 
-      if (farmaciaEvento !== farmaciaId) {
-        console.log(`[SSE] 🔕 Evento ignorado. Farmácia (${farmaciaEvento}) ≠ (${farmaciaId})`)
-        return
-      }
+  console.log(`[SSE] 🎯 Evento para farmácia: ${farmaciaEvento}, pedidoId: ${pedidoId}`)
 
-      try {
-        console.log('[SSE] 📡 Buscando dados do novo pedido...')
-        const res = await api.get(`/pedidos/${pedidoId}`)
-        console.log('[SSE] ✅ Pedido carregado:', res.data)
+  if (farmaciaEvento !== farmaciaId) {
+    console.log(`[SSE] 🔕 Farmácia (${farmaciaEvento}) ≠ (${farmaciaId})`)
+    return
+  }
 
-        setNovosPedidos(prev => [res.data, ...prev])
-      } catch (err) {
-        console.error('[SSE] ❗ Erro ao buscar novo pedido:', err)
-      }
-    }
+  try {
+    console.log('[SSE] 📡 Buscando pedido...')
+    const res = await api.get(`/pedidos/${pedidoId}`)
+    console.log('[SSE] ✅ Pedido carregado:', res.data)
+    setNovosPedidos(prev => [res.data, ...prev])
+  } catch (err) {
+    console.error('[SSE] ❗ Erro ao buscar pedido:', err)
+  }
+}
+
 
     eventSource.onerror = (err) => {
       console.error('[SSE] 🔌 Erro na conexão. Fechando stream...', err)
