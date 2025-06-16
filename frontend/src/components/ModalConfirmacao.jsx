@@ -35,16 +35,16 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
 
         <div className="flex justify-between gap-2">
           <button
-            onClick={confirmar}
-            className="modal-confirmacao-botao"
-          >
-            <SquareCheckBig size={16} /> Confirmar
-          </button>
-          <button
             onClick={onCancelar}
             className="modal-confirmacao-cancelar"
           >
             Cancelar
+          </button>
+          <button
+            onClick={confirmar}
+            className="modal-confirmacao-botao"
+          >
+            <SquareCheckBig size={16} /> Confirmar
           </button>
         </div>
       </div>
