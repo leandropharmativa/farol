@@ -208,15 +208,6 @@ p {
   background: #cbd5e0;
 }
 
-.botao-principal {
-  background: #0074d9;
-  color: white;
-}
-
-.botao-principal:hover {
-  background: #005fa3;
-}
-
 .botao-sair {
   background: #ffe5e5;
   color: #cc0000;
@@ -450,7 +441,10 @@ p {
   @apply bg-farol-primary hover:bg-farol-secondary text-white px-4 py-2 rounded transition;
 }
 .botao-azul {
-  @apply rounded-full bg-farol-primary text-white shadow-md hover:bg-farol-secondary transition p-3;
+  @apply rounded-full bg-farol-secondary text-white shadow-md hover:bg-farol-primary transition p-3;
+}
+.botao-principal {
+  @apply rounded-full bg-farol-primary text-white hover:bg-farol-secondary shadow-md transition p-3;
 }
 
 
