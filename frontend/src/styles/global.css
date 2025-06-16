@@ -275,7 +275,7 @@ p {
 .modal-container {
   background: white;
   width: 100%;
-  max-width: 520px;
+  max-width: 500px;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   max-height: 90vh;
@@ -402,7 +402,7 @@ p {
 }
 
 .btn-config2 {
-  @apply bg-white text-sm text-farol-primary p-4 rounded-full hover:bg-farol-focus transition;
+  @apply text-sm text-white p-4 rounded-full hover:text-farol-focus transition;
 }
 
 /* lista de pedidos */
