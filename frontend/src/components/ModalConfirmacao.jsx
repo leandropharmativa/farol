@@ -1,43 +1,50 @@
-// frontend/src/components/ModalConfirmacao.jsx
 import { useState } from 'react'
 import { SquareCheckBig } from 'lucide-react'
 
 export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
   const [codigo, setCodigo] = useState('')
-  const [observacao, setObservacao] = useState('')
+  const [obs, setObs] = useState('')
 
   const confirmar = () => {
-    if (!codigo) return
-    onConfirmar(codigo, observacao)
+    if (!codigo.trim()) return
+    onConfirmar(codigo, obs)
   }
 
   return (
     <div className="modal-overlay">
-      <div className="modal-container max-w-sm p-4 animate-fadeIn">
-        <h2 className="text-left text-lg font-bold text-farol-primary mb-4">
-          Confirmar {titulo?.replace('etapa', '').replace(/\"/g, '').trim()}
+      <div className="bg-white max-w-xs w-full p-4 rounded-lg shadow-md animate-fadeIn">
+        <h2 className="text-base font-semibold text-left text-farol-primary mb-4">
+          Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
         </h2>
 
-        <label className="modal-confirmacao-label">Código de Usuário</label>
         <input
-          type="number"
-          className="modal-confirmacao-input mb-3"
+          type="text"
+          placeholder="Código do Usuário"
+          className="border border-gray-300 rounded-md px-3 py-1 text-sm w-full mb-2 focus:outline-none focus:ring-2 focus:ring-farol-primary"
           value={codigo}
           onChange={(e) => setCodigo(e.target.value)}
         />
 
-        <label className="modal-confirmacao-label">Observação (opcional)</label>
         <input
           type="text"
-          className="modal-confirmacao-input"
-          value={observacao}
-          onChange={(e) => setObservacao(e.target.value)}
+          placeholder="Observação (opcional)"
+          className="border border-gray-300 rounded-md px-3 py-1 text-sm w-full mb-3 focus:outline-none focus:ring-2 focus:ring-farol-primary"
+          value={obs}
+          onChange={(e) => setObs(e.target.value)}
         />
 
-        <div className="flex justify-end gap-2 mt-6">
-          <button onClick={onCancelar} className="modal-confirmacao-cancelar text-sm">Cancelar</button>
-          <button onClick={confirmar} className="modal-confirmacao-botao text-sm">
+        <div className="flex justify-between gap-2">
+          <button
+            onClick={confirmar}
+            className="bg-farol-primary hover:bg-farol-secondary text-white rounded-full px-4 py-1.5 text-sm flex items-center gap-1 w-full justify-center"
+          >
             <SquareCheckBig size={16} /> Confirmar
+          </button>
+          <button
+            onClick={onCancelar}
+            className="text-gray-500 hover:text-gray-700 text-sm px-4 py-1.5 rounded w-full"
+          >
+            Cancelar
           </button>
         </div>
       </div>
