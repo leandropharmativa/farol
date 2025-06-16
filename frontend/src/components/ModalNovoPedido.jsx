@@ -159,11 +159,11 @@ return createPortal(
       </div>
 
       <div className="top-icons">
-        <button className="btn-config2" onClick={salvarPedido} title="Salvar Pedido">
-          <Save size={24} />
-        </button>
         <button className="btn-config2" onClick={onClose} title="Fechar">
           <SquareX size={24} />
+        </button>
+        <button className="btn-config2" onClick={salvarPedido} title="Salvar Pedido">
+          <Save size={24} />
         </button>
       </div>
       
