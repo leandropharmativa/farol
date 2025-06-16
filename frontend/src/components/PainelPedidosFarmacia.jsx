@@ -114,12 +114,15 @@ eventSource.onmessage = (event) => {
         const dataPedido = new Date(pedidoNovo.data_criacao).toISOString().split('T')[0]
         const dataAtual = new Date(dataSelecionada).toISOString().split('T')[0]
 
-        if (dataPedido === dataAtual) {
-          setPedidoExtra(pedidoNovo)
-          setForcarRender(prev => prev + 1)
-        } else {
-          toast.info('Novo pedido de outra data')
-        }
+if (dataPedido === dataAtual) {
+  setPedidos(prev => {
+    const jaExiste = prev.some(p => p.id === pedidoNovo.id)
+    return jaExiste ? prev : [...prev, { ...pedidoNovo, destaque: true }]
+  })
+} else {
+  toast.info('Novo pedido de outra data')
+}
+
       })
       .catch(() => toast.error('Erro ao buscar novo pedido'))
   }
