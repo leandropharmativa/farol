@@ -303,14 +303,17 @@ return (
     )}
 
 
-        {pedidos.map((p, index) => (
-          <div
-            key={p.id}
-            className={`pedido-card ${
-            p.destaque ? 'border-2 border-farol-primary bg-yellow-50' :
-            index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'
-          }`}
-          >
+    {pedidos.map((p, index) => (
+      <div
+        key={p.id}
+        className={`pedido-card ${
+          p.destaque
+            ? 'border-2 border-farol-primary bg-yellow-50'
+            : index % 2 === 0
+              ? 'pedido-card-branco'
+              : 'pedido-card-cinza'
+        }`}
+      >
 
             <div className="pedido-linha">
               <div className="pedido-conteudo">
@@ -373,6 +376,7 @@ return (
           </div>
         ))}
       </div>
+  }}
 
       {abrirModal && (
         <ModalConfirmacao
