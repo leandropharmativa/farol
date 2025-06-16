@@ -76,34 +76,28 @@ export default function PainelFarmacia() {
 
   return (
     <div className="painel-container">
-      <header className="painel-header">
-        <h1 className="painel-titulo fonte-pacifico">{nomeFarmacia}</h1>
-        <div className="flex justify-center my-4">
-          <input
-            type="text"
-            value={filtroRegistro}
-            onChange={(e) => setFiltroRegistro(e.target.value)}
-            placeholder="Buscar por registro..."
-            className="w-full max-w-md px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-farol-primary text-sm"
-          />
-        </div>
-        {tipoLogin === 'usuario' && (
-          <p className="text-sm text-gray-600 mt-1 text-center flex items-center justify-center gap-1">
-            <UserRound size={16} /> {nomeUsuario}
-          </p>
-        )}
-      </header>
+    <header className="painel-header flex flex-wrap gap-4 items-center justify-between">
+      <div className="flex items-center gap-4">
+      <h1 className="painel-titulo fonte-pacifico text-2xl">{nomeFarmacia}</h1>
 
-      <div className="painel-acoes">
-        <div className="campo-busca">
-          <Search className="icone-busca" size={20} />
-          <input
-            type="text"
-            placeholder="Buscar pedido por nome ou código"
-            className="input-busca"
-          />
-        </div>
-      </div>
+      <div className="flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-sm">
+      <Search size={16} className="text-gray-500 mr-2" />
+      <input
+        type="text"
+        placeholder="Buscar por registro..."
+        value={filtroRegistro}
+        onChange={e => setFiltroRegistro(e.target.value)}
+        className="bg-transparent outline-none text-sm w-40"
+      />
+    </div>
+    </div>
+
+      {tipoLogin === 'usuario' && (
+      <p className="text-sm text-gray-600 flex items-center gap-1">
+      <User size={16} /> {nomeUsuario}
+      </p>
+      )}
+      </header>
 
       {/* Lista de pedidos do dia */}
       <NovosPedidosStream farmaciaId={farmaciaId} />
