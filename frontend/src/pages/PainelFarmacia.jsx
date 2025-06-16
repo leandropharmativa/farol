@@ -74,7 +74,7 @@ export default function PainelFarmacia() {
   return (
     <div className="painel-container">
       <header className="painel-header">
-        <h1 className="painel-titulo">{nomeFarmacia}</h1>
+        <h1 className="painel-titulo fonte-pacifico">{nomeFarmacia}</h1>
         {tipoLogin === 'usuario' && (
           <p className="text-sm text-gray-600 mt-1 text-center">Usuário: {nomeUsuario}</p>
         )}
