@@ -1,10 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../services/api'
-import { toast } from 'react-toastify'
-import {
-  User, MapPinHouse, MapPinned, PillBottle, Calendar,
-  AlarmClock, FileText
-} from 'lucide-react'
+import { User, MapPinHouse, MapPinned, PillBottle, Calendar, AlarmClock, FileText } from 'lucide-react'
 
 export default function NovosPedidosStream({ farmaciaId }) {
   const [novosPedidos, setNovosPedidos] = useState([])
@@ -22,29 +18,24 @@ export default function NovosPedidosStream({ farmaciaId }) {
     const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
     eventSource.onmessage = async (event) => {
-      if (event.data.startsWith('novo_pedido')) {
-        const partes = event.data.split(':')
-        const farmId = partes[1]
-        const pedidoId = partes[2]
+      if (!event.data.startsWith('novo_pedido')) return
 
-        if (farmId !== farmaciaId) return
+      const partes = event.data.split(':')
+      const farmaciaEvento = partes[1]
+      const pedidoId = partes[2]
 
-        try {
-          const res = await api.get(`/pedidos/${pedidoId}`)
-          setNovosPedidos(prev => [res.data, ...prev])
-        } catch (err) {
-          console.warn('Erro ao buscar novo pedido:', err)
-        }
+      if (farmaciaEvento !== farmaciaId) return
+
+      try {
+        const res = await api.get(`/pedidos/${pedidoId}`)
+        setNovosPedidos(prev => [res.data, ...prev])
+      } catch (err) {
+        console.warn('Erro ao buscar novo pedido:', err)
       }
     }
 
-    eventSource.onerror = () => {
-      eventSource.close()
-    }
-
-    return () => {
-      eventSource.close()
-    }
+    eventSource.onerror = () => eventSource.close()
+    return () => eventSource.close()
   }, [farmaciaId])
 
   if (novosPedidos.length === 0) return null
