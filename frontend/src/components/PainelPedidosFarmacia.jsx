@@ -53,21 +53,23 @@ const etapas = [
     setAbrirModal(true)
   }
 
-  const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
-    try {
-      const res = await api.post(`/pedidos/${pedidoSelecionado}/registrar-etapa`, {
-        etapa: etapaSelecionada,
-        usuario_logado_id: usuarioLogado.id,
-        codigo_confirmacao: codigoConfirmacao,
-        observacao
-      })
-      toast.success(res.data.mensagem)
-      setAbrirModal(false)
-      carregarPedidos()
-    } catch (err) {
-      toast.error(err.response?.data?.detail || 'Erro ao registrar etapa')
-    }
+const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
+  try {
+    const formData = new FormData()
+    formData.append('etapa', etapaSelecionada)
+    formData.append('usuario_logado_id', usuarioLogado.id)
+    formData.append('codigo_confirmacao', codigoConfirmacao)
+    formData.append('observacao', observacao)
+
+    const res = await api.post(`/pedidos/${pedidoSelecionado}/registrar-etapa`, formData)
+
+    toast.success(res.data.mensagem)
+    setAbrirModal(false)
+    carregarPedidos()
+  } catch (err) {
+    toast.error(err.response?.data?.detail || 'Erro ao registrar etapa')
   }
+}
 
   const carregarPedidosComData = async (dataRef) => {
     try {
