@@ -240,7 +240,7 @@ const etapas = [
                 {etapas.map(et => {
                   const Icone = et.icone
                   const ativo = p[et.campo]
-                  const podeExecutar = String(usuarioLogado?.[et.permissao]) === 'true'
+                  const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
     
                   if (!podeExecutar) return null
   
