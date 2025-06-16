@@ -80,16 +80,17 @@ export default function PainelFarmacia() {
       <div className="flex items-center gap-4">
       <h1 className="painel-titulo fonte-pacifico text-2xl">{nomeFarmacia}</h1>
 
-      <div className="flex items-center bg-white rounded-full border border-gray-300 px-3 py-1 shadow-sm">
-      <Search size={16} className="text-gray-500 mr-2" />
-      <input
-        type="text"
-        placeholder="Buscar por registro..."
-        value={filtroRegistro}
-        onChange={e => setFiltroRegistro(e.target.value)}
-        className="bg-transparent outline-none text-sm w-40"
-      />
-    </div>
+<div className="flex items-center bg-white rounded-full px-3 py-1 shadow-sm">
+  <Search size={16} className="text-gray-500 mr-2" />
+  <input
+    type="text"
+    placeholder="Buscar por registro..."
+    value={filtroRegistro}
+    onChange={e => setFiltroRegistro(e.target.value)}
+    className="bg-transparent text-sm w-40 border-none focus:outline-none focus:ring-0"
+  />
+</div>
+
     </div>
 
       {tipoLogin === 'usuario' && (
