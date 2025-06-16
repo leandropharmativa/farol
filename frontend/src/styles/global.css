@@ -447,5 +447,15 @@ p {
   @apply rounded-full bg-farol-linecolor text-white hover:bg-farol-secondary shadow-md transition p-3;
 }
 
+.input-busca-redonda {
+  border: none !important;
+  outline: none !important;
+  background: transparent;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  width: 100%;
+  appearance: none;
+}
+
 
 
