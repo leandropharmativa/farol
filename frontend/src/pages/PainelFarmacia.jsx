@@ -12,7 +12,6 @@ import {
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 import ModalNovoPedido from '../components/ModalNovoPedido'
 import PainelPedidosFarmacia from '../components/PainelPedidosFarmacia'
-import PedidosRecentesFarmacia from './PedidosRecentesFarmacia'
 
 export default function PainelFarmacia() {
   const navigate = useNavigate()
@@ -40,10 +39,6 @@ export default function PainelFarmacia() {
   const irParaConfiguracoes = () => {
     setModalConfiguracoesAberto(true)
   }
-
-  const incluirPedidoNaLista = (novo) => {
-  setPedidos(prev => [...prev, { ...novo, destaque: true }])
-}
 
   useEffect(() => {
     const handleClickFora = (event) => {
@@ -94,12 +89,6 @@ export default function PainelFarmacia() {
           />
         </div>
       </div>
-
-      <PedidosRecentesFarmacia
-        farmaciaId={farmaciaId}
-        dataSelecionada={dataSelecionada}
-        onIncluirPedido={incluirPedidoNaLista}
-      />
 
       {/* Lista de pedidos do dia */}
       <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} />
