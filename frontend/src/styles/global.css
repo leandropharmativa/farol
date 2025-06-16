@@ -406,7 +406,7 @@ p {
 }
 
 .btn-config2 {
-  @apply text-linecolor hover:text-farol-focus;
+  @apply text-farol-linecolor hover:text-farol-focus;
 }
 
 /* lista de pedidos */
