@@ -120,12 +120,15 @@ const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
-  const corLocalClasse = (nome) => {
-    if (!nome) return 'bg-gray-300 text-gray-800'
-    const hash = Array.from(nome).reduce((acc, c) => acc + c.charCodeAt(0), 0)
-    const indice = (hash % 6) + 1
-    return `bg-farol-loc${indice} text-white`
+const corLocalClasse = (nome) => {
+  if (!nome) return 'bg-gray-300 text-gray-800'
+  let hash = 0
+  for (let i = 0; i < nome.length; i++) {
+    hash = (hash * 31 + nome.charCodeAt(i)) % 1000
   }
+  const indice = (hash % 6) + 1
+  return `bg-farol-loc${indice} text-white`
+}
 
   const pedidosFiltrados = pedidos.filter(p =>
     p.registro?.toLowerCase().includes(filtroRegistro.toLowerCase())
