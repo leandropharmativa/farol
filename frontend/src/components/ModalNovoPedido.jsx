@@ -108,29 +108,29 @@ const salvarPedido = async () => {
 
         <div className="grid grid-cols-2 gap-4">
           <input
-            className=""
+            className="modal-novo-pedido-input"
             placeholder="Registro*"
             value={registro}
             onChange={e => setRegistro(e.target.value)}
           />
           <input
-            className=""
+            className="modal-novo-pedido-input"
             placeholder="Nº de Itens*"
             value={numeroItens}
             onChange={e => setNumeroItens(e.target.value)}
           />
 
-          <select className="" value={atendenteId} onChange={e => setAtendenteId(e.target.value)}>
+          <select className="modal-novo-pedido-input" value={atendenteId} onChange={e => setAtendenteId(e.target.value)}>
             <option value="">Selecione um atendente*</option>
             {usuarios.map(u => <option key={u.id} value={u.id}>{u.nome}</option>)}
           </select>
 
-          <select className="" value={origemId} onChange={e => setOrigemId(e.target.value)}>
+          <select className="modal-novo-pedido-input" value={origemId} onChange={e => setOrigemId(e.target.value)}>
             <option value="">Origem*</option>
             {locais.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
           </select>
 
-          <select className="" value={destinoId} onChange={e => setDestinoId(e.target.value)}>
+          <select className="modal-novo-pedido-input" value={destinoId} onChange={e => setDestinoId(e.target.value)}>
             <option value="">Destino*</option>
             {locais.map(l => <option key={l.id} value={l.id}>{l.nome}</option>)}
           </select>
@@ -138,7 +138,7 @@ const salvarPedido = async () => {
           <div className="col-span-2 flex flex-col gap-1">
             <label className="text-sm text-gray-600">Previsão de Entrega*</label>
             <input
-              className=""
+              className="modal-novo-pedido-input"
               type="datetime-local"
               value={previsaoEntrega}
               onChange={e => setPrevisaoEntrega(e.target.value)}
@@ -146,7 +146,7 @@ const salvarPedido = async () => {
           </div>
 
           <input
-            className=""
+            className="modal-novo-pedido-input"
             type="file"
             accept=".pdf,.png,.jpg,.jpeg"
             onChange={e => setReceita(e.target.files[0])}
