@@ -120,6 +120,8 @@ const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
   const dataSplit = formatarData(dataSelecionada).split(' ')
   const [dia, mes, ano] = dataSplit
 
+// Fora do componente (no topo do arquivo)
+const corFixasLocais = {}
 const coresDisponiveis = [
   'bg-farol-loc1 text-white',
   'bg-farol-loc2 text-white',
@@ -132,19 +134,17 @@ const coresDisponiveis = [
   'bg-farol-loc9 text-white',
   'bg-farol-loc10 text-white'
 ]
+let indiceCorAtual = 0
 
-const corCache = new Map()
-
-const corLocalClasse = (nome) => {
+function corLocalClasse(nome) {
   if (!nome) return 'bg-gray-300 text-gray-800'
 
-  if (corCache.has(nome)) return corCache.get(nome)
+  if (corFixasLocais[nome]) return corFixasLocais[nome]
 
-  // Gera índice baseado na soma dos códigos de caractere com multiplicação
-  const hash = [...nome].reduce((acc, c, i) => acc + c.charCodeAt(0) * (i + 1), 0)
-  const indice = hash % coresDisponiveis.length
-  const cor = coresDisponiveis[indice]
-  corCache.set(nome, cor)
+  // Atribui a próxima cor disponível em ordem, evitando repetição entre nomes diferentes
+  const cor = coresDisponiveis[indiceCorAtual % coresDisponiveis.length]
+  corFixasLocais[nome] = cor
+  indiceCorAtual++
   return cor
 }
 
