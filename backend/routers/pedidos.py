@@ -70,6 +70,7 @@ async def criar_pedido(
 
 
     return {"status": "ok", "mensagem": "Pedido criado com sucesso"}
+    "pedido_id": pedido_i
 
 # 📌 Editar pedido
 @router.post("/pedidos/editar/{pedido_id}")
