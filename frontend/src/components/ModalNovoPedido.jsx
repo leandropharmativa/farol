@@ -71,6 +71,7 @@ const salvarPedido = async () => {
 
     const res = await api.post('/pedidos/criar', formData)
     if (res.data?.pedido_id) {
+      localStorage.setItem('ultimoPedidoCriadoId', pedidoId)
       localStorage.setItem('ultimoPedidoCriadoRegistro', registro)
     }
 
