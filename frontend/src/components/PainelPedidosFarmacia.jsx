@@ -129,6 +129,9 @@ const etapas = [
     p.registro?.toLowerCase().includes(filtroRegistro.toLowerCase())
   )
 
+  console.log('Exibindo permissões:', usuarioLogado)
+  console.log('Primeiro pedido:', pedidosFiltrados[0])
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
