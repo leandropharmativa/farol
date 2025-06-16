@@ -402,7 +402,7 @@ p {
 }
 
 .btn-config2 {
-  @apply text-sm text-white rounded-full hover:text-farol-focus transition;
+  @apply text-sm text-white rounded-full hover:text-farol-secondary transition;
 }
 
 /* lista de pedidos */
@@ -482,7 +482,7 @@ p {
 }
 
 .modal-novo-pedido {
-  @apply bg-farol-primary max-w-xs w-full p-4;
+  @apply bg-farol-primary max-w-xs w-full p-2;
 }
 
 .modal-novo-pedido-input {
