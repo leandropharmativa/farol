@@ -69,7 +69,7 @@ export default function PainelFarmacia() {
     }
   }, [modalConfiguracoesAberto])
 
-  const usuarioLogado = {
+const usuarioLogado = {
   id: localStorage.getItem('usuarioId'),
   nome: localStorage.getItem('nomeUsuario'),
   email: localStorage.getItem('email'),
@@ -79,7 +79,9 @@ export default function PainelFarmacia() {
   permissao_despacho: localStorage.getItem('permissao_despacho') === 'true',
   permissao_entrega: localStorage.getItem('permissao_entrega') === 'true',
   permissao_registrar_pagamento: localStorage.getItem('permissao_registrar_pagamento') === 'true',
-  }
+}
+
+const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getItem('email')
 
   return (
     <div className="painel-container">
@@ -109,7 +111,7 @@ export default function PainelFarmacia() {
 
       {/* Lista de pedidos do dia */}
       <NovosPedidosStream farmaciaId={farmaciaId} />
-      <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} filtroRegistro={filtroRegistro} />
+      <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} filtroRegistro={filtroRegistro} emailFarmacia={emailFarmacia} />
 
       {/* Botão de incluir pedido com transição de subida */}
       <div
