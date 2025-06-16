@@ -157,6 +157,13 @@ eventSource.onmessage = (event) => {
   }
 }, [pedidos])
 
+  useEffect(() => {
+  if (pedidoExtra) {
+    const timer = setTimeout(() => setPedidoExtra(null), 5000)
+    return () => clearTimeout(timer)
+  }
+}, [pedidoExtra])
+
 useEffect(() => {
   if (farmaciaId) carregarPedidos()
 }, [farmaciaId, dataSelecionada, filtroPorPrevisao]) // 🔁 carrega nos filtros
@@ -193,6 +200,7 @@ const corLocalClasse = (nome) => {
 }
 //teste
 console.log('🧪 pedidoExtraRef:', pedidoExtraRef.current)
+console.log('🚨 Render pedidoExtra:', pedidoExtra)
 return (
   <div>
     
@@ -270,8 +278,7 @@ return (
     <div className="space-y-0">
       {/* Novo pedido destacado (caso exista) */}
 
-  console.log('🚨 Render pedidoExtra:', pedidoExtra)
-  {pedidoExtra && (
+{pedidoExtra && pedidoExtra.id && (
   <div className="pedido-card border-2 border-farol-primary bg-yellow-50">
     <div className="pedido-linha">
       <div className="pedido-conteudo">
@@ -281,7 +288,7 @@ return (
         </div>
         <div className="pedido-info">
           <User size={16} />
-          <span>{pedidoExtra.atendente}</span>
+          <span>{pedidoExtra.atendente || '—'}</span>
         </div>
         <div className="pedido-info text-sm text-gray-500 italic">
           Novo pedido recebido...
@@ -290,7 +297,6 @@ return (
     </div>
   </div>
 )}
-
 
       {/* Lista de pedidos filtrados */}
       {pedidos.map((p, index) => (
