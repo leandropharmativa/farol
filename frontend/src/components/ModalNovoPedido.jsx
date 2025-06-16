@@ -97,12 +97,12 @@ const salvarPedido = async () => {
 
 return createPortal(
   <div className="modal-overlay right-align modal-novo-pedido">
-    <div className="modal-novo-pedido rounded-lg shadow-md animate-fadeIn">
+    <div className="modal-novo-pedido animate-fadeIn">
       <div className="top-icons">
-        <button className="btn-config" onClick={salvarPedido} title="Salvar Pedido">
+        <button className="btn-config2" onClick={salvarPedido} title="Salvar Pedido">
           <Save size={20} />
         </button>
-        <button className="btn-config" onClick={onClose} title="Fechar">
+        <button className="btn-config2" onClick={onClose} title="Fechar">
           <X size={20} />
         </button>
       </div>
