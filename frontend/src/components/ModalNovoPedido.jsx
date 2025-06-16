@@ -116,7 +116,6 @@ const salvarPedido = async () => {
           />
           <input
             className="input-config"
-            type="number"
             placeholder="Nº de Itens*"
             value={numeroItens}
             onChange={e => setNumeroItens(e.target.value)}
