@@ -52,10 +52,20 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado }) {
     try {
       const res = await api.get(`/pedidos/${novoId}`)
       const novo = res.data
-      const dataPedido = new Date(novo.data_criacao).toISOString().split('T')[0]
-      const dataAtual = new Date(dataSelecionada).toISOString().split('T')[0]
-
-      if (dataPedido === dataAtual) {
+      const mesmaData = (a, b) =>
+      a.getDate() === b.getDate() &&
+      a.getMonth() === b.getMonth() &&
+      a.getFullYear() === b.getFullYear()
+      const dataPedido = new Date(novo.data_criacao)
+      const dataAtual = new Date(dataSelecionada)
+  
+      if (mesmaData(dataPedido, dataAtual)) {
+      setPedidos(prev => {
+      const jaExiste = prev.some(p => p.id === novo.id)
+      return jaExiste ? prev : [...prev, { ...novo, destaque: true }]
+      })
+    }
+    if (dataPedido === dataAtual) {
         setPedidos(prev => {
           const jaExiste = prev.some(p => p.id === novo.id)
           return jaExiste ? prev : [...prev, { ...novo, destaque: true }]
