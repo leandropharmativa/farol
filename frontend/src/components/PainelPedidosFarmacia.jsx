@@ -38,14 +38,14 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
     }
   }
 
-  const etapas = [
-    { campo: 'status_impressao', nome: 'Impressão', icone: Printer },
-    { campo: 'status_conferencia', nome: 'Conferência', icone: FileCheck2 },
-    { campo: 'status_producao', nome: 'Produção', icone: CircleCheckBig },
-    { campo: 'status_despacho', nome: 'Despacho', icone: Truck },
-    { campo: 'status_entrega', nome: 'Entrega', icone: PackageCheck },
-    { campo: 'status_pagamento', nome: 'Pagamento', icone: CreditCard }
-  ]
+const etapas = [
+  { campo: 'status_impressao', nome: 'Impressão', icone: Printer, permissao: 'permissao_impressao' },
+  { campo: 'status_conferencia', nome: 'Conferência', icone: FileCheck2, permissao: 'permissao_conferencia' },
+  { campo: 'status_producao', nome: 'Produção', icone: CircleCheckBig, permissao: 'permissao_producao' },
+  { campo: 'status_despacho', nome: 'Despacho', icone: Truck, permissao: 'permissao_despacho' },
+  { campo: 'status_entrega', nome: 'Entrega', icone: PackageCheck, permissao: 'permissao_entrega' },
+  { campo: 'status_pagamento', nome: 'Pagamento', icone: CreditCard, permissao: 'permissao_registrar_pagamento' }
+]
 
   const solicitarConfirmacao = (pedidoId, etapa) => {
     setPedidoSelecionado(pedidoId)
@@ -240,15 +240,19 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
                 {etapas.map(et => {
                   const Icone = et.icone
                   const ativo = p[et.campo]
+                  const podeExecutar = usuarioLogado?.[et.permissao] === true
+    
+                  if (!podeExecutar) return null
+  
                   return (
-                    <button
-                      key={et.campo}
-                      onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
-                      className={`rounded-full p-1 ${ativo ? 'text-green-600' : 'text-gray-400 hover:text-red-500'}`}
-                      title={et.nome}
+                  <button
+                    key={et.campo}
+                    onClick={() => !ativo && solicitarConfirmacao(p.id, et.nome)}
+                    className={`rounded-full p-1 ${ativo ? 'text-green-600' : 'text-gray-400 hover:text-red-500'}`}
+                    title={et.nome}
                     >
-                      <Icone size={18} />
-                    </button>
+                    <Icone size={18} />
+                  </button>
                   )
                 })}
 
