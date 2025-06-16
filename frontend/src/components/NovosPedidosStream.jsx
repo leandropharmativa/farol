@@ -26,49 +26,50 @@ export default function NovosPedidosStream({ farmaciaId }) {
       console.log('[SSE] ✅ Conexão aberta com sucesso')
     }
 
-eventSource.onmessage = async (event) => {
-  const rawData = event.data || ''
-  const cleaned = rawData.replace(/^data:\s*/, '').trim()
+    eventSource.onmessage = async (event) => {
+      const rawData = event.data || ''
+      const cleaned = rawData.replace(/^data:\s*/, '').trim()
 
-  console.log('[SSE] 📩 Mensagem recebida (limpa):', cleaned)
+      console.log('[SSE] 📩 Mensagem recebida (limpa):', cleaned)
 
-  if (!cleaned.startsWith('novo_pedido')) {
-    console.log('[SSE] ⚠️ Evento ignorado (não é novo_pedido)')
-    return
-  }
+      if (!cleaned.startsWith('novo_pedido')) {
+        console.log('[SSE] ⚠️ Evento ignorado (não é novo_pedido)')
+        return
+      }
 
-  const partes = cleaned.split(':')
-  if (partes.length < 3) {
-    console.warn('[SSE] ❌ Formato de evento inválido:', cleaned)
-    return
-  }
+      const partes = cleaned.split(':')
+      if (partes.length < 3) {
+        console.warn('[SSE] ❌ Formato de evento inválido:', cleaned)
+        return
+      }
 
-  const farmaciaEvento = partes[1]
-  const pedidoId = partes[2]
+      const farmaciaEvento = partes[1]
+      const pedidoId = partes[2]
 
-  console.log(`[SSE] 🎯 Evento para farmácia: ${farmaciaEvento}, pedidoId: ${pedidoId}`)
+      console.log(`[SSE] 🎯 Evento para farmácia: ${farmaciaEvento}, pedidoId: ${pedidoId}`)
 
-  if (farmaciaEvento !== farmaciaId) {
-    console.log(`[SSE] 🔕 Farmácia (${farmaciaEvento}) ≠ (${farmaciaId})`)
-    return
-  }
+      if (farmaciaEvento !== farmaciaId) {
+        console.log(`[SSE] 🔕 Farmácia (${farmaciaEvento}) ≠ (${farmaciaId})`)
+        return
+      }
 
-try {
-  console.log('[SSE] 📡 Buscando pedido...')
-  const res = await api.get(`/pedidos/${pedidoId}`)
-  console.log('[SSE] ✅ Pedido carregado:', res.data)
+      try {
+        console.log('[SSE] 📡 Buscando pedido...')
+        const res = await api.get(`/pedidos/${pedidoId}`)
+        console.log('[SSE] ✅ Pedido carregado:', res.data)
 
-  setNovosPedidos(prev => [res.data, ...prev])
+        setNovosPedidos(prev => [res.data, ...prev])
 
-  // ⏳ Migrar para lista principal após 15 segundos
-  setTimeout(() => {
-    console.log(`[SSE] ⏳ Pedido ${res.data.id} será migrado para lista principal`)
-    window.dispatchEvent(new CustomEvent('novoPedidoCriado'))
-    setNovosPedidos(prev => prev.filter(p => p.id !== res.data.id))
-  }, 3000)
-} catch (err) {
-  console.error('[SSE] ❗ Erro ao buscar pedido:', err)
-}
+        // ⏳ Migrar para lista principal após 3 segundos
+        setTimeout(() => {
+          console.log(`[SSE] ⏳ Pedido ${res.data.id} será migrado para lista principal`)
+          window.dispatchEvent(new CustomEvent('novoPedidoCriado'))
+          setNovosPedidos(prev => prev.filter(p => p.id !== res.data.id))
+        }, 3000)
+      } catch (err) {
+        console.error('[SSE] ❗ Erro ao buscar pedido:', err)
+      }
+    }
 
     eventSource.onerror = (err) => {
       console.error('[SSE] 🔌 Erro na conexão. Fechando stream...', err)
@@ -90,7 +91,7 @@ try {
     <div className="mb-4">
       <div className="text-sm font-semibold text-farol-primary mb-1">NOVOS PEDIDOS</div>
       {novosPedidos.map(p => (
-        <div key={p.id} className="pedido-card border-l-4 border-farol-primary bg-yellow-50">
+        <div key={p.id} className="pedido-card border-l-4 border-farol-primary bg-farol-focus">
           <div className="pedido-linha">
             <div className="pedido-conteudo">
               <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
@@ -126,7 +127,6 @@ try {
           </div>
         </div>
       ))}
-      <hr className="my-2 border-t-2 border-dashed border-gray-300" />
     </div>
   )
 }
