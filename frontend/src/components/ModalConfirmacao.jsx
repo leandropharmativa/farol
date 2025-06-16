@@ -30,7 +30,7 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Observação (opcional)</label>
+            <label className="block text-sm font-medium mb-1">Observação</label>
             <textarea
               className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
               rows={2}
