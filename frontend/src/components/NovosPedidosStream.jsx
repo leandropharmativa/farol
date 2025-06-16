@@ -55,27 +55,27 @@ export default function NovosPedidosStream({ farmaciaId }) {
       }
 
       // 🚫 Ignora pedidos criados por este próprio usuário
-      const pedido = res.data
-      const ultimoId = localStorage.getItem('ultimoPedidoCriadoId')
-      const ultimoRegistro = localStorage.getItem('ultimoPedidoCriadoRegistro')
+try {
+  console.log('[SSE] 📡 Buscando pedido...')
+  const res = await api.get(`/pedidos/${pedidoId}`)
+  console.log('[SSE] ✅ Pedido carregado:', res.data)
 
-      if (pedido.id == ultimoId || pedido.registro === ultimoRegistro) {
-      console.log(`[SSE] 🙈 Ignorando pedido local (${pedido.id})`)
-      localStorage.removeItem('ultimoPedidoCriadoId')
-      localStorage.removeItem('ultimoPedidoCriadoRegistro')
-      return
-      }
+  const pedido = res.data
+  const ultimoId = localStorage.getItem('ultimoPedidoCriadoId')
+  const ultimoRegistro = localStorage.getItem('ultimoPedidoCriadoRegistro')
 
-      try {
-        console.log('[SSE] 📡 Buscando pedido...')
-        const res = await api.get(`/pedidos/${pedidoId}`)
-        console.log('[SSE] ✅ Pedido carregado:', res.data)
+  if (String(pedido.id) === ultimoId || pedido.registro === ultimoRegistro) {
+    console.log(`[SSE] 🙈 Ignorando pedido local (${pedido.id})`)
+    localStorage.removeItem('ultimoPedidoCriadoId')
+    localStorage.removeItem('ultimoPedidoCriadoRegistro')
+    return
+  }
 
-        setNovosPedidos(prev => [res.data, ...prev])
-      } catch (err) {
-        console.error('[SSE] ❗ Erro ao buscar pedido:', err)
-      }
-    }
+  setNovosPedidos(prev => [pedido, ...prev])
+} catch (err) {
+  console.error('[SSE] ❗ Erro ao buscar pedido:', err)
+}
+
 
     eventSource.onerror = (err) => {
       console.error('[SSE] 🔌 Erro na conexão. Fechando stream...', err)
