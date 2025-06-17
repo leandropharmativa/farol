@@ -343,7 +343,7 @@ if (etapa !== 'conferência') return null
 const { itens_solidos = 0, itens_semisolidos = 0, itens_saches = 0 } = log
 
 return (
-<span key={i} className="pedido-info flex items-center gap-[1px] ml-1">
+<span key={i} className="flex items-center gap-[1px] ml-1">
 {[...Array(itens_solidos)].map((_, i) => <Pill key={`s${i}`} size={12} className="text-farol-solidos" />)}
 {[...Array(itens_semisolidos)].map((_, i) => <Beaker key={`ss${i}`} size={12} className="text-farol-semisolidos" />)}
 {[...Array(itens_saches)].map((_, i) => <StickyNote key={`st${i}`} size={12} className="text-farol-saches" />)}
@@ -364,8 +364,8 @@ return (
 <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
 </div>
 
-<div className="pedido-info-mini"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
-<div className="pedido-info-mini"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
+<div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
+<div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
 
 {p.receita_arquivo && (
 <div className="pedido-info text-blue-600">
