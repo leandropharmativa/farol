@@ -164,39 +164,35 @@ function corLocalClasse(nome) {
     <div>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <Tippy
-            content={
-            filtroPorPrevisao
-            ? 'Filtrando por data de *previsão de entrega*'
-            : 'Filtrando por data de *criação do pedido*'
-            }
-            placement="bottom"
-            animation="shift-away"
-            arrow={true}
-            theme="light-border"
-          >
-          <button
-            onClick={() => {
-              const novoValor = !filtroPorPrevisao
-              setFiltroPorPrevisao(novoValor)
-              if (!novoValor) {
-                setDataSelecionada(new Date())
-              }
-            }}
-            className="text-farol-primary hover:text-farol-secondary transition flex items-center"
-            title={
-              filtroPorPrevisao
-                ? 'Filtrando por data de previsão de entrega'
-                : 'Filtrando por data de criação'
-            }
-          >
-            {filtroPorPrevisao ? (
-              <CalendarCheck2 size={20} className="inline-block align-middle" />
-            ) : (
-              <CalendarPlus size={20} className="inline-block align-middle" />
-            )}
-          </button>
-          </Tippy>
+<Tippy
+  content={
+    <span className="text-[12px] text-farol-secondary">
+      {filtroPorPrevisao ? 'Previsão de Entrega' : 'Data de Criação'}
+    </span>
+  }
+  placement="right"
+  animation="text"
+  arrow={true}
+  theme="light-border"
+>
+  <button
+    onClick={() => {
+      const novoValor = !filtroPorPrevisao
+      setFiltroPorPrevisao(novoValor)
+      if (!novoValor) {
+        setDataSelecionada(new Date())
+      }
+    }}
+    className="text-farol-primary hover:text-farol-secondary transition flex items-center"
+  >
+    {filtroPorPrevisao ? (
+      <CalendarCheck2 size={20} className="inline-block align-middle" />
+    ) : (
+      <CalendarPlus size={20} className="inline-block align-middle" />
+    )}
+  </button>
+</Tippy>
+
           <div className="flex items-baseline gap-1 text-xl font-bold">
             <span
               className="cursor-pointer select-none"
