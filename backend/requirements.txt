@@ -7,3 +7,8 @@ passlib[bcrypt]==1.7.4
 bcrypt==4.0.1
 sqlalchemy==2.0.30
 sse-starlette==1.6.1
+google-api-python-client
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+
