@@ -30,21 +30,26 @@ const res = await api.get('/pedidos/listar', {
 params: { farmacia_id: farmaciaId }
 })
 
-const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
+let pedidosCarregados = res.data
 
-const pedidosFiltrados = res.data.filter(p => {
+if (!filtroRegistro.trim()) {
+// Aplica o filtro por data somente se não estiver buscando por registro
+const dataFiltro = new Date(dataSelecionada).toISOString().split('T')[0]
+
+pedidosCarregados = pedidosCarregados.filter(p => {
 const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
 if (!campoOriginal) return false
-const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
+const campoData = new Date(campoOriginal).toISOString().split('T')[0]
 return campoData === dataFiltro
 })
+}
 
-setPedidos(pedidosFiltrados)
-
+setPedidos(pedidosCarregados)
 } catch (err) {
 toast.error('Erro ao carregar pedidos')
 }
 }
+
 
 useEffect(() => {
 const carregarLogs = async () => {
@@ -388,11 +393,11 @@ const idEtapa = `${p.id}-${et.nome}`
 const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
 
 const handleTooltipShow = async () => {
-  setTooltipStates(prev => ({
-    ...prev,
-    [idEtapa]: { loading: true, html: '' }
-  }))
- // já carregado
+setTooltipStates(prev => ({
+...prev,
+[idEtapa]: { loading: true, html: '' }
+}))
+// já carregado
 
 setTooltipStates(prev => ({
 ...prev,
