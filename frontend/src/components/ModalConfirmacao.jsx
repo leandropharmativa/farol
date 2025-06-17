@@ -25,7 +25,7 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 px-4" h-full>
+    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 px-4  h-full">
       <div className="bg-white w-full max-w-xs p-4 rounded-lg shadow-md animate-fadeIn max-h-screen overflow-y-auto">
         <h2 className="text-base font-semibold text-left text-farol-primary mb-2">
           Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
