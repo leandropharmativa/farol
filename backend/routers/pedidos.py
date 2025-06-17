@@ -250,7 +250,6 @@ def listar_pedidos(farmacia_id: UUID):
         SELECT 
             p.id,
             p.registro,
-            p.numero_itens,
             p.previsao_entrega,
             p.data_criacao,
             p.status_inclusao,
@@ -320,7 +319,6 @@ def obter_pedido(pedido_id: int):
         SELECT 
             p.id,
             p.registro,
-            p.numero_itens,
             p.previsao_entrega,
             p.data_criacao,
             p.status_inclusao,
