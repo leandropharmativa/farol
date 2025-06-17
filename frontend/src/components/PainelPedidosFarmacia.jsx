@@ -371,8 +371,8 @@ return (
 {p.receita_arquivo && (
 <Tippy
 content={<span className="text-[12px]">Abrir Receita</span>}
-placement="top"
-animation="shift-away"
+placement="top-end"
+animation="text"
 theme="light-border"
 delay={[200, 0]}
 >
