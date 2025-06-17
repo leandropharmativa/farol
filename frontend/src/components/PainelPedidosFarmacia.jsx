@@ -285,29 +285,28 @@ function corLocalClasse(nome) {
   const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
 
   const logs = logsPorPedido[p.id] || []
-  console.log('🧾 Logs do pedido', p.id, logs)
-
   const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
-  console.log(`📌 Log da etapa "${et.nome}" do pedido ${p.id}:`, logEtapa)
 
-  let tooltip = ''
+  let tooltipHTML = ''
+
   if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
     const dt = new Date(logEtapa.data_hora)
     const data = dt.toLocaleDateString('pt-BR')
     const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
-    tooltip = `<div class='text-xs'>
-      <strong>${et.nome}</strong><br />
-      ${logEtapa.usuario_confirmador}<br />
-      ${data} ${hora}
-    </div>`
+    tooltipHTML = `
+      <div class='text-xs'>
+        <strong>${et.nome}</strong><br />
+        ${logEtapa.usuario_confirmador}<br />
+        ${data} ${hora}
+      </div>`
   } else {
-    tooltip = `<div class='text-xs'>Aguardando ${et.nome}</div>`
+    tooltipHTML = `<div class='text-xs text-gray-500'>Aguardando ${et.nome}</div>`
   }
 
   return (
     <Tippy
       key={et.campo}
-      content={<span dangerouslySetInnerHTML={{ __html: tooltip }} />}
+      content={<span dangerouslySetInnerHTML={{ __html: tooltipHTML }} />}
       placement="right"
       animation="shift-away"
       arrow={false}
