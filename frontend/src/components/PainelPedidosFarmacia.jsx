@@ -399,16 +399,23 @@ html = `
 <div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
 <hr class='my-1 border-t border-gray-300' />
 <div class='flex items-center gap-1 mb-0.5'>
-<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+<circle cx="12" cy="7" r="4" />
+</svg>
 <span>${logEtapa.usuario_confirmador}</span>
 </div>
-<div class='flex items-center gap-1'>
-<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+<div class='flex items-center gap-1 mb-1'>
+<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+</svg>
 <span>${data} ${hora}</span>
 </div>
+${logEtapa.observacao
+? `<div class='mt-1 text-red-500 italic'>${logEtapa.observacao}</div>`
+: ''}
 </div>
 `
-
 // Atualiza o status local do pedido se necessário
 if (!p[et.campo]) {
 setPedidos(prev =>
