@@ -215,6 +215,21 @@ function corLocalClasse(nome) {
     p.registro?.toLowerCase().includes(filtroRegistro.toLowerCase())
   )
 
+  const totalSolidos = pedidos.reduce((total, p) => {
+  const logConf = logsPorPedido[p.id]?.find(l => l.etapa?.toLowerCase() === 'conferência')
+  return total + (logConf?.itens_solidos || 0)
+}, 0)
+
+const totalSemisolidos = pedidos.reduce((total, p) => {
+  const logConf = logsPorPedido[p.id]?.find(l => l.etapa?.toLowerCase() === 'conferência')
+  return total + (logConf?.itens_semisolidos || 0)
+}, 0)
+
+const totalSaches = pedidos.reduce((total, p) => {
+  const logConf = logsPorPedido[p.id]?.find(l => l.etapa?.toLowerCase() === 'conferência')
+  return total + (logConf?.itens_saches || 0)
+}, 0)
+
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
@@ -273,25 +288,25 @@ function corLocalClasse(nome) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-xs">
-          <div className="flex items-center gap-1 text-farol-primary">
-            <Boxes size={14} />
-            <span>{pedidos.length}</span>
-          </div>
-          <div className="flex items-center gap-1 text-farol-semisolidos">
-            <Beaker size={14} />
-            <span>0</span>
-          </div>
-          <div className="flex items-center gap-1 text-farol-solidos">
-            <Pill size={14} />
-            <span>0</span>
-          </div>
-          <div className="flex items-center gap-1 text-farol-saches">
-            <StickyNote size={14} />
-            <span>0</span>
-          </div>
-        </div>
-      </div>
+<div className="flex items-center gap-2 text-xs">
+  <div className="flex items-center gap-1 text-farol-primary">
+    <Boxes size={14} />
+    <span>{pedidos.length}</span>
+  </div>
+  <div className="flex items-center gap-1 text-farol-semisolidos">
+    <Beaker size={14} />
+    <span>{totalSemisolidos}</span>
+  </div>
+  <div className="flex items-center gap-1 text-farol-solidos">
+    <Pill size={14} />
+    <span>{totalSolidos}</span>
+  </div>
+  <div className="flex items-center gap-1 text-farol-saches">
+    <StickyNote size={14} />
+    <span>{totalSaches}</span>
+  </div>
+</div>
+
 
       <div className="space-y-0">
         {pedidosFiltrados.map((p, index) => (
