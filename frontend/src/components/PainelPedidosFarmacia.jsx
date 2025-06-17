@@ -369,16 +369,22 @@ return (
 <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
 
 {p.receita_arquivo && (
+<Tippy
+content={<span className="text-[12px]">Abrir Receita</span>}
+placement="top"
+animation="shift-away"
+theme="light-border"
+delay={[200, 0]}
+>
 <a
 href={p.receita_arquivo}
 target="_blank"
 rel="noopener noreferrer"
-title="Abrir Receita"
-className="pedido-info hover:text-farol-primary"
+className="pedido-info text-blue-600 hover:text-blue-800"
 >
-<FileText size={16} />
+<FileText size={18} />
 </a>
-
+</Tippy>
 )}
 </div>
 
