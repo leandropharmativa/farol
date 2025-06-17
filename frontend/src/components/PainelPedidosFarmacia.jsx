@@ -479,5 +479,3 @@ onCancelar={() => setAbrirModal(false)}
 />
 )}
 </div>
-)
-}
