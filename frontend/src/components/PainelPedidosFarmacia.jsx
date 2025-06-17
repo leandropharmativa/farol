@@ -9,7 +9,6 @@ import {
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 import Tippy from '@tippyjs/react'
-import 'tippy.js/dist/tippy.css'
 import 'tippy.js/dist/tippy.css' // obrigatório – base
 import 'tippy.js/themes/light.css'       // para theme="light"
 import 'tippy.js/themes/light-border.css' // para theme="light-border"
