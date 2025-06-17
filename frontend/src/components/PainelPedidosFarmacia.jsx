@@ -285,10 +285,13 @@ function corLocalClasse(nome) {
   const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
 
   const logs = logsPorPedido[p.id] || []
-  const logEtapa = logs.find(l => l.etapa.toLowerCase() === et.nome.toLowerCase())
+  console.log('🧾 Logs do pedido', p.id, logs)
+
+  const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
+  console.log(`📌 Log da etapa "${et.nome}" do pedido ${p.id}:`, logEtapa)
 
   let tooltip = ''
-  if (logEtapa) {
+  if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
     const dt = new Date(logEtapa.data_hora)
     const data = dt.toLocaleDateString('pt-BR')
     const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
@@ -327,7 +330,6 @@ function corLocalClasse(nome) {
     </Tippy>
   )
 })}
-
 
                 {/* Exibe botão de edição apenas se email for o da farmácia */}
                 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
