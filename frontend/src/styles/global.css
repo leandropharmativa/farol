@@ -355,7 +355,7 @@ p {
 }
 
 .login-input {
-  @apply w-full text-sm rounded-full border border-white bg-white text-farol-secondary placeholder-gray-400 mb-2 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-farol-linecolor appearance-none;
+  @apply w-full text-sm rounded-full border border-white bg-white text-farol-secondary placeholder-gray-400 mb-2 px-3 py-1.5 hover:border-farol-secondary focus:outline-none focus:ring-2 focus:ring-farol-linecolor appearance-none;
 }
 
 .login-btn {
