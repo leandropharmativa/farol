@@ -46,6 +46,28 @@ const carregarPedidos = async () => {
   }
 }
 
+  useEffect(() => {
+  const carregarLogs = async () => {
+    const novosLogs = {}
+    await Promise.all(
+      pedidos.map(async (p) => {
+        try {
+          const res = await api.get(`/pedidos/${p.id}/logs`)
+          novosLogs[p.id] = res.data
+        } catch (err) {
+          novosLogs[p.id] = []
+        }
+      })
+    )
+    setLogsPorPedido(novosLogs)
+  }
+
+  if (pedidos.length > 0) {
+    carregarLogs()
+  }
+}, [pedidos])
+
+
 const etapas = [
   { campo: 'status_impressao', nome: 'Impressão', icone: Printer, permissao: 'permissao_impressao' },
   { campo: 'status_conferencia', nome: 'Conferência', icone: FileCheck2, permissao: 'permissao_conferencia' },
