@@ -464,12 +464,12 @@ ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default
 )
 })}
 
-{p.observacao && (
+{logsPorPedido[p.id]?.some(log => log.etapa === 'Inclusão' && log.observacao) && (
 <Tippy
 content={
 <div className="text-[12px] max-w-[240px] text-gray-700 leading-snug">
 <div className="font-semibold text-red-600 mb-1">Observação</div>
-<div>{p.observacao}</div>
+<div>{logsPorPedido[p.id].find(log => log.etapa === 'Inclusão')?.observacao}</div>
 </div>
 }
 placement="top-end"
