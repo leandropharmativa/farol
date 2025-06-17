@@ -144,14 +144,14 @@ background: #d1d5db;
   align-items: center;
   justify-content: space-between;
   background: #f3f4f6;
-  padding: 0.25rem 0.5rem;
+  padding: 0.05rem 0.1rem;
   border-radius: 999px;
-  gap: 4px;
-  font-size: 0.875rem;
+  gap: 1px;
+  font-size: 0.675rem;
 }
 
 .contador-mini button {
-  padding: 0 6px;
+  padding: 0 2px;
   background: #e5e7eb;
   border-radius: 999px;
   font-weight: bold;
@@ -163,13 +163,13 @@ background: #d1d5db;
 }
 
 .contador-mini span {
-  width: 1.5rem;
+  width: 1.0rem;
   text-align: center;
   font-weight: bold;
 }
 
 .contador-num {
-width: 2rem;
+width: 1rem;
 text-align: center;
 font-weight: bold;
 }
