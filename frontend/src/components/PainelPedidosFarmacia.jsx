@@ -61,7 +61,7 @@ const etapas = [
     setAbrirModal(true)
   }
 
-const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
+const confirmarEtapa = async (codigoConfirmacao, observacao = '', extras = {}) => {
   try {
     const formData = new FormData()
     formData.append('etapa', etapaSelecionada)
