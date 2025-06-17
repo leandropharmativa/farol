@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { SquareCheckBig } from 'lucide-react'
 
-export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
+export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, coordenadas }) {
   const [codigo, setCodigo] = useState('')
   const [obs, setObs] = useState('')
   const [solidos, setSolidos] = useState('')
   const [semisolidos, setSemisolidos] = useState('')
   const [saches, setSaches] = useState('')
+
+  const inputRef = useRef(null)
+
+useEffect(() => {
+  if (inputRef.current) inputRef.current.focus()
+}, [])
 
   const isConferencia = titulo?.toLowerCase().includes('conferência')
 
@@ -25,19 +31,29 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 px-4  h-full">
+    <div className="fixed inset-0 bg-black bg-opacity-30 z-50">
+  <div
+    className="absolute bg-white w-full max-w-xs p-4 rounded-lg shadow-md animate-fadeIn max-h-screen overflow-y-auto"
+    style={{
+      top: coordenadas?.top ?? '50%',
+      left: coordenadas?.left ?? '50%',
+      transform: coordenadas ? 'translateY(0)' : 'translate(-50%, -50%)'
+    }}
+  >
       <div className="bg-white w-full max-w-xs p-4 rounded-lg shadow-md animate-fadeIn max-h-screen overflow-y-auto">
         <h2 className="text-base font-semibold text-left text-farol-primary mb-2">
           Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
         </h2>
 
-        <input
-          type="text"
-          placeholder="Código do Usuário"
-          className="modal-confirmacao-input rounded-full"
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
-        />
+<input
+  ref={inputRef}
+  type="text"
+  placeholder="Código do Usuário"
+  className="modal-confirmacao-input rounded-full"
+  value={codigo}
+  onChange={(e) => setCodigo(e.target.value)}
+/>
+
 
         <input
           type="text"
