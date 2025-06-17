@@ -52,14 +52,15 @@ className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
 </button>
 
 {/* Título com ícone da etapa */}
-<div className="flex items-center gap-2 mb-3">
+<div className="flex items-center gap-2 mb-3 leading-tight">
 {IconeEtapa && (
-<IconeEtapa size={18} className="text-farol-primary mt-[1px]" />
+<IconeEtapa size={18} className="text-farol-primary" />
 )}
-<h2 className="text-sm font-semibold text-farol-primary leading-none">
+<span className="text-sm font-semibold text-farol-primary relative top-[1px]">
 Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
-</h2>
+</span>
 </div>
+
 
 <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mb-2">
 <UserRound className="text-gray-400 mr-2" size={16} />
