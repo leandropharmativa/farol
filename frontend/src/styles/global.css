@@ -421,7 +421,10 @@ p {
 }
 
 .pedido-info {
-  @apply flex items-center text-sm p-2 mr-2 w-20;
+  @apply flex items-center text-sm mr-2 mb-2 w-30;
+}
+.pedido-info-mini {
+  @apply flex items-center text-sm mr-2 mb-2 w-10;
 }
 
 .pedido-info a {
