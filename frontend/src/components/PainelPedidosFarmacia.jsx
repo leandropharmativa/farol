@@ -312,7 +312,7 @@ function corLocalClasse(nome) {
   arrow={false}
   theme="material"
   delay={[200, 0]}
-  offset={[5, 10]}
+  offset={[15, 0]}
 >
   <span className="inline-block">
     <button
