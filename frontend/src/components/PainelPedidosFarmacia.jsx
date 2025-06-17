@@ -307,11 +307,11 @@ function corLocalClasse(nome) {
 <Tippy
   key={et.campo}
   content={<span dangerouslySetInnerHTML={{ __html: tooltipHTML }} />}
-  placement="right"
-  animation="shift-away"
+  placement="top-end"
+  animation="text"
   arrow={false}
-  theme="light-border"
-  delay={[100, 0]}
+  theme="material"
+  delay={[200, 0]}
 >
   <span className="inline-block">
     <button
