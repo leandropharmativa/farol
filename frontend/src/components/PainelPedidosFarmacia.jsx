@@ -412,7 +412,7 @@ html = `
 <span>${data} ${hora}</span>
 </div>
 ${logEtapa.observacao
-? `<div class='mt-1 text-red-500 italic'>${logEtapa.observacao}</div>`
+? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>`
 : ''}
 </div>
 `
