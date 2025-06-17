@@ -215,17 +215,17 @@ const pedidosFiltrados = pedidos.filter(p =>
 p.registro?.toLowerCase().includes(filtroRegistro.toLowerCase())
 )
 
-const totalSolidos = pedidos.reduce((total, p) => {
+const totalSolidos = pedidosFiltrados.reduce((total, p) => {
 const logConf = logsPorPedido[p.id]?.find(l => l.etapa?.toLowerCase() === 'conferência')
 return total + (logConf?.itens_solidos || 0)
 }, 0)
 
-const totalSemisolidos = pedidos.reduce((total, p) => {
+const totalSemisolidos = pedidosFiltrados.reduce((total, p) => {
 const logConf = logsPorPedido[p.id]?.find(l => l.etapa?.toLowerCase() === 'conferência')
 return total + (logConf?.itens_semisolidos || 0)
 }, 0)
 
-const totalSaches = pedidos.reduce((total, p) => {
+const totalSaches = pedidosFiltrados.reduce((total, p) => {
 const logConf = logsPorPedido[p.id]?.find(l => l.etapa?.toLowerCase() === 'conferência')
 return total + (logConf?.itens_saches || 0)
 }, 0)
