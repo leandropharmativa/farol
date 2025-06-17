@@ -298,8 +298,8 @@ if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
   const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
 
   tooltipHTML = `
-    <div class='text-[10px] text-gray-700 leading-tight'>
-      <div class='font-semibold mb-1'>${et.nome}</div>
+    <div class='text-[12px] text-gray-700 leading-tight'>
+      <div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
       <hr class='my-1 border-t border-gray-300' />
       <div class='flex items-center gap-1 mb-0.5'>
         <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
