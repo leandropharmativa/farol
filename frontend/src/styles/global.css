@@ -461,7 +461,7 @@ p {
 
 /* ====== MODAL CONFIRMAÇÃO DE ETAPA ====== */
 .modal-confirmacao-input {
-  @apply w-full text-sm px-3 py-1 rounded border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-farol-primary;
+  @apply w-full text-sm px-3 py-1 rounded-full border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-farol-primary;
 }
 
 .modal-confirmacao-label {
