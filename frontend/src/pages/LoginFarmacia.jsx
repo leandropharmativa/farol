@@ -140,7 +140,7 @@ export default function LoginFarmacia() {
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
 
       {/* Nome Farol no topo centralizado */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl font-bold text-farol-primary fonte-pacifico">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl font-bold text-white fonte-pacifico">
         Farol
       </div>
       
