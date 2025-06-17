@@ -89,7 +89,7 @@ const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getI
       <div className="flex items-center gap-4">
       <h1 className="painel-titulo fonte-pacifico text-2xl">{nomeFarmacia}</h1>
 
-<div className="flex items-center bg-white rounded-full px-3 py-1 shadow-sm">
+<div className="flex items-center bg-white rounded-full p-4 px-3 py-1 shadow-sm">
   <Search size={16} className="text-gray-500 mr-2" />
   <input
     type="text"
