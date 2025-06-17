@@ -20,38 +20,41 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
   const [logsPorPedido, setLogsPorPedido] = useState({})
 
-  const carregarPedidos = async () => {
-    try {
-      const res = await api.get('/pedidos/listar', {
-        params: { farmacia_id: farmaciaId }
-      })
-
-      const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
-
-      const pedidosFiltrados = res.data.filter(p => {
-        const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-        if (!campoOriginal) return false
-        const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
-        return campoData === dataFiltro
-      })
-
-      setPedidos(pedidosFiltrados)
-    } catch (err) {
-      toast.error('Erro ao carregar pedidos')
-    }
-  }
-
-  const logsMap = {}
-
-  await Promise.all(pedidosFiltrados.map(async (pedido) => {
+const carregarPedidos = async () => {
   try {
-    const resLog = await api.get(`/pedidos/${pedido.id}/logs`)
-    logsMap[pedido.id] = resLog.data
-  } catch (e) {
-    logsMap[pedido.id] = []
+    const res = await api.get('/pedidos/listar', {
+      params: { farmacia_id: farmaciaId }
+    })
+
+    const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
+
+    const pedidosFiltrados = res.data.filter(p => {
+      const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+      if (!campoOriginal) return false
+      const campoData = new Date(campoOriginal).toLocaleDateString('pt-BR')
+      return campoData === dataFiltro
+    })
+
+    setPedidos(pedidosFiltrados)
+
+    // ✅ ESTE BLOCO É O QUE DEVE SER INSERIDO AQUI
+    const logsMap = {}
+
+    await Promise.all(pedidosFiltrados.map(async (pedido) => {
+      try {
+        const resLog = await api.get(`/pedidos/${pedido.id}/logs`)
+        logsMap[pedido.id] = resLog.data
+      } catch (e) {
+        logsMap[pedido.id] = []
+      }
+    }))
+
+    setLogsPorPedido(logsMap)
+
+  } catch (err) {
+    toast.error('Erro ao carregar pedidos')
   }
-}))
-setLogsPorPedido(logsMap)
+}
 
 const etapas = [
   { campo: 'status_impressao', nome: 'Impressão', icone: Printer, permissao: 'permissao_impressao' },
