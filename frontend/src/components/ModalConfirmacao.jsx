@@ -80,29 +80,30 @@ onChange={(e) => setObs(e.target.value)}
 />
 
 {isConferencia && (
-<>
-<div className="contador-linha">
-<Pill className="text-farol-solidos" size={18} />
-<button onClick={() => setSolidos(Math.max(0, solidos - 1))} className="btn-mini">–</button>
-<span className="contador-num">{solidos}</span>
-<button onClick={() => setSolidos(solidos + 1)} className="btn-mini">+</button>
+<div className="flex gap-2 mt-2">
+<div className="contador-mini">
+<Pill className="text-farol-solidos" size={16} />
+<button onClick={() => setSolidos(Math.max(0, solidos - 1))}>–</button>
+<span>{solidos}</span>
+<button onClick={() => setSolidos(solidos + 1)}>+</button>
 </div>
 
-<div className="contador-linha">
-<Beaker className="text-farol-semisolidos" size={18} />
-<button onClick={() => setSemisolidos(Math.max(0, semisolidos - 1))} className="btn-mini">–</button>
-<span className="contador-num">{semisolidos}</span>
-<button onClick={() => setSemisolidos(semisolidos + 1)} className="btn-mini">+</button>
+<div className="contador-mini">
+<Beaker className="text-farol-semisolidos" size={16} />
+<button onClick={() => setSemisolidos(Math.max(0, semisolidos - 1))}>–</button>
+<span>{semisolidos}</span>
+<button onClick={() => setSemisolidos(semisolidos + 1)}>+</button>
 </div>
 
-<div className="contador-linha">
-<StickyNote className="text-farol-saches" size={18} />
-<button onClick={() => setSaches(Math.max(0, saches - 1))} className="btn-mini">–</button>
-<span className="contador-num">{saches}</span>
-<button onClick={() => setSaches(saches + 1)} className="btn-mini">+</button>
+<div className="contador-mini">
+<StickyNote className="text-farol-saches" size={16} />
+<button onClick={() => setSaches(Math.max(0, saches - 1))}>–</button>
+<span>{saches}</span>
+<button onClick={() => setSaches(saches + 1)}>+</button>
 </div>
-</>
+</div>
 )}
+
 
 <button
 onClick={confirmar}
@@ -135,6 +136,36 @@ transition: background 0.2s;
 
 .btn-mini:hover {
 background: #d1d5db;
+}
+
+.contador-mini {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 999px;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+.contador-mini button {
+  padding: 0 6px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.contador-mini button:hover {
+  background: #d1d5db;
+}
+
+.contador-mini span {
+  width: 1.5rem;
+  text-align: center;
+  font-weight: bold;
 }
 
 .contador-num {
