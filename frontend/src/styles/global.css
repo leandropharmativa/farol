@@ -421,7 +421,7 @@ p {
 }
 
 .pedido-info {
-  @apply flex items-center text-sm mr-2;
+  @apply flex items-center text-sm mr-2 width-100px;
 }
 
 .pedido-info a {
