@@ -143,7 +143,7 @@ export default function LoginFarmacia() {
           <img
             src="/farol.png"
             alt="Logo"
-            className="w-full max-h-32 object-contain mb-4"
+            className="w-full object-contain mb-4"
           />
         </div>
 
