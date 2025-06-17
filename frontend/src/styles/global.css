@@ -8,12 +8,6 @@
 
 /* ====== ESTILOS GLOBAIS E UTILITÁRIOS ====== */
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
   font-family: 'Lato', sans-serif;
   background-color: #f4f6f8;
