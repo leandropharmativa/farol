@@ -18,6 +18,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
   const [abrirModal, setAbrirModal] = useState(false)
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
+  const [logsPorPedido, setLogsPorPedido] = useState({})
 
   const carregarPedidos = async () => {
     try {
@@ -39,6 +40,18 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
       toast.error('Erro ao carregar pedidos')
     }
   }
+
+  const logsMap = {}
+
+  await Promise.all(pedidosFiltrados.map(async (pedido) => {
+  try {
+    const resLog = await api.get(`/pedidos/${pedido.id}/logs`)
+    logsMap[pedido.id] = resLog.data
+  } catch (e) {
+    logsMap[pedido.id] = []
+  }
+}))
+setLogsPorPedido(logsMap)
 
 const etapas = [
   { campo: 'status_impressao', nome: 'Impressão', icone: Printer, permissao: 'permissao_impressao' },
