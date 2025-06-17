@@ -279,7 +279,7 @@ function corLocalClasse(nome) {
 
               <div className="flex items-center gap-2">
 
-  {etapas.map(et => {
+{etapas.map(et => {
   const Icone = et.icone
   const ativo = p[et.campo]
   const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
@@ -287,18 +287,29 @@ function corLocalClasse(nome) {
   const logs = logsPorPedido[p.id] || []
   const logEtapa = logs.find(l => l.etapa.toLowerCase() === et.nome.toLowerCase())
 
-  const tooltip = logEtapa
-    ? `<strong>${et.nome}</strong><br>${logEtapa.usuario_confirmador}<br><small>${new Date(logEtapa.data_hora).toLocaleDateString('pt-BR')} ${new Date(logEtapa.data_hora).toLocaleTimeString('pt-BR').slice(0, 5)}</small>`
-    : et.nome
+  let tooltip = ''
+  if (logEtapa) {
+    const dt = new Date(logEtapa.data_hora)
+    const data = dt.toLocaleDateString('pt-BR')
+    const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
+    tooltip = `<div class='text-xs'>
+      <strong>${et.nome}</strong><br />
+      ${logEtapa.usuario_confirmador}<br />
+      ${data} ${hora}
+    </div>`
+  } else {
+    tooltip = `<div class='text-xs'>Aguardando ${et.nome}</div>`
+  }
 
   return (
     <Tippy
       key={et.campo}
       content={<span dangerouslySetInnerHTML={{ __html: tooltip }} />}
-      delay={[200, 0]}
-      placement="top-end"
+      placement="right"
       animation="shift-away"
+      arrow={false}
       theme="light-border"
+      delay={[100, 0]}
     >
       <button
         onClick={() => {
@@ -316,6 +327,7 @@ function corLocalClasse(nome) {
     </Tippy>
   )
 })}
+
 
                 {/* Exibe botão de edição apenas se email for o da farmácia */}
                 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
