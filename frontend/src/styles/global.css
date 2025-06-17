@@ -22,10 +22,6 @@ body {
 }
 
 /* ====== INPUT E BOTÃO GERAL ====== */
-.input {
-  @apply w-full p-2 rounded-md border border-white text-black placeholder-gray-400;
-}
-
 .btn-primary {
   @apply w-full bg-white text-orange-600 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition;
 }
