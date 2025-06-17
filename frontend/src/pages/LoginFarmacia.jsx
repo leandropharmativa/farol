@@ -138,12 +138,7 @@ export default function LoginFarmacia() {
 
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-
-      {/* Nome Farol no topo centralizado */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl font-bold text-white fonte-pacifico">
-        Farol
-      </div>
-      
+   
       <div className="login-box">
         <div className="mb-6 flex justify-center">
           <img
@@ -152,6 +147,11 @@ export default function LoginFarmacia() {
             className="w-full object-contain mb-4"
           />
         </div>
+
+        {/* Nome Farol no topo centralizado */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl font-bold text-white fonte-pacifico">
+        Farol
+      </div>
 
         {modo === 'login' ? (
           <>
