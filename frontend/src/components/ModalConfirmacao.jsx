@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { SquareCheckBig, Pill, Beaker, StickyNote } from 'lucide-react'
+import { SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound } from 'lucide-react'
 
-export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, coordenadas }) {
+export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, coordenadas, IconeEtapa }) {
   const [codigo, setCodigo] = useState('')
   const [obs, setObs] = useState('')
   const [solidos, setSolidos] = useState(0)
@@ -33,30 +33,46 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, coor
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 z-50">
       <div
-        className="absolute bg-white w-full max-w-xs p-4 rounded-lg shadow-md animate-fadeIn max-h-screen overflow-y-auto"
+        className="absolute bg-white w-full max-w-[280px] p-4 rounded-xl shadow-md animate-fadeIn max-h-screen overflow-y-auto"
         style={{
+          position: 'absolute',
           top: coordenadas?.top ?? '50%',
           left: coordenadas?.left ?? '50%',
           transform: coordenadas ? 'translateX(-100%)' : 'translate(-50%, -50%)'
         }}
       >
-        <h2 className="text-base font-semibold text-left text-farol-primary mb-2">
-          Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
-        </h2>
+        {/* Ícone de fechar no canto */}
+        <button
+          onClick={onCancelar}
+          className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
+        >
+          <X size={20} />
+        </button>
+
+        {/* Título com ícone da etapa */}
+        <div className="flex items-center gap-2 mb-3">
+          {IconeEtapa && <IconeEtapa size={20} className="text-farol-primary" />}
+          <h2 className="text-sm font-semibold text-farol-primary">
+            Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
+          </h2>
+        </div>
+
+        <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mb-2">
+          <UserRound className="text-gray-400 mr-2" size={16} />
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Usuário"
+            className="bg-transparent outline-none text-sm flex-1"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value)}
+          />
+        </div>
 
         <input
-          ref={inputRef}
           type="text"
-          placeholder="Código do Usuário"
-          className="modal-confirmacao-input rounded-full"
-          value={codigo}
-          onChange={(e) => setCodigo(e.target.value)}
-        />
-
-        <input
-          type="text"
-          placeholder="Observação (opcional)"
-          className="modal-confirmacao-input rounded-full"
+          placeholder="Observação"
+          className="w-full rounded-full border border-gray-300 px-3 py-2 text-sm mb-2"
           value={obs}
           onChange={(e) => setObs(e.target.value)}
         />
@@ -86,32 +102,24 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, coor
           </>
         )}
 
-        <div className="flex justify-between gap-2 mt-2">
-          <button onClick={onCancelar} className="modal-confirmacao-cancelar">
-            Cancelar
-          </button>
-          <button onClick={confirmar} className="modal-confirmacao-botao flex items-center gap-1">
-            <SquareCheckBig size={16} /> Confirmar
-          </button>
-        </div>
+        <button
+          onClick={confirmar}
+          className="mt-4 w-full bg-farol-primary hover:bg-farol-primaryfocus text-white font-medium py-2 px-4 rounded-full flex items-center justify-center gap-2 text-sm"
+        >
+          <SquareCheckBig size={16} /> Confirmar
+        </button>
 
-        {/* Estilos embutidos */}
+        {/* CSS embutido */}
         <style jsx>{`
-          .modal-confirmacao-input {
-            width: 100%;
-            margin-bottom: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #ccc;
-            font-size: 0.95rem;
-            background: #f9f9f9;
-          }
-
           .contador-linha {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-top: 0.5rem;
             gap: 0.5rem;
+            background: #f3f4f6;
+            padding: 0.4rem 0.8rem;
+            border-radius: 999px;
           }
 
           .btn-mini {
