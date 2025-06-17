@@ -291,7 +291,7 @@ def listar_logs_pedido(pedido_id: int):
             u2.nome AS usuario_confirmador
         FROM farol_farmacia_pedido_logs l
         JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
-        JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
+        LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
         WHERE l.pedido_id = %s
         ORDER BY l.data_hora DESC
     """, (pedido_id,))
