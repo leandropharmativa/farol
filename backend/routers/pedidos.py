@@ -3,6 +3,7 @@ from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Req
 from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
 from db import cursor
+from utils.google_drive import upload_arquivo_para_drive
 import os
 import uuid
 from uuid import UUID
@@ -40,10 +41,20 @@ async def criar_pedido(
     filename = None
     if receita:
         ext = os.path.splitext(receita.filename)[-1].lower()
-        filename = f"{registro}{ext}"
-        with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
-            f.write(await receita.read())
+        # Salva temporariamente
+        temp_filename = f"temp_{registro}{ext}"
+        temp_path = os.path.join("/tmp", temp_filename)
+        with open(temp_path, "wb") as f:
+        f.write(await receita.read())
 
+        # Envia para o Google Drive
+        arquivo_id, link = upload_arquivo_para_drive(temp_path, f"{registro}{ext}")
+
+        # Remove temporário
+        os.remove(temp_path)
+
+        filename = link  # salva o link direto no banco
+        
     cursor.execute("""
         INSERT INTO farol_farmacia_pedidos (
             farmacia_id, registro, atendente_id,
