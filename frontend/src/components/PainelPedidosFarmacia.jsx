@@ -368,19 +368,16 @@ return (
 <div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
 
 {p.receita_arquivo && (
-<div className="pedido-info text-blue-600">
-<FileText size={16} />
 <a
-href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
+href={p.receita_arquivo}
 target="_blank"
 rel="noopener noreferrer"
-className="underline"
+title="Abrir Receita"
+className="pedido-info text-blue-600 hover:text-blue-800"
 >
-Receita
+<FileText size={18} />
 </a>
-</div>
-)}
-</div>
+
 
 <div className="flex items-center gap-2">
 
