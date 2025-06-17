@@ -322,7 +322,7 @@ if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
   placement="top-end"
   animation="text"
   arrow={false}
-  theme="material"
+  theme="light-border"
   delay={[200, 0]}
   offset={[15, 0]}
 >
