@@ -4,7 +4,7 @@ import api from '../services/api'
 import { toast } from 'react-toastify'
 import {
   User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock,
-  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard,
+  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserRound,
   FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine,
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -291,21 +291,30 @@ function corLocalClasse(nome) {
   const logs = logsPorPedido[p.id] || []
   const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
 
-  let tooltipHTML = ''
+let tooltipHTML = ''
 
-  if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
-    const dt = new Date(logEtapa.data_hora)
-    const data = dt.toLocaleDateString('pt-BR')
-    const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
-    tooltipHTML = `
-      <div class='text-xs'>
-        <strong>${et.nome}</strong><br />
-        ${logEtapa.usuario_confirmador}<br />
-        ${data} ${hora}
-      </div>`
-  } else {
-    tooltipHTML = `<div class='text-xs text-gray-500'>Aguardando ${et.nome}</div>`
-  }
+if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
+  const dt = new Date(logEtapa.data_hora)
+  const data = dt.toLocaleDateString('pt-BR')
+  const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
+
+  tooltipHTML = `
+    <div class='text-[10px] text-gray-700 leading-tight'>
+      <div class='font-semibold mb-1'>${et.nome}</div>
+      <hr class='my-1 border-t border-gray-300' />
+      <div class='flex items-center gap-1 mb-0.5'>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+        <span>${logEtapa.usuario_confirmador}</span>
+      </div>
+      <div class='flex items-center gap-1'>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+        <span>${data} ${hora}</span>
+      </div>
+    </div>`
+} else {
+  tooltipHTML = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
+}
+
 
   return (
 <Tippy
