@@ -304,29 +304,31 @@ function corLocalClasse(nome) {
   }
 
   return (
-    <Tippy
-      key={et.campo}
-      content={<span dangerouslySetInnerHTML={{ __html: tooltipHTML }} />}
-      placement="right"
-      animation="shift-away"
-      arrow={false}
-      theme="light-border"
-      delay={[100, 0]}
+<Tippy
+  key={et.campo}
+  content={<span dangerouslySetInnerHTML={{ __html: tooltipHTML }} />}
+  placement="right"
+  animation="shift-away"
+  arrow={false}
+  theme="light-border"
+  delay={[100, 0]}
+>
+  <span className="inline-block">
+    <button
+      onClick={() => {
+        if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
+      }}
+      disabled={!podeExecutar || ativo}
+      className={`
+        rounded-full p-1
+        ${ativo ? 'text-green-600' : 'text-gray-400'}
+        ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}
+      `}
     >
-      <button
-        onClick={() => {
-          if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
-        }}
-        disabled={!podeExecutar || ativo}
-        className={`
-          rounded-full p-1
-          ${ativo ? 'text-green-600' : 'text-gray-400'}
-          ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}
-        `}
-      >
-        <Icone size={18} />
-      </button>
-    </Tippy>
+      <Icone size={18} />
+    </button>
+  </span>
+</Tippy>
   )
 })}
 
