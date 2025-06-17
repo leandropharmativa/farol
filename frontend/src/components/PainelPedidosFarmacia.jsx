@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import {
   User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserRound,
-  FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine, Loader2,
+  FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine,
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 import Tippy from '@tippyjs/react'
@@ -287,78 +287,62 @@ function corLocalClasse(nome) {
   const ativo = p[et.campo]
   const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
 
-  const [tooltipContent, setTooltipContent] = useState('Carregando...')
-  const [loadingTooltip, setLoadingTooltip] = useState(false)
+  const logs = logsPorPedido[p.id] || []
+  const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
 
-  const handleTooltipShow = async () => {
-    setLoadingTooltip(true)
-    try {
-      const res = await api.get(`/pedidos/${p.id}/logs`)
-      const logs = res.data || []
-      const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
+let tooltipHTML = ''
 
-      if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
-        const dt = new Date(logEtapa.data_hora)
-        const data = dt.toLocaleDateString('pt-BR')
-        const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
+if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
+  const dt = new Date(logEtapa.data_hora)
+  const data = dt.toLocaleDateString('pt-BR')
+  const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
 
-        setTooltipContent(`
-          <div class='text-[12px] text-gray-700 leading-tight'>
-            <div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
-            <hr class='my-1 border-t border-gray-300' />
-            <div class='flex items-center gap-1 mb-0.5'>
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
-              <span>${logEtapa.usuario_confirmador}</span>
-            </div>
-            <div class='flex items-center gap-1'>
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
-              <span>${data} ${hora}</span>
-            </div>
-          </div>
-        `)
-      } else {
-        setTooltipContent(`<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`)
-      }
-    } catch (e) {
-      setTooltipContent(`<div class='text-[10px] text-red-400'>Erro ao carregar</div>`)
-    }
-    setLoadingTooltip(false)
-  }
-
+  tooltipHTML = `
+    <div class='text-[12px] text-gray-700 leading-tight'>
+      <div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
+      <hr class='my-1 border-t border-gray-300' />
+      <div class='flex items-center gap-1 mb-0.5'>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+        <span>${logEtapa.usuario_confirmador}</span>
+      </div>
+      <div class='flex items-center gap-1'>
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+        <span>${data} ${hora}</span>
+      </div>
+    </div>`
+} else {
+  tooltipHTML = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
+}
   return (
-    <Tippy
-      key={et.campo}
-      content={
-        loadingTooltip
-          ? <span className="flex items-center gap-1 text-[10px] text-gray-500"><Loader2 className="animate-spin w-3 h-3" /> Carregando...</span>
-          : <span dangerouslySetInnerHTML={{ __html: tooltipContent }} />
-      }
-      placement="top-end"
-      animation="text"
-      arrow={false}
-      theme="light-border"
-      delay={[200, 0]}
-      offset={[15, 0]}
-      onShow={handleTooltipShow}
+<Tippy
+  key={et.campo}
+  content={<span dangerouslySetInnerHTML={{ __html: tooltipHTML }} />}
+  placement="top-end"
+  animation="text"
+  arrow={false}
+  theme="light-border"
+  delay={[200, 0]}
+  offset={[15, 0]}
+>
+  <span className="inline-block">
+    <button
+      onClick={() => {
+        if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
+      }}
+      disabled={!podeExecutar || ativo}
+      className={`
+        rounded-full p-1
+        ${ativo ? 'text-green-600' : 'text-gray-400'}
+        ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}
+      `}
     >
-      <span className="inline-block">
-        <button
-          onClick={() => {
-            if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
-          }}
-          disabled={!podeExecutar || ativo}
-          className={`
-            rounded-full p-1
-            ${ativo ? 'text-green-600' : 'text-gray-400'}
-            ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}
-          `}
-        >
-          <Icone size={18} />
-        </button>
-      </span>
-    </Tippy>
+      <Icone size={18} />
+    </button>
+  </span>
+</Tippy>
   )
 })}
+
                 {/* Exibe botão de edição apenas se email for o da farmácia */}
                 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
                   <button
