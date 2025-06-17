@@ -8,6 +8,12 @@
 
 /* ====== ESTILOS GLOBAIS E UTILITÁRIOS ====== */
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Lato', sans-serif;
   background-color: #f4f6f8;
@@ -16,6 +22,10 @@ body {
 }
 
 /* ====== INPUT E BOTÃO GERAL ====== */
+.input {
+  @apply w-full p-2 rounded-md border border-white text-black placeholder-gray-400;
+}
+
 .btn-primary {
   @apply w-full bg-white text-orange-600 font-semibold py-2 px-4 rounded-md hover:bg-gray-100 transition;
 }
@@ -28,6 +38,19 @@ form {
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+input[type="text"],
+input[type="password"],
+input[type="file"],
+select,
+textarea {
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
 }
 
 button {
@@ -488,4 +511,3 @@ p {
   transform: translateX(0);
   transition: all 0.2s ease-out;
 }
-
