@@ -53,8 +53,10 @@ className="absolute top-2 right-2 text-gray-400 hover:text-red-500"
 
 {/* Título com ícone da etapa */}
 <div className="flex items-center gap-2 mb-3">
-{IconeEtapa && <IconeEtapa size={20} className="text-farol-primary" />}
-<h2 className="text-sm font-semibold text-farol-primary">
+{IconeEtapa && (
+<IconeEtapa size={18} className="text-farol-primary mt-[1px]" />
+)}
+<h2 className="text-sm font-semibold text-farol-primary leading-none">
 Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
 </h2>
 </div>
