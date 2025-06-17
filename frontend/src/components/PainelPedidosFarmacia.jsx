@@ -22,6 +22,7 @@ export default function PainelPedidosFarmacia({ farmaciaId, usuarioLogado, filtr
   const [dataSelecionada, setDataSelecionada] = useState(new Date())
   const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
   const [logsPorPedido, setLogsPorPedido] = useState({})
+  const [tooltipStates, setTooltipStates] = useState({})
 
 const carregarPedidos = async () => {
   try {
@@ -287,22 +288,30 @@ function corLocalClasse(nome) {
   const ativo = p[et.campo]
   const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
 
-  const [tooltipContent, setTooltipContent] = useState('Carregando...')
-  const [loadingTooltip, setLoadingTooltip] = useState(false)
+  const idEtapa = `${p.id}-${et.nome}`
+  const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
 
   const handleTooltipShow = async () => {
-    setLoadingTooltip(true)
+    if (tooltipStates[idEtapa]?.html) return // já carregado
+
+    setTooltipStates(prev => ({
+      ...prev,
+      [idEtapa]: { loading: true, html: '' }
+    }))
+
     try {
       const res = await api.get(`/pedidos/${p.id}/logs`)
       const logs = res.data || []
       const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
+
+      let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
 
       if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
         const dt = new Date(logEtapa.data_hora)
         const data = dt.toLocaleDateString('pt-BR')
         const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
 
-        setTooltipContent(`
+        html = `
           <div class='text-[12px] text-gray-700 leading-tight'>
             <div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
             <hr class='my-1 border-t border-gray-300' />
@@ -315,31 +324,36 @@ function corLocalClasse(nome) {
               <span>${data} ${hora}</span>
             </div>
           </div>
-        `)
-      } else {
-        setTooltipContent(`<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`)
+        `
       }
+
+      setTooltipStates(prev => ({
+        ...prev,
+        [idEtapa]: { loading: false, html }
+      }))
     } catch (e) {
-      setTooltipContent(`<div class='text-[10px] text-red-400'>Erro ao carregar</div>`)
+      setTooltipStates(prev => ({
+        ...prev,
+        [idEtapa]: { loading: false, html: `<div class='text-[10px] text-red-400'>Erro ao carregar</div>` }
+      }))
     }
-    setLoadingTooltip(false)
   }
 
   return (
     <Tippy
       key={et.campo}
       content={
-        loadingTooltip
+        tooltip.loading
           ? <span className="flex items-center gap-1 text-[10px] text-gray-500"><Loader2 className="animate-spin w-3 h-3" /> Carregando...</span>
-          : <span dangerouslySetInnerHTML={{ __html: tooltipContent }} />
+          : <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
       }
+      onShow={handleTooltipShow}
       placement="top-end"
       animation="text"
       arrow={false}
       theme="light-border"
       delay={[200, 0]}
       offset={[15, 0]}
-      onShow={handleTooltipShow}
     >
       <span className="inline-block">
         <button
@@ -347,11 +361,9 @@ function corLocalClasse(nome) {
             if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
           }}
           disabled={!podeExecutar || ativo}
-          className={`
-            rounded-full p-1
+          className={`rounded-full p-1
             ${ativo ? 'text-green-600' : 'text-gray-400'}
-            ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}
-          `}
+            ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}`}
         >
           <Icone size={18} />
         </button>
@@ -359,6 +371,7 @@ function corLocalClasse(nome) {
     </Tippy>
   )
 })}
+
 
                 {/* Exibe botão de edição apenas se email for o da farmácia */}
                 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
