@@ -534,6 +534,7 @@ titulo={etapaSelecionada}
 onConfirmar={confirmarEtapa}
 onCancelar={() => setAbrirModal(false)}
 coordenadas={coordenadasModal}
+IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
 />
 )}
 
