@@ -32,17 +32,8 @@ onConfirmar(codigo, obs, extras)
 
 return (
 <div className="fixed inset-0 bg-black bg-opacity-30 z-50">
-<div
-className="absolute bg-white w-full max-w-[280px] p-4 rounded-xl shadow-md animate-fadeIn max-h-screen overflow-y-auto"
-style={{
-top: coordenadas?.top ?? '50%',
-left: coordenadas?.left
-? `calc(${coordenadas.left}px - 200px)`  // 270px é a largura estimada do modal
-: '50%',
-transform: coordenadas ? 'translateY(0)' : 'translate(-50%, -50%)'
-}}
-
->
+<div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-start justify-center pt-10">
+<div className="bg-white w-full max-w-[280px] p-4 rounded-xl shadow-md animate-fadeIn max-h-screen overflow-y-auto relative">
 {/* Ícone de fechar no canto */}
 <button
 onClick={onCancelar}
