@@ -164,6 +164,17 @@ function corLocalClasse(nome) {
     <div>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
+          <Tippy
+            content={
+            filtroPorPrevisao
+            ? 'Filtrando por data de *previsão de entrega*'
+            : 'Filtrando por data de *criação do pedido*'
+            }
+            placement="bottom"
+            animation="shift-away"
+            arrow={true}
+            theme="light-border"
+          >
           <button
             onClick={() => {
               const novoValor = !filtroPorPrevisao
@@ -185,7 +196,7 @@ function corLocalClasse(nome) {
               <CalendarPlus size={20} className="inline-block align-middle" />
             )}
           </button>
-
+          </Tippy>
           <div className="flex items-baseline gap-1 text-xl font-bold">
             <span
               className="cursor-pointer select-none"
