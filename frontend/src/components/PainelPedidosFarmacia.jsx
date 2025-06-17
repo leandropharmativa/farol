@@ -380,7 +380,7 @@ delay={[200, 0]}
 href={p.receita_arquivo}
 target="_blank"
 rel="noopener noreferrer"
-className="pedido-info text-blue-600 hover:text-blue-800"
+className="pedido-info text-farol-primary hover:text-farol-secondary"
 >
 <FileText size={18} />
 </a>
