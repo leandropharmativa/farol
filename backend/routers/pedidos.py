@@ -45,7 +45,7 @@ async def criar_pedido(
         temp_filename = f"temp_{registro}{ext}"
         temp_path = os.path.join("/tmp", temp_filename)
         with open(temp_path, "wb") as f:
-        f.write(await receita.read())
+            f.write(await receita.read())
 
         # Envia para o Google Drive
         arquivo_id, link = upload_arquivo_para_drive(temp_path, f"{registro}{ext}")
