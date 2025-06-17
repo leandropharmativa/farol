@@ -77,11 +77,24 @@ const etapas = [
 { campo: 'status_pagamento', nome: 'Pagamento', icone: CreditCard, permissao: 'permissao_registrar_pagamento' }
 ]
 
-const solicitarConfirmacao = (pedidoId, etapa) => {
+const [coordenadasModal, setCoordenadasModal] = useState(null)
+
+const solicitarConfirmacao = (pedidoId, etapa, event) => {
+const rect = event?.currentTarget?.getBoundingClientRect()
+if (rect) {
+setCoordenadasModal({
+top: rect.top + window.scrollY + 30,
+left: rect.left + window.scrollX
+})
+} else {
+setCoordenadasModal(null)
+}
+
 setPedidoSelecionado(pedidoId)
 setEtapaSelecionada(etapa)
 setAbrirModal(true)
 }
+
 
 const confirmarEtapa = async (codigoConfirmacao, observacao = '', extras = {}) => {
 try {
@@ -460,8 +473,8 @@ offset={[15, 0]}
 >
 <span className="inline-block">
 <button
-onClick={() => {
-if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome)
+onClick={(e) => {
+if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome, e)
 }}
 disabled={!podeExecutar || ativo}
 className={`rounded-full p-1
@@ -520,8 +533,10 @@ onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
 titulo={etapaSelecionada}
 onConfirmar={confirmarEtapa}
 onCancelar={() => setAbrirModal(false)}
+coordenadas={coordenadasModal}
 />
 )}
+
 </div>
 )
 }
