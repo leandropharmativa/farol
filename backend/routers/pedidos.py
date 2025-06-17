@@ -284,6 +284,9 @@ def listar_logs_pedido(pedido_id: int):
             l.etapa,
             l.data_hora,
             l.observacao,
+            l.itens_solidos,
+            l.itens_semisolidos,
+            l.itens_saches,
             u1.nome AS usuario_logado,
             u2.nome AS usuario_confirmador
         FROM farol_farmacia_pedido_logs l
