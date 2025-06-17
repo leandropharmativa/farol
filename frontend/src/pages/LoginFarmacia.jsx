@@ -149,7 +149,7 @@ export default function LoginFarmacia() {
         </div>
 
         {/* Nome Farol no topo centralizado */}
-      <div className="absolute left-1/2 -translate-x-1/2 text-3xl text-white fonte-pacifico text-center">
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl text-white fonte-pacifico text-right">
         Farol
       </div>
 
@@ -157,14 +157,14 @@ export default function LoginFarmacia() {
           <>
             <input
               type="text"
-              className="login-input"
-              placeholder="Login (e-mail ou código)"
+              className="login-input text-center"
+              placeholder="Login"
               value={emailOuCodigo}
               onChange={(e) => setEmailOuCodigo(e.target.value)}
             />
             <input
               type="password"
-              className="login-input"
+              className="login-input text-center"
               placeholder="Senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
