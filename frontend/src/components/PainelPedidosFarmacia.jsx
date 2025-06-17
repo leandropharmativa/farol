@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 import {
-  User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock,
+  User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock, AlertCircle,
   PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserRound,
   FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine, Loader2,
 } from 'lucide-react'
@@ -430,6 +430,31 @@ const handleTooltipShow = async () => {
     }))
   }
 }
+
+{p.observacao && (
+  <Tippy
+    content={
+      <div className="text-[12px] max-w-[240px] text-gray-700 leading-snug">
+        <div className="font-semibold text-farol-alert mb-1">Observação</div>
+        <div>{p.observacao}</div>
+      </div>
+    }
+    placement="top-end"
+    animation="text"
+    arrow={true}
+    theme="light-border"
+    delay={[200, 0]}
+    offset={[10, 5]}
+  >
+    <span className="inline-block">
+      <AlertCircle
+        size={18}
+        className="text-farol-alert animate-pulse cursor-help"
+        title="Observação"
+      />
+    </span>
+  </Tippy>
+)}
 
   return (
     <Tippy
