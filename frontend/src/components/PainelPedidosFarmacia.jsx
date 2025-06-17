@@ -276,7 +276,26 @@ function corLocalClasse(nome) {
           <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
             <div className="pedido-linha">
               <div className="pedido-conteudo">
-                <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
+
+  <div className="pedido-info flex items-center gap-1">
+  <PillBottle size={16} />
+  <span>{p.registro}</span>
+  {logsPorPedido[p.id]?.map((log, i) => {
+    const etapa = log.etapa?.toLowerCase()
+    if (etapa !== 'conferência') return null
+
+    const { itens_solidos = 0, itens_semisolidos = 0, itens_saches = 0 } = log
+
+    return (
+      <span key={i} className="flex items-center gap-[1px] ml-1">
+        {[...Array(itens_solidos)].map((_, i) => <Pill key={`s${i}`} size={12} className="text-farol-solidos" />)}
+        {[...Array(itens_semisolidos)].map((_, i) => <Beaker key={`ss${i}`} size={12} className="text-farol-semisolidos" />)}
+        {[...Array(itens_saches)].map((_, i) => <StickyNote key={`st${i}`} size={12} className="text-farol-saches" />)}
+      </span>
+    )
+  })}
+</div>
+
                 <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
 
                 <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
