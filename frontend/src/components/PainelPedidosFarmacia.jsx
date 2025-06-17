@@ -170,7 +170,7 @@ function corLocalClasse(nome) {
       {filtroPorPrevisao ? 'Previsão de Entrega' : 'Data de Criação'}
     </span>
   }
-  placement="right"
+  placement="top-end"
   animation="text"
   arrow={true}
   theme="light-border"
