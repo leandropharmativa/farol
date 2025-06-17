@@ -427,7 +427,7 @@ const totalSaches = pedidos.reduce((total, p) => {
       key={et.campo}
       content={
         tooltip.loading
-          ? <span className="flex items-center gap-1 text-[10px] text-gray-500"><Loader2 className="animate-spin w-3 h-3" /> Carregando...</span>
+          ? <span className="flex items-center gap-1 text-[10px] text-gray-500"><Loader2 className="animate-spin w-3 h-3" /></span>
           : <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
       }
       onShow={handleTooltipShow}
