@@ -500,3 +500,15 @@ p {
   @apply flex justify-end gap-2 mb-2;
 }
 
+/* frontend/src/styles/tippy-custom.css */
+.tippy-box[data-animation='text'][data-state='hidden'] {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+.tippy-box[data-animation='text'][data-state='visible'] {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 0.2s ease-out;
+}
+
