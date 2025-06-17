@@ -41,20 +41,6 @@ const carregarPedidos = async () => {
 
     setPedidos(pedidosFiltrados)
 
-    // ✅ ESTE BLOCO É O QUE DEVE SER INSERIDO AQUI
-    const logsMap = {}
-
-    await Promise.all(pedidosFiltrados.map(async (pedido) => {
-      try {
-        const resLog = await api.get(`/pedidos/${pedido.id}/logs`)
-        logsMap[pedido.id] = resLog.data
-      } catch (e) {
-        logsMap[pedido.id] = []
-      }
-    }))
-
-    setLogsPorPedido(logsMap)
-
   } catch (err) {
     toast.error('Erro ao carregar pedidos')
   }
