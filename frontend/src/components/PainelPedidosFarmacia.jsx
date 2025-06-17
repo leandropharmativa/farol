@@ -364,8 +364,8 @@ return (
 <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
 </div>
 
-<div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
-<div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
+<div className="pedido-info-mini"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
+<div className="pedido-info-mini"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
 
 {p.receita_arquivo && (
 <div className="pedido-info text-blue-600">
