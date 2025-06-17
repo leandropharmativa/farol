@@ -1,3 +1,4 @@
+
 // frontend/src/components/PainelPedidosFarmacia.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
@@ -373,11 +374,13 @@ href={p.receita_arquivo}
 target="_blank"
 rel="noopener noreferrer"
 title="Abrir Receita"
-className="pedido-info text-blue-600 hover:text-blue-800"
+className="pedido-info hover:text-farol-primary"
 >
-<FileText size={18} />
+<FileText size={16} />
 </a>
 
+)}
+</div>
 
 <div className="flex items-center gap-2">
 
