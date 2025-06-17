@@ -118,7 +118,7 @@ export default function NovosPedidosStream({ farmaciaId }) {
         <div key={p.id} className="pedido-card border-l-4 border-farol-primary bg-farol-focus">
           <div className="pedido-linha">
             <div className="pedido-conteudo">
-              <div className="pedido-info"><PillBottle size={16} /><span>{p.registro} - {p.numero_itens}</span></div>
+              <div className="pedido-info"><PillBottle size={16} /><span>{p.registro}</span></div>
               <div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
 
               <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome)}`}>
