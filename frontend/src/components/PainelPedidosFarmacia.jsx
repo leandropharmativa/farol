@@ -375,7 +375,11 @@ const idEtapa = `${p.id}-${et.nome}`
 const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
 
 const handleTooltipShow = async () => {
-if (tooltipStates[idEtapa]?.html) return // já carregado
+  setTooltipStates(prev => ({
+    ...prev,
+    [idEtapa]: { loading: true, html: '' }
+  }))
+ // já carregado
 
 setTooltipStates(prev => ({
 ...prev,
