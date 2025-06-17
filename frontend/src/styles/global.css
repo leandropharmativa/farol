@@ -355,11 +355,11 @@ p {
 }
 
 .login-input {
-  @apply w-full text-sm rounded-md border border-white bg-white text-black placeholder-gray-400 mb-2 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-farol-linecolor appearance-none;
+  @apply w-full text-sm rounded-full border border-white bg-white text-farol-secondary placeholder-gray-400 mb-2 px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-farol-linecolor appearance-none;
 }
 
 .login-btn {
-  @apply w-full bg-white text-sm text-farol-primary font-semibold mt-2 py-2 px-4 rounded-md hover:bg-farol-focus transition;
+  @apply w-full bg-white text-sm text-farol-primary font-semibold mt-2 py-2 px-4 rounded-full hover:bg-farol-focus transition;
 }
 
 .login-link {
