@@ -165,13 +165,13 @@ function corLocalClasse(nome) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <Tippy
-            content={
+            content={<span className="text-[10px] text-farol-secondary">
             filtroPorPrevisao
-            ? 'Filtrando por data de *previsão de entrega*'
-            : 'Filtrando por data de *criação do pedido*'
-            }
-            placement="bottom"
-            animation="shift-away"
+            ? 'Clique para alternar para previsão de entrega'
+            : 'Clique para alternar para data do pedido'
+            </span>}
+            placement="top"
+            animation="text"
             arrow={true}
             theme="light-border"
           >
