@@ -26,11 +26,11 @@ clientes_ativos = []
 async def criar_pedido(
     farmacia_id: UUID = Form(...),
     registro: str = Form(...),
-    numero_itens: int = Form(...),
     atendente_id: int = Form(...),
     origem_id: int = Form(...),
     destino_id: int = Form(...),
     previsao_entrega: str = Form(...),
+    observacao: str = Form(""),
     receita: UploadFile = File(None)
 ):
     cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE registro = %s", (registro,))
@@ -46,38 +46,37 @@ async def criar_pedido(
 
     cursor.execute("""
         INSERT INTO farol_farmacia_pedidos (
-            farmacia_id, registro, numero_itens, atendente_id,
+            farmacia_id, registro, atendente_id,
             origem_id, destino_id, previsao_entrega, receita_arquivo,
             data_criacao, status_inclusao
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW() AT TIME ZONE 'America/Sao_Paulo', TRUE)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, NOW() AT TIME ZONE 'America/Sao_Paulo', TRUE)
         RETURNING id
     """, (
-        str(farmacia_id), registro, numero_itens, atendente_id,
+        str(farmacia_id), registro, atendente_id,
         origem_id, destino_id, previsao_entrega, filename
     ))
     pedido_id = cursor.fetchone()[0]
 
     cursor.execute("""
         INSERT INTO farol_farmacia_pedido_logs (
-            pedido_id, etapa, usuario_logado_id, usuario_confirmador_id
-        ) VALUES (%s, %s, %s, %s)
+            pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
+        ) VALUES (%s, %s, %s, %s, %s)
     """, (
-        pedido_id, "Inclusão", atendente_id, atendente_id
+        pedido_id, "Inclusão", atendente_id, atendente_id, observacao
     ))
 
-    # 🔔 Notificar clientes SSE com data e farmácia
-    hoje_str = datetime.utcnow().date().isoformat()  # yyyy-mm-dd
+    # 🔔 Notificar clientes SSE
     evento = f"novo_pedido:{farmacia_id}:{pedido_id}"
     for q in clientes_ativos:
         await q.put(evento)
 
-
     return {
-    "status": "ok",
-    "mensagem": "Pedido criado com sucesso",
-    "pedido_id": pedido_id
+        "status": "ok",
+        "mensagem": "Pedido criado com sucesso",
+        "pedido_id": pedido_id
     }
+
 
 # 📌 Editar pedido
 @router.post("/pedidos/editar/{pedido_id}")
