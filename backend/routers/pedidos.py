@@ -176,7 +176,10 @@ def registrar_etapa(
     etapa: str = Form(...),
     usuario_logado_id: int = Form(...),
     codigo_confirmacao: int = Form(...),
-    observacao: str = Form("")
+    observacao: str = Form(""),
+    itens_solidos: Optional[int] = Form(None),
+    itens_semisolidos: Optional[int] = Form(None),
+    itens_saches: Optional[int] = Form(None)
 ):
     cursor.execute("SELECT id FROM farol_farmacia_usuarios WHERE codigo = %s", (codigo_confirmacao,))
     row = cursor.fetchone()
@@ -204,13 +207,24 @@ def registrar_etapa(
         if not permitido or not permitido[0]:
             raise HTTPException(status_code=403, detail="Usuário não tem permissão para essa etapa.")
 
-    cursor.execute("""
-        INSERT INTO farol_farmacia_pedido_logs (
+    if etapa_normalizada == "conferencia":
+        cursor.execute("""
+            INSERT INTO farol_farmacia_pedido_logs (
+                pedido_id, etapa, usuario_logado_id, usuario_confirmador_id,
+                observacao, itens_solidos, itens_semisolidos, itens_saches
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            pedido_id, etapa, usuario_logado_id, usuario_confirmador_id,
+            observacao, itens_solidos, itens_semisolidos, itens_saches
+        ))
+    else:
+        cursor.execute("""
+            INSERT INTO farol_farmacia_pedido_logs (
+                pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
+            ) VALUES (%s, %s, %s, %s, %s)
+        """, (
             pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
-        ) VALUES (%s, %s, %s, %s, %s)
-    """, (
-        pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
-    ))
+        ))
 
     coluna_status = {
         "impressao": "status_impressao",
