@@ -69,6 +69,13 @@ const confirmarEtapa = async (codigoConfirmacao, observacao = '') => {
     formData.append('codigo_confirmacao', codigoConfirmacao)
     formData.append('observacao', observacao)
 
+    // 🟨 Apenas na conferência, envia os tipos de item
+    if (etapaSelecionada === 'Conferência') {
+      formData.append('itens_solidos', extras.itens_solidos || 0)
+      formData.append('itens_semisolidos', extras.itens_semisolidos || 0)
+      formData.append('itens_saches', extras.itens_saches || 0)
+    }
+
     const res = await api.post(`/pedidos/${pedidoSelecionado}/registrar-etapa`, formData)
 
     toast.success(res.data.mensagem)
