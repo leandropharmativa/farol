@@ -1,10 +1,8 @@
-// frontend/src/pages/LoginFarmacia.jsx
 import { useState } from 'react'
 import api from '../services/api'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router-dom'
-import { TowerControl } from 'lucide-react'
 
 export default function LoginFarmacia() {
   const [modo, setModo] = useState('login')
@@ -27,90 +25,76 @@ export default function LoginFarmacia() {
     setNomeEmpresa('')
   }
 
-const handleLogin = async () => {
-  setCarregandoLogin(true)
-  try {
-    // 1. Tenta login de admin
+  const handleLogin = async () => {
+    setCarregandoLogin(true)
     try {
-      const resAdmin = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
-        email: emailOuCodigo,
-        senha,
-      })
-      localStorage.setItem('token', resAdmin.data.token)
-      localStorage.setItem('tipoLogin', 'admin')
-      toast.success('Login como administrador')
-      navigate('/gerar')
-      window.location.reload()
-      return
-    } catch (err) {
-      console.log('Erro login admin:', err?.response?.data)
-    }
-
-    // 2. Tenta login de farmácia
-    try {
-      const resFarmacia = await api.post('/farmacia/login', {
-        email: emailOuCodigo,
-        senha,
-      })
-      if (resFarmacia.data.status === 'ok') {
-        localStorage.setItem('token', resFarmacia.data.token)
-        localStorage.setItem('farmaciaId', resFarmacia.data.farmaciaId)
-        localStorage.setItem('email', emailOuCodigo)
-        localStorage.setItem('tipoLogin', 'farmacia')
-        localStorage.setItem('nomeFarmacia', resFarmacia.data.nome)
-        toast.success('Login como farmácia')
-        navigate('/painel-farmacia')
+      // 1. Admin
+      try {
+        const resAdmin = await axios.post(`${import.meta.env.VITE_API_URL}/admin/login`, {
+          email: emailOuCodigo,
+          senha,
+        })
+        localStorage.setItem('token', resAdmin.data.token)
+        localStorage.setItem('tipoLogin', 'admin')
+        toast.success('Login como administrador')
+        navigate('/gerar')
         window.location.reload()
         return
-      } else {
-        console.log('Login farmácia falhou:', resFarmacia.data)
-      }
-    } catch (err) {
-      console.log('Erro login farmácia:', err?.response?.data)
-    }
+      } catch {}
 
-    // 3. Tenta login de usuário da farmácia
-    try {
-      const resUsuario = await api.post('/usuarios/login', {
-        codigo: emailOuCodigo,
-        senha,
-      })
-      if (resUsuario.data.status === 'ok') {
-        localStorage.setItem('token', resUsuario.data.token)
-        localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
-        localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
-        localStorage.setItem('nomeUsuario', resUsuario.data.nome)
-        localStorage.setItem('nomeFarmacia', resUsuario.data.nomeFarmacia)
-        localStorage.setItem('tipoLogin', 'usuario')
-        localStorage.setItem('emailFarmacia', resUsuario.data.emailFarmacia)
-        // Salva permissões
-        localStorage.setItem('permissao_impressao', resUsuario.data.permissao_impressao)
-        localStorage.setItem('permissao_conferencia', resUsuario.data.permissao_conferencia)
-        localStorage.setItem('permissao_producao', resUsuario.data.permissao_producao)
-        localStorage.setItem('permissao_despacho', resUsuario.data.permissao_despacho)
-        localStorage.setItem('permissao_entrega', resUsuario.data.permissao_entrega)
-        localStorage.setItem('permissao_registrar_pagamento', resUsuario.data.permissao_registrar_pagamento)
-        toast.success('Login como usuário')
-        
-        navigate('/painel-farmacia')
-        window.location.reload()
-        return
-      } else {
-        console.log('Login usuário falhou:', resUsuario.data)
-      }
-    } catch (err) {
-      console.log('Erro login usuário:', err?.response?.data)
-    }
+      // 2. Farmácia
+      try {
+        const resFarmacia = await api.post('/farmacia/login', {
+          email: emailOuCodigo,
+          senha,
+        })
+        if (resFarmacia.data.status === 'ok') {
+          localStorage.setItem('token', resFarmacia.data.token)
+          localStorage.setItem('farmaciaId', resFarmacia.data.farmaciaId)
+          localStorage.setItem('email', emailOuCodigo)
+          localStorage.setItem('tipoLogin', 'farmacia')
+          localStorage.setItem('nomeFarmacia', resFarmacia.data.nome)
+          toast.success('Login como farmácia')
+          navigate('/painel-farmacia')
+          window.location.reload()
+          return
+        }
+      } catch {}
 
-    // Nenhuma das tentativas deu certo
-    toast.error('Credenciais inválidas.')
-  } catch (err) {
-    console.error('Erro inesperado no login:', err)
-    toast.error('Erro ao processar login.')
-  } finally {
-    setCarregandoLogin(false)
+      // 3. Usuário da farmácia
+      try {
+        const resUsuario = await api.post('/usuarios/login', {
+          codigo: emailOuCodigo,
+          senha,
+        })
+        if (resUsuario.data.status === 'ok') {
+          localStorage.setItem('token', resUsuario.data.token)
+          localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
+          localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
+          localStorage.setItem('nomeUsuario', resUsuario.data.nome)
+          localStorage.setItem('nomeFarmacia', resUsuario.data.nomeFarmacia)
+          localStorage.setItem('tipoLogin', 'usuario')
+          localStorage.setItem('emailFarmacia', resUsuario.data.emailFarmacia)
+          localStorage.setItem('permissao_impressao', resUsuario.data.permissao_impressao)
+          localStorage.setItem('permissao_conferencia', resUsuario.data.permissao_conferencia)
+          localStorage.setItem('permissao_producao', resUsuario.data.permissao_producao)
+          localStorage.setItem('permissao_despacho', resUsuario.data.permissao_despacho)
+          localStorage.setItem('permissao_entrega', resUsuario.data.permissao_entrega)
+          localStorage.setItem('permissao_registrar_pagamento', resUsuario.data.permissao_registrar_pagamento)
+          toast.success('Login como usuário')
+          navigate('/painel-farmacia')
+          window.location.reload()
+          return
+        }
+      } catch {}
+
+      toast.error('Credenciais inválidas.')
+    } catch {
+      toast.error('Erro ao processar login.')
+    } finally {
+      setCarregandoLogin(false)
+    }
   }
-}
 
   const buscarEmpresa = async () => {
     if (!codigo.trim()) return
@@ -127,7 +111,7 @@ const handleLogin = async () => {
       } else {
         toast.error(res.data.mensagem || 'Código inválido ou expirado.')
       }
-    } catch (err) {
+    } catch {
       toast.error('Erro ao verificar código.')
     }
     setCarregandoEmpresa(false)
@@ -155,9 +139,12 @@ const handleLogin = async () => {
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen">
       <div className="login-box">
-        <div className="login-header">
-          <TowerControl size={36} />
-          <h1 className="text-3xl font-bold tracking-wide fonte-pacifico">Farol</h1>
+        <div className="mb-6 flex justify-center">
+          <img
+            src="/farol.png"
+            alt="Logo"
+            className="h-20 object-contain"
+          />
         </div>
 
         {modo === 'login' ? (
@@ -193,18 +180,12 @@ const handleLogin = async () => {
               value={codigo}
               onChange={(e) => setCodigo(e.target.value)}
             />
-            <button
-              className="login-btn"
-              onClick={buscarEmpresa}
-              disabled={!codigo.trim()}
-            >
+            <button className="login-btn" onClick={buscarEmpresa} disabled={!codigo.trim()}>
               Validar Código
             </button>
-
             {carregandoEmpresa && (
               <p className="text-sm text-center mt-2">Verificando código...</p>
             )}
-
             {nomeEmpresa && (
               <>
                 <p className="text-sm mt-2 mb-2 text-center">
