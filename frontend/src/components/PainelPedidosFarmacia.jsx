@@ -594,7 +594,12 @@ locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.resid
 
 const Icone = et.icone
 const ativo = p[et.campo]
-const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
+let podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
+
+// Etapa de Recebimento só pode ser executada se Despacho estiver feito
+if (et.nome === 'Recebimento' && !p.status_despacho) {
+  podeExecutar = false
+}
 
 const idEtapa = `${p.id}-${et.nome}`
 const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
