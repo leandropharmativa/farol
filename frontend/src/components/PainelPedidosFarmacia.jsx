@@ -98,19 +98,22 @@ const etapas = [
 const [coordenadasModal, setCoordenadasModal] = useState(null)
 
 const solicitarConfirmacao = (pedidoId, etapa, event) => {
-const rect = event?.currentTarget?.getBoundingClientRect()
-if (rect) {
-setCoordenadasModal({
-top: rect.top + window.scrollY + 30,
-left: rect.left + window.scrollX
-})
-} else {
-setCoordenadasModal(null)
-}
+  const rect = event?.currentTarget?.getBoundingClientRect()
+  if (rect) {
+    setCoordenadasModal({
+      top: rect.top + window.scrollY + 30,
+      left: rect.left + window.scrollX
+    })
+  } else {
+    setCoordenadasModal(null)
+  }
 
-setPedidoSelecionado(pedidoId)
-setEtapaSelecionada(etapa)
-setAbrirModal(true)
+  const pedidoSelecionadoObj = pedidos.find(p => p.id === pedidoId)
+  window.__ULTIMO_PEDIDO_SELECIONADO = pedidoSelecionadoObj  // <-- ESSA LINHA É O QUE FALTAVA
+
+  setPedidoSelecionado(pedidoId)
+  setEtapaSelecionada(etapa)
+  setAbrirModal(true)
 }
 
 const confirmarEtapa = async (codigo, observacao, extras = {}) => {
