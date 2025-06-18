@@ -22,48 +22,62 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 clientes_ativos = []
 
 @router.post("/pedidos/criar")
-async def criar_pedido(form: PedidoCriacao):
-    data_agora = datetime.now()
+async def criar_pedido(
+    farmacia_id: UUID = Form(...),
+    registro: str = Form(...),
+    atendente_id: int = Form(...),
+    origem_id: int = Form(...),
+    destino_id: int = Form(...),
+    previsao_entrega: str = Form(...),
+    observacao: str = Form(""),
+    receita: UploadFile = File(None)
+):
+    cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE registro = %s", (registro,))
+    if cursor.fetchone():
+        return JSONResponse(status_code=400, content={"erro": "Já existe um pedido com este registro."})
+
+    filename = None
+    if receita:
+        ext = os.path.splitext(receita.filename)[-1].lower()
+        temp_filename = f"temp_{registro}{ext}"
+        temp_path = os.path.join("/tmp", temp_filename)
+        with open(temp_path, "wb") as f:
+            f.write(await receita.read())
+        arquivo_id, link = upload_arquivo_para_drive(temp_path, f"{registro}{ext}")
+        os.remove(temp_path)
+        filename = link
 
     cursor.execute("""
-        INSERT INTO pedidos (farmacia_id, registro, numero_itens, atendente_id, origem_id, destino_id, previsao_entrega, data_criacao)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
+        INSERT INTO farol_farmacia_pedidos (
+            farmacia_id, registro, atendente_id,
+            origem_id, destino_id, previsao_entrega, receita_arquivo,
+            data_criacao, status_inclusao
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, NOW() AT TIME ZONE 'America/Sao_Paulo', TRUE)
+        RETURNING id
     """, (
-        form.farmacia_id,
-        form.registro,
-        form.numero_itens,
-        form.atendente_id,
-        form.origem_id,
-        form.destino_id,
-        form.previsao_entrega,
-        data_agora
+        str(farmacia_id), registro, atendente_id,
+        origem_id, destino_id, previsao_entrega, filename
     ))
-
     pedido_id = cursor.fetchone()[0]
 
     cursor.execute("""
-        INSERT INTO logs_pedido (pedido_id, etapa, usuario_id, data_hora)
-        VALUES (%s, %s, %s, %s)
+        INSERT INTO farol_farmacia_pedido_logs (
+            pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
+        ) VALUES (%s, %s, %s, %s, %s)
     """, (
-        pedido_id,
-        'gerado',
-        form.atendente_id,
-        data_agora
+        pedido_id, "Inclusão", atendente_id, atendente_id, observacao
     ))
 
-    # Notifica via SSE os ouvintes dessa farmácia
-    evento = json.dumps({
-        "id": pedido_id,
-        "registro": form.registro,
-        "nova_etapa": "gerado",
-        "data": str(data_agora)
-    })
+    evento = f"novo_pedido:{farmacia_id}:{pedido_id}"
+    for q in clientes_ativos:
+        await q.put(evento)
 
-    for fid, q in clientes_ativos:
-        if fid == str(form.farmacia_id):
-            await q.put(evento)
-
-    return {"status": "ok", "pedido_id": pedido_id}
+    return {
+        "status": "ok",
+        "mensagem": "Pedido criado com sucesso",
+        "pedido_id": pedido_id
+    }
 
 @router.post("/pedidos/editar/{pedido_id}")
 async def editar_pedido(
@@ -302,41 +316,33 @@ def listar_pedidos(farmacia_id: UUID):
 
 @router.get("/pedidos/{pedido_id}/logs")
 def listar_logs_pedido(pedido_id: int):
-    try:
-        cursor.execute("""
-            SELECT 
-                l.id,
-                l.etapa,
-                l.data_hora,
-                l.observacao,
-                l.itens_solidos,
-                l.itens_semisolidos,
-                l.itens_saches,
-                u1.nome AS usuario_logado,
-                u2.nome AS usuario_confirmador
-            FROM farol_farmacia_pedido_logs l
-            JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
-            LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
-            WHERE l.pedido_id = %s
-            ORDER BY l.data_hora DESC
-        """, (pedido_id,))
-        if cursor.description is None:
-            return []
-        colunas = [desc[0] for desc in cursor.description]
-        return [dict(zip(colunas, row)) for row in cursor.fetchall()]
-    except Exception as e:
-        print(f"[ERRO LOG PEDIDO {pedido_id}] {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar logs do pedido: {str(e)}")
+    cursor.execute("""
+        SELECT 
+            l.id,
+            l.etapa,
+            l.data_hora,
+            l.observacao,
+            l.itens_solidos,
+            l.itens_semisolidos,
+            l.itens_saches,
+            u1.nome AS usuario_logado,
+            u2.nome AS usuario_confirmador
+        FROM farol_farmacia_pedido_logs l
+        JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
+        LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
+        WHERE l.pedido_id = %s
+        ORDER BY l.data_hora DESC
+    """, (pedido_id,))
+    if cursor.description is None:
+        return []
+    colunas = [desc[0] for desc in cursor.description]
+    return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
 @router.get("/pedidos/stream")
-async def stream_pedidos(request: Request, farmacia_id: str = Query(...)):
-    if not farmacia_id:
-        raise HTTPException(status_code=422, detail="farmacia_id é obrigatório")
-
-    queue = asyncio.Queue()
-    clientes_ativos.append((farmacia_id, queue))
-
+async def stream_pedidos(request: Request):
     async def event_generator():
+        queue = asyncio.Queue()
+        clientes_ativos.append(queue)
         try:
             while True:
                 if await request.is_disconnected():
@@ -344,10 +350,9 @@ async def stream_pedidos(request: Request, farmacia_id: str = Query(...)):
                 evento = await queue.get()
                 yield f"data: {evento}\n\n"
         finally:
-            clientes_ativos.remove((farmacia_id, queue))
-
+            clientes_ativos.remove(queue)
     return EventSourceResponse(event_generator())
-        
+
 @router.get("/pedidos/{pedido_id}")
 def obter_pedido(pedido_id: int):
     cursor.execute("""
