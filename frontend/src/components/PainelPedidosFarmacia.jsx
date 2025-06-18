@@ -125,7 +125,7 @@ const confirmarEtapa = async (codigo, observacao, extras = {}) => {
     if (extras.itens_semisolidos !== undefined) formData.append('itens_semisolidos', extras.itens_semisolidos)
     if (extras.itens_saches !== undefined) formData.append('itens_saches', extras.itens_saches)
 
-    await api.post(`/pedidos/${pedidoSelecionado.id}/registrar-etapa`, formData)
+    await api.post(`/pedidos/${pedidoSelecionado}/registrar-etapa`, formData)
 
     // ✅ Se for entrega residencial no despacho, registrar entrega
     if (
