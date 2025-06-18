@@ -330,35 +330,26 @@ def listar_logs_pedido(pedido_id: int):
                 u1.nome AS usuario_logado,
                 u2.nome AS usuario_confirmador
             FROM farol_farmacia_pedido_logs l
-            JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
+            LEFT JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
             LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
             WHERE l.pedido_id = %s
             ORDER BY l.data_hora DESC
         """, (pedido_id,))
+
         if cursor.description is None:
             return []
+
         colunas = [desc[0] for desc in cursor.description]
-        return [dict(zip(colunas, row)) for row in cursor.fetchall()]
+        rows = cursor.fetchall()
+        
+        print(f"[DEBUG] Logs brutos do pedido {pedido_id}:")
+        for r in rows:
+            print(r)
+
+        return [dict(zip(colunas, row)) for row in rows]
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar logs: {str(e)}")
-
-@router.get("/pedidos/stream")
-async def stream_pedidos(request: Request, farmacia_id: UUID = Query(...)):
-    queue = asyncio.Queue()
-    cliente = {"fila": queue, "farmacia_id": str(farmacia_id)}
-    clientes_ativos.append(cliente)
-
-    async def event_generator():
-        try:
-            while True:
-                if await request.is_disconnected():
-                    break
-                evento = await queue.get()
-                yield f"data: {evento}\n\n"
-        finally:
-            clientes_ativos.remove(cliente)
-
-    return EventSourceResponse(event_generator())
+        print(f"[ERRO LOG PEDIDO {pedido_id}] {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar logs do pedido: {str(e)}")
 
 @router.get("/pedidos/{pedido_id}")
 def obter_pedido(pedido_id: int):
