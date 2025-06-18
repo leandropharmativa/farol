@@ -38,8 +38,6 @@ params: { farmacia_id: farmaciaId }
 
 let pedidosCarregados = res.data
 
-if (!filtroRegistro.trim()) {
-// Aplica o filtro por data somente se não estiver buscando por registro
 const dataFiltro = new Date(dataSelecionada).toISOString().split('T')[0]
 
 pedidosCarregados = pedidosCarregados.filter(p => {
@@ -55,7 +53,6 @@ setPedidos(pedidosCarregados)
 toast.error('Erro ao carregar pedidos')
 }
 }
-
 
 useEffect(() => {
 const carregarLogs = async () => {
@@ -77,7 +74,6 @@ if (pedidos.length > 0) {
 carregarLogs()
 }
 }, [pedidos])
-
 
 const etapas = [
 { campo: 'status_impressao', nome: 'Impressão', icone: Printer, permissao: 'permissao_impressao' },
@@ -181,10 +177,10 @@ toast.error('Erro ao carregar pedidos')
 }
 
 useEffect(() => {
-  if (!farmaciaId) return
-  carregarPedidos()
-  api.get(`/usuarios/${farmaciaId}`).then(r => setUsuarios(r.data))
-  api.get(`/locais/${farmaciaId}`).then(r => setLocais(r.data))
+if (!farmaciaId) return
+carregarPedidos()
+api.get(`/usuarios/${farmaciaId}`).then(r => setUsuarios(r.data))
+api.get(`/locais/${farmaciaId}`).then(r => setLocais(r.data))
 }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
 
 useEffect(() => {
