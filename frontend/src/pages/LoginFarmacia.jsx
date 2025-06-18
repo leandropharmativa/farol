@@ -143,11 +143,11 @@ return (
     <img
       src="/farol.png"
       alt="Imagem de fundo"
-      className="absolute bottom-0 left-0 z-0 pointer-events-none max-h-[50vh]"
+      className="absolute bottom-0 left-0 z-0 pointer-events-none max-h-[70vh]"
     />
 
     {/* Quadro de login sobre a imagem */}
-    <div className="login-box z-10 relative bg-white rounded-lg shadow-lg p-6">
+    <div className="login-box z-10 relative bg-white shadow-lg p-6">
      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl text-white fonte-pacifico text-right">
         Farol
       </div>
