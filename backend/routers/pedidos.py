@@ -70,8 +70,9 @@ async def criar_pedido(
     ))
 
     evento = f"novo_pedido:{farmacia_id}:{pedido_id}"
-    for q in clientes_ativos:
-        await q.put(evento)
+    for cliente in clientes_ativos:
+        if cliente["farmacia_id"] == str(farmacia_id):
+            await cliente["fila"].put(evento)
 
     return {
         "status": "ok",
@@ -316,33 +317,38 @@ def listar_pedidos(farmacia_id: UUID):
 
 @router.get("/pedidos/{pedido_id}/logs")
 def listar_logs_pedido(pedido_id: int):
-    cursor.execute("""
-        SELECT 
-            l.id,
-            l.etapa,
-            l.data_hora,
-            l.observacao,
-            l.itens_solidos,
-            l.itens_semisolidos,
-            l.itens_saches,
-            u1.nome AS usuario_logado,
-            u2.nome AS usuario_confirmador
-        FROM farol_farmacia_pedido_logs l
-        JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
-        LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
-        WHERE l.pedido_id = %s
-        ORDER BY l.data_hora DESC
-    """, (pedido_id,))
-    if cursor.description is None:
-        return []
-    colunas = [desc[0] for desc in cursor.description]
-    return [dict(zip(colunas, row)) for row in cursor.fetchall()]
+    try:
+        cursor.execute("""
+            SELECT 
+                l.id,
+                l.etapa,
+                l.data_hora,
+                l.observacao,
+                l.itens_solidos,
+                l.itens_semisolidos,
+                l.itens_saches,
+                u1.nome AS usuario_logado,
+                u2.nome AS usuario_confirmador
+            FROM farol_farmacia_pedido_logs l
+            JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
+            LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
+            WHERE l.pedido_id = %s
+            ORDER BY l.data_hora DESC
+        """, (pedido_id,))
+        if cursor.description is None:
+            return []
+        colunas = [desc[0] for desc in cursor.description]
+        return [dict(zip(colunas, row)) for row in cursor.fetchall()]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar logs: {str(e)}")
 
 @router.get("/pedidos/stream")
-async def stream_pedidos(request: Request):
+async def stream_pedidos(request: Request, farmacia_id: UUID = Query(...)):
+    queue = asyncio.Queue()
+    cliente = {"fila": queue, "farmacia_id": str(farmacia_id)}
+    clientes_ativos.append(cliente)
+
     async def event_generator():
-        queue = asyncio.Queue()
-        clientes_ativos.append(queue)
         try:
             while True:
                 if await request.is_disconnected():
@@ -350,7 +356,8 @@ async def stream_pedidos(request: Request):
                 evento = await queue.get()
                 yield f"data: {evento}\n\n"
         finally:
-            clientes_ativos.remove(queue)
+            clientes_ativos.remove(cliente)
+
     return EventSourceResponse(event_generator())
 
 @router.get("/pedidos/{pedido_id}")
