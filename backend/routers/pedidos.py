@@ -89,18 +89,26 @@ async def editar_pedido(
     destino_id: int = Form(...),
     previsao_entrega: str = Form(...),
     receita: UploadFile = File(None),
+    remover_receita: Optional[bool] = Form(False),
+    usuario_logado_id: int = Form(...),
     status_inclusao: Optional[bool] = Form(None),
     status_impressao: Optional[bool] = Form(None),
     status_conferencia: Optional[bool] = Form(None),
     status_producao: Optional[bool] = Form(None),
     status_despacho: Optional[bool] = Form(None),
     status_entrega: Optional[bool] = Form(None),
-    status_pagamento: Optional[bool] = Form(None)
+    status_pagamento: Optional[bool] = Form(None),
+    status_recebimento: Optional[bool] = Form(None)
 ):
     try:
-        previsao_dt = datetime.fromisoformat(previsao_entrega)
-        filename = None
+        # Buscar dados anteriores
+        cursor.execute("SELECT * FROM farol_farmacia_pedidos WHERE id = %s", (pedido_id,))
+        anterior = cursor.fetchone()
+        colunas = [desc[0] for desc in cursor.description]
+        anterior_dict = dict(zip(colunas, anterior))
 
+        previsao_dt = datetime.fromisoformat(previsao_entrega)
+        novo_receita_link = None
         campos_status = {
             "status_inclusao": status_inclusao,
             "status_impressao": status_impressao,
@@ -108,49 +116,81 @@ async def editar_pedido(
             "status_producao": status_producao,
             "status_despacho": status_despacho,
             "status_entrega": status_entrega,
-            "status_pagamento": status_pagamento
+            "status_pagamento": status_pagamento,
+            "status_recebimento": status_recebimento
         }
 
         status_sql = []
         status_values = []
+        alteracoes = []
 
-        for campo, valor in campos_status.items():
-            if valor is not None:
+        # Verifica alterações de campos principais
+        if registro != anterior_dict['registro']:
+            alteracoes.append(f"registro: {anterior_dict['registro']} → {registro}")
+        if numero_itens != anterior_dict['numero_itens']:
+            alteracoes.append(f"nº itens: {anterior_dict['numero_itens']} → {numero_itens}")
+        if atendente_id != anterior_dict['atendente_id']:
+            alteracoes.append("atendente alterado")
+        if origem_id != anterior_dict['origem_id']:
+            alteracoes.append("origem alterada")
+        if destino_id != anterior_dict['destino_id']:
+            alteracoes.append("destino alterado")
+        if previsao_dt.isoformat() != anterior_dict['previsao_entrega'].isoformat():
+            alteracoes.append(f"previsão entrega: {anterior_dict['previsao_entrega'].isoformat()} → {previsao_dt.isoformat()}")
+
+        # Verifica alterações de status
+        for campo, novo_valor in campos_status.items():
+            if novo_valor is not None and anterior_dict.get(campo) != novo_valor:
                 status_sql.append(f"{campo} = %s")
-                status_values.append(valor)
+                status_values.append(novo_valor)
+                alteracoes.append(f"{campo.replace('status_', '').capitalize()} → {novo_valor}")
 
-        if receita:
+        # Verifica manipulação da receita
+        if remover_receita and anterior_dict["receita_arquivo"]:
+            alteracoes.append("receita removida")
+            novo_receita_link = None
+        elif receita:
             ext = os.path.splitext(receita.filename)[-1].lower()
-            filename = f"{registro}_{uuid.uuid4().hex[:6]}{ext}"
-            with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
+            temp_filename = f"temp_{registro}{ext}"
+            temp_path = os.path.join("/tmp", temp_filename)
+            with open(temp_path, "wb") as f:
                 f.write(await receita.read())
-            update_sql = f"""
-                UPDATE farol_farmacia_pedidos SET
-                    registro=%s, numero_itens=%s, atendente_id=%s,
-                    origem_id=%s, destino_id=%s, previsao_entrega=%s,
-                    receita_arquivo=%s
-                    {',' if status_sql else ''}
-                    {', '.join(status_sql)}
-                WHERE id=%s
-            """
-            cursor.execute(update_sql, (
-                registro, numero_itens, atendente_id,
-                origem_id, destino_id, previsao_dt,
-                filename, *status_values, pedido_id
-            ))
-        else:
-            update_sql = f"""
-                UPDATE farol_farmacia_pedidos SET
-                    registro=%s, numero_itens=%s, atendente_id=%s,
-                    origem_id=%s, destino_id=%s, previsao_entrega=%s
-                    {',' if status_sql else ''}
-                    {', '.join(status_sql)}
-                WHERE id=%s
-            """
-            cursor.execute(update_sql, (
-                registro, numero_itens, atendente_id,
-                origem_id, destino_id, previsao_dt,
-                *status_values, pedido_id
+            _, novo_receita_link = upload_arquivo_para_drive(temp_path, f"{registro}{ext}")
+            os.remove(temp_path)
+            alteracoes.append("nova receita adicionada")
+
+        # Monta SQL final
+        sql = f"""
+            UPDATE farol_farmacia_pedidos SET
+                registro=%s, numero_itens=%s, atendente_id=%s,
+                origem_id=%s, destino_id=%s, previsao_entrega=%s
+                {", receita_arquivo = %s" if remover_receita or receita else ""}
+                {',' if status_sql else ''}
+                {', '.join(status_sql)}
+            WHERE id=%s
+        """
+
+        base_params = [
+            registro, numero_itens, atendente_id,
+            origem_id, destino_id, previsao_dt
+        ]
+        if remover_receita:
+            base_params.append(None)
+        elif receita:
+            base_params.append(novo_receita_link)
+        params = base_params + status_values + [pedido_id]
+
+        cursor.execute(sql, tuple(params))
+
+        # Registra log se houve alteração
+        if alteracoes:
+            obs_log = "; ".join(alteracoes)
+            cursor.execute("""
+                INSERT INTO farol_farmacia_pedido_logs (
+                    pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
+                ) VALUES (%s, %s, %s, %s, %s)
+            """, (
+                pedido_id, "Edição", usuario_logado_id, usuario_logado_id, obs_log
             ))
 
         return {"status": "ok", "mensagem": "Pedido atualizado com sucesso"}
@@ -176,6 +216,7 @@ def registrar_etapa(
     itens_semisolidos: Optional[int] = Form(None),
     itens_saches: Optional[int] = Form(None)
 ):
+    # Confirmação de usuário
     cursor.execute("SELECT id FROM farol_farmacia_usuarios WHERE codigo = %s", (codigo_confirmacao,))
     row = cursor.fetchone()
     if not row:
@@ -183,13 +224,16 @@ def registrar_etapa(
     usuario_confirmador_id = row[0]
 
     etapa_normalizada = remover_acentos(etapa.lower())
+
+    # Mapeamento de permissões
     coluna_permissao = {
         "impressao": "permissao_impressao",
         "conferencia": "permissao_conferencia",
         "producao": "permissao_producao",
         "despacho": "permissao_despacho",
         "entrega": "permissao_entrega",
-        "pagamento": "permissao_registrar_pagamento"
+        "pagamento": "permissao_registrar_pagamento",
+        "recebimento": "permissao_recebimento"
     }.get(etapa_normalizada)
 
     if coluna_permissao:
@@ -201,6 +245,7 @@ def registrar_etapa(
         if not permitido or not permitido[0]:
             raise HTTPException(status_code=403, detail="Usuário não tem permissão para essa etapa.")
 
+    # Inserção no log
     if etapa_normalizada == "conferencia":
         cursor.execute("""
             INSERT INTO farol_farmacia_pedido_logs (
@@ -220,13 +265,15 @@ def registrar_etapa(
             pedido_id, etapa, usuario_logado_id, usuario_confirmador_id, observacao
         ))
 
+    # Atualiza status da etapa no pedido
     coluna_status = {
         "impressao": "status_impressao",
         "conferencia": "status_conferencia",
         "producao": "status_producao",
         "despacho": "status_despacho",
         "entrega": "status_entrega",
-        "pagamento": "status_pagamento"
+        "pagamento": "status_pagamento",
+        "recebimento": "status_recebimento"
     }.get(etapa_normalizada)
 
     if coluna_status:
@@ -253,6 +300,7 @@ def listar_pedidos(farmacia_id: UUID):
             p.status_despacho,
             p.status_entrega,
             p.status_pagamento,
+            p.status_recebimento,  
             p.receita_arquivo,
             u.nome AS atendente,
             l_origem.nome AS origem_nome,
@@ -321,6 +369,7 @@ def obter_pedido(pedido_id: int):
             p.status_despacho,
             p.status_entrega,
             p.status_pagamento,
+            p.status_recebimento,  
             p.receita_arquivo,
             u.nome AS atendente,
             l_origem.nome AS origem_nome,
