@@ -373,9 +373,12 @@ def obter_pedido(pedido_id: int):
     return dict(zip(colunas, row))
 
 @router.get("/pedidos/stream")
-async def stream_pedidos(request: Request):
+async def stream_pedidos(request: Request, farmacia_id: str = Query(...)):
+    if not farmacia_id:
+        raise HTTPException(status_code=422, detail="farmacia_id é obrigatório")
+
     queue = asyncio.Queue()
-    clientes_ativos.append(queue)
+    clientes_ativos.append((farmacia_id, queue))
 
     async def event_generator():
         try:
@@ -385,6 +388,6 @@ async def stream_pedidos(request: Request):
                 evento = await queue.get()
                 yield f"data: {evento}\n\n"
         finally:
-            clientes_ativos.remove(queue)
+            clientes_ativos.remove((farmacia_id, queue))
 
     return EventSourceResponse(event_generator())
