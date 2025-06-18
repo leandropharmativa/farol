@@ -17,10 +17,9 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
   const [valorPago, setValorPago] = useState('')
   const [formaPagamento, setFormaPagamento] = useState('')
   const [codigoEntregador, setCodigoEntregador] = useState('')
-  const [usuarios, setUsuarios] = useState([])
+  const [usuariosEntrega, setUsuariosEntrega] = useState([])
 
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
-
   const inputRef = useRef(null)
 
   const etapa = titulo?.toLowerCase()
@@ -31,18 +30,20 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
   useEffect(() => {
     if (farmaciaId && isDespachoResidencial) {
       api.get(`/usuarios/${farmaciaId}`)
-        .then(res => setUsuarios(res.data))
+        .then(res => {
+          const filtrados = res.data.filter(u =>
+            u.permissao_entrega === true || u.permissao_entrega === 'true'
+          )
+          setUsuariosEntrega(filtrados)
+        })
         .catch(() => toast.error('Erro ao carregar usuários'))
     }
   }, [farmaciaId, isDespachoResidencial])
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus()
-
     const ultimoPedido = window.__ULTIMO_PEDIDO_SELECIONADO
-    if (ultimoPedido) {
-      setPedidoSelecionado(ultimoPedido)
-    }
+    if (ultimoPedido) setPedidoSelecionado(ultimoPedido)
   }, [])
 
   const confirmar = () => {
@@ -152,7 +153,7 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
               onChange={(e) => setCodigoEntregador(e.target.value)}
             >
               <option value="">Selecionar entregador</option>
-              {usuarios.map(u => (
+              {usuariosEntrega.map(u => (
                 <option key={u.id} value={u.codigo}>{u.nome}</option>
               ))}
             </select>
