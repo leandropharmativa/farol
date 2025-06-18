@@ -5,7 +5,7 @@ import { toast } from 'react-toastify'
 import {
 User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock, AlertCircle,
 PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserRound, X,
-FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine, Loader2,
+FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine, Loader2, Handshake,
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 import Tippy from '@tippyjs/react'
@@ -80,7 +80,7 @@ const etapas = [
 { campo: 'status_conferencia', nome: 'Conferência', icone: FileCheck2, permissao: 'permissao_conferencia' },
 { campo: 'status_producao', nome: 'Produção', icone: CircleCheckBig, permissao: 'permissao_producao' },
 { campo: 'status_despacho', nome: 'Despacho', icone: Truck, permissao: 'permissao_despacho' },
-{ campo: 'status_recebimento', nome: 'Recebimento', icone: PackagePlus, permissao: 'permissao_recebimento' },
+{ campo: 'status_recebimento', nome: 'Recebimento', icone: Handshake, permissao: 'permissao_recebimento' },
 { campo: 'status_entrega', nome: 'Entrega', icone: PackageCheck, permissao: 'permissao_entrega' },
 { campo: 'status_pagamento', nome: 'Pagamento', icone: CreditCard, permissao: 'permissao_registrar_pagamento' }
 ]
