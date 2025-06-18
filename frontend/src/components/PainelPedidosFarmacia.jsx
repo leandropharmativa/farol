@@ -273,33 +273,41 @@ setFormEdicao({})
 }
 
 const salvarEdicao = async (pedidoId) => {
-const formData = new FormData()
+  const formData = new FormData()
 
-Object.entries(formEdicao).forEach(([k, v]) => {
-if (v !== null && v !== undefined) {
-formData.append(k, v)
+  // Campos obrigatórios (nunca podem faltar)
+  formData.append('registro', formEdicao.registro || '')
+  formData.append('atendente_id', formEdicao.atendente_id || '')
+  formData.append('origem_id', formEdicao.origem_id || '')
+  formData.append('destino_id', formEdicao.destino_id || '')
+  formData.append('previsao_entrega', formEdicao.previsao_entrega || '')
+  formData.append('usuario_logado_id', usuarioLogado.id)
+
+  // Receita
+  if (formEdicao.remover_receita) {
+    formData.append('remover_receita', 'true')
+  }
+  if (formEdicao.receita) {
+    formData.append('receita', formEdicao.receita)
+  }
+
+  // 🔎 Log dos dados enviados
+  console.log('🔍 Enviando para /pedidos/editar:')
+  for (let pair of formData.entries()) {
+    console.log(`${pair[0]}:`, pair[1])
+  }
+
+  try {
+    await api.post(`/pedidos/editar/${pedidoId}`, formData)
+    toast.success('Pedido atualizado')
+    setEditandoId(null)
+    carregarPedidos()
+  } catch (err) {
+    console.error('❌ Erro ao editar pedido:', err)
+    toast.error('Erro ao salvar edição')
+  }
 }
-})
-
-// ✅ Adiciona o campo obrigatório exigido pelo backend
-formData.append('usuario_logado_id', usuarioLogado.id)
-
-// ✅ Se a receita foi marcada para remoção, informa explicitamente
-if (formEdicao.remover_receita) {
-formData.append('remover_receita', 'true')
-}
-
-try {
-await api.post(`/pedidos/editar/${pedidoId}`, formData)
-toast.success('Pedido atualizado')
-setEditandoId(null)
-carregarPedidos()
-} catch {
-toast.error('Erro ao salvar edição')
-}
-}
-
-
+  
 return (
 <div>
 <div className="flex items-center justify-between mb-4">
