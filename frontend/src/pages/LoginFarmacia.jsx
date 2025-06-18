@@ -137,100 +137,105 @@ export default function LoginFarmacia() {
     }
   }
 
-  return (
-    <div className="bg-gray-100 flex items-center justify-center min-h-screen">
-   
-      <div className="login-box">
-        <div className="mb-6 flex justify-center">
-          <img
-            src="/farol.png"
-            alt="Logo"
-            className="w-full object-contain mb-4"
-          />
-        </div>
+return (
+  <div className="relative bg-gray-100 flex items-center justify-center min-h-screen overflow-hidden">
+    {/* Imagem do farol colada no canto inferior esquerdo */}
+    <img
+      src="/farol.png"
+      alt="Imagem de fundo"
+      className="absolute bottom-0 left-0 w-40 opacity-20 z-0 pointer-events-none"
+    />
 
-        {/* Nome Farol no topo centralizado */}
+    {/* Quadro de login sobre a imagem */}
+    <div className="login-box z-10 relative bg-white rounded-lg shadow-lg p-6">
+      <div className="mb-6 flex justify-center">
+        <img
+          src="/farol.png"
+          alt="Logo"
+          className="w-full object-contain mb-4"
+        />
+      </div>
+
       <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl text-white fonte-pacifico text-right">
         Farol
       </div>
 
-        {modo === 'login' ? (
-          <>
-            <input
-              type="text"
-              className="login-input text-center"
-              placeholder="Login"
-              value={emailOuCodigo}
-              onChange={(e) => setEmailOuCodigo(e.target.value)}
-            />
-            <input
-              type="password"
-              className="login-input text-center"
-              placeholder="Senha"
-              value={senha}
-              onChange={(e) => setSenha(e.target.value)}
-            />
-            <button
-              className="login-btn disabled:opacity-60"
-              onClick={handleLogin}
-              disabled={carregandoLogin}
-            >
-              {carregandoLogin ? 'Verificando...' : 'Entrar'}
-            </button>
-          </>
-        ) : (
-          <>
-            <input
-              type="text"
-              className="login-input"
-              placeholder="Código de ativação"
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value)}
-            />
-            <button className="login-btn" onClick={buscarEmpresa} disabled={!codigo.trim()}>
-              Validar Código
-            </button>
-            {carregandoEmpresa && (
-              <p className="text-sm text-center mt-2">Verificando código...</p>
-            )}
-            {nomeEmpresa && (
-              <>
-                <p className="text-sm mt-2 mb-2 text-center">
-                  <strong>Empresa:</strong> {nomeEmpresa}
-                </p>
-                <input
-                  type="text"
-                  className="login-input"
-                  placeholder="Nome da farmácia"
-                  value={nome}
-                  onChange={(e) => setNome(e.target.value)}
-                />
-                <input
-                  type="email"
-                  className="login-input"
-                  placeholder="E-mail"
-                  value={emailOuCodigo}
-                  onChange={(e) => setEmailOuCodigo(e.target.value)}
-                />
-                <input
-                  type="password"
-                  className="login-input"
-                  placeholder="Senha"
-                  value={senha}
-                  onChange={(e) => setSenha(e.target.value)}
-                />
-                <button className="login-btn" onClick={handleAtivar}>
-                  Ativar Conta
-                </button>
-              </>
-            )}
-          </>
-        )}
+      {modo === 'login' ? (
+        <>
+          <input
+            type="text"
+            className="login-input text-center"
+            placeholder="Login"
+            value={emailOuCodigo}
+            onChange={(e) => setEmailOuCodigo(e.target.value)}
+          />
+          <input
+            type="password"
+            className="login-input text-center"
+            placeholder="Senha"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+          />
+          <button
+            className="login-btn disabled:opacity-60"
+            onClick={handleLogin}
+            disabled={carregandoLogin}
+          >
+            {carregandoLogin ? 'Verificando...' : 'Entrar'}
+          </button>
+        </>
+      ) : (
+        <>
+          <input
+            type="text"
+            className="login-input"
+            placeholder="Código de ativação"
+            value={codigo}
+            onChange={(e) => setCodigo(e.target.value)}
+          />
+          <button className="login-btn" onClick={buscarEmpresa} disabled={!codigo.trim()}>
+            Validar Código
+          </button>
+          {carregandoEmpresa && (
+            <p className="text-sm text-center mt-2">Verificando código...</p>
+          )}
+          {nomeEmpresa && (
+            <>
+              <p className="text-sm mt-2 mb-2 text-center">
+                <strong>Empresa:</strong> {nomeEmpresa}
+              </p>
+              <input
+                type="text"
+                className="login-input"
+                placeholder="Nome da farmácia"
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+              />
+              <input
+                type="email"
+                className="login-input"
+                placeholder="E-mail"
+                value={emailOuCodigo}
+                onChange={(e) => setEmailOuCodigo(e.target.value)}
+              />
+              <input
+                type="password"
+                className="login-input"
+                placeholder="Senha"
+                value={senha}
+                onChange={(e) => setSenha(e.target.value)}
+              />
+              <button className="login-btn" onClick={handleAtivar}>
+                Ativar Conta
+              </button>
+            </>
+          )}
+        </>
+      )}
 
-        <button className="login-link" onClick={alternarModo}>
-          {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
-        </button>
-      </div>
+      <button className="login-link" onClick={alternarModo}>
+        {modo === 'login' ? 'Primeiro acesso?' : 'Já tenho conta'}
+      </button>
     </div>
-  )
-}
+  </div>
+)
