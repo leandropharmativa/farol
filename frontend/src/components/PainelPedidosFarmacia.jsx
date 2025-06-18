@@ -30,10 +30,15 @@ const [usuarios, setUsuarios] = useState([])
 const [locais, setLocais] = useState([])
 
 const destinoEhResidencia = (pedido) => {
-return locais.find(l => l.id === pedido.destino_id)?.residencia
+  if (!pedido || !locais.length) return false
+  return locais.some(l =>
+    l.residencia &&
+    (
+      l.id === pedido.destino_id || 
+      l.nome?.trim().toLowerCase() === pedido.destino_nome?.trim().toLowerCase()
+    )
+  )
 }
-
-
 
 const carregarPedidos = async () => {
 try {
