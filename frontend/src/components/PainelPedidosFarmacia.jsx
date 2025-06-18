@@ -738,11 +738,11 @@ tooltip.loading ? (
 ) : ativo ? (
 <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
 ) : !podeExecutar ? (
-<span className="text-[11px] text-red-500 font-medium">
+<span className="text-[10px] text-farol-primary">
 Aguardando conclusão de etapas anteriores
 </span>
 ) : (
-<span dangerouslySetInnerHTML={{ __html: tooltip.html || `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>` }} />
+<span dangerouslySetInnerHTML={{ __html: tooltip.html || `<span class='text-[10px] text-farol-secondary'>Aguardando ${et.nome}</span>` }} />
 )
 }
 onShow={() => {
