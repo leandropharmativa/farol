@@ -77,6 +77,7 @@ const usuarioLogado = {
   permissao_conferencia: localStorage.getItem('permissao_conferencia') === 'true',
   permissao_producao: localStorage.getItem('permissao_producao') === 'true',
   permissao_despacho: localStorage.getItem('permissao_despacho') === 'true',
+  permissao_recebimento: localStorage.getItem('permissao_recebimento') === 'true',
   permissao_entrega: localStorage.getItem('permissao_entrega') === 'true',
   permissao_registrar_pagamento: localStorage.getItem('permissao_registrar_pagamento') === 'true',
 }
