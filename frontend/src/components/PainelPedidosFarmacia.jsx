@@ -181,15 +181,11 @@ toast.error('Erro ao carregar pedidos')
 }
 
 useEffect(() => {
-if (farmaciaId) carregarPedidos()
+  if (!farmaciaId) return
+  carregarPedidos()
+  api.get(`/usuarios/${farmaciaId}`).then(r => setUsuarios(r.data))
+  api.get(`/locais/${farmaciaId}`).then(r => setLocais(r.data))
 }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
-
-useEffect(() => {
-if (farmaciaId) {
-api.get(`/usuarios/${farmaciaId}`).then(r => setUsuarios(r.data))
-api.get(`/locais/${farmaciaId}`).then(r => setLocais(r.data))
-}
-}, [farmaciaId])
 
 useEffect(() => {
 const atualizarLocal = () => carregarPedidos()
