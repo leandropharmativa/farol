@@ -274,9 +274,21 @@ setFormEdicao({})
 
 const salvarEdicao = async (pedidoId) => {
 const formData = new FormData()
+
 Object.entries(formEdicao).forEach(([k, v]) => {
-if (v !== null && v !== undefined) formData.append(k, v)
+if (v !== null && v !== undefined) {
+formData.append(k, v)
+}
 })
+
+// ✅ Adiciona o campo obrigatório exigido pelo backend
+formData.append('usuario_logado_id', usuarioLogado.id)
+
+// ✅ Se a receita foi marcada para remoção, informa explicitamente
+if (formEdicao.remover_receita) {
+formData.append('remover_receita', 'true')
+}
+
 try {
 await api.post(`/pedidos/editar/${pedidoId}`, formData)
 toast.success('Pedido atualizado')
@@ -286,6 +298,7 @@ carregarPedidos()
 toast.error('Erro ao salvar edição')
 }
 }
+
 
 return (
 <div>
@@ -598,7 +611,7 @@ let podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.
 
 // Etapa de Recebimento só pode ser executada se Despacho estiver feito
 if (et.nome === 'Recebimento' && !p.status_despacho) {
-  podeExecutar = false
+podeExecutar = false
 }
 
 const idEtapa = `${p.id}-${et.nome}`
