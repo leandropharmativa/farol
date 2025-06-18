@@ -721,30 +721,34 @@ className="text-red-500 animate-pulse cursor-pointer"
 
 {/* Exibe botão de edição apenas se email for o da farmácia */}
 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
-<button
-title="Editar pedido"
-className="text-gray-400 hover:text-blue-500 p-1"
-onClick={() => iniciarEdicao(p)}
->
-<FilePenLine size={18} />
-</button>
-{editandoId === p.id && (
-<>
-<button
-title="Salvar"
-className="text-green-600 hover:text-green-800 p-1"
-onClick={() => salvarEdicao(p.id)}
->
-<CircleCheckBig size={18} />
-</button>
-<button
-title="Cancelar"
-className="text-gray-400 hover:text-red-500 p-1"
-onClick={cancelarEdicao}
->
-<X size={18} />
-</button>
-</>
+  <>
+    <button
+      title="Editar pedido"
+      className="text-gray-400 hover:text-blue-500 p-1"
+      onClick={() => iniciarEdicao(p)}
+    >
+      <FilePenLine size={18} />
+    </button>
+    {editandoId === p.id && (
+      <>
+        <button
+          title="Salvar"
+          className="text-green-600 hover:text-green-800 p-1"
+          onClick={() => salvarEdicao(p.id)}
+        >
+          <CircleCheckBig size={18} />
+        </button>
+        <button
+          title="Cancelar"
+          className="text-gray-400 hover:text-red-500 p-1"
+          onClick={cancelarEdicao}
+        >
+          <X size={18} />
+        </button>
+      </>
+    )}
+  </>
+)}
 )}
 </div>
 </div>
