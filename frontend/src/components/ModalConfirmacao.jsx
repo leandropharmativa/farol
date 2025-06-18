@@ -19,7 +19,6 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
   const [codigoEntregador, setCodigoEntregador] = useState('')
   const [usuarios, setUsuarios] = useState([])
 
-  const [usuariosEntrega, setUsuariosEntrega] = useState([])
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
 
   const inputRef = useRef(null)
@@ -44,15 +43,6 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
     if (ultimoPedido) {
       setPedidoSelecionado(ultimoPedido)
     }
-
-    api.get('/usuarios/todos')
-      .then(res => {
-        const filtrados = res.data.filter(u =>
-          u.permissao_entrega === true || u.permissao_entrega === 'true'
-        )
-        setUsuariosEntrega(filtrados)
-      })
-      .catch(() => setUsuariosEntrega([]))
   }, [])
 
   const confirmar = () => {
@@ -162,7 +152,7 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
               onChange={(e) => setCodigoEntregador(e.target.value)}
             >
               <option value="">Selecionar entregador</option>
-              {usuariosEntrega.map(u => (
+              {usuarios.map(u => (
                 <option key={u.id} value={u.codigo}>{u.nome}</option>
               ))}
             </select>
