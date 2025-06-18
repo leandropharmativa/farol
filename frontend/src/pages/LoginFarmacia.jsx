@@ -143,20 +143,12 @@ return (
     <img
       src="/farol.png"
       alt="Imagem de fundo"
-      className="absolute bottom-0 left-0 w-40 opacity-20 z-0 pointer-events-none"
+      className="absolute bottom-0 left-0 z-0 pointer-events-none"
     />
 
     {/* Quadro de login sobre a imagem */}
     <div className="login-box z-10 relative bg-white rounded-lg shadow-lg p-6">
-      <div className="mb-6 flex justify-center">
-        <img
-          src="/farol.png"
-          alt="Logo"
-          className="w-full object-contain mb-4"
-        />
-      </div>
-
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl text-white fonte-pacifico text-right">
+     <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl text-white fonte-pacifico text-right">
         Farol
       </div>
 
