@@ -38,16 +38,15 @@ params: { farmacia_id: farmaciaId }
 
 let pedidosCarregados = res.data
 
-if (!filtroRegistro.trim()) {
-const dataFiltro = new Date(dataSelecionada).toISOString().split('T')[0]
+// Aplica filtro por data (tanto para criação quanto previsão)
+const dataFiltroLocal = new Date(dataSelecionada).toLocaleDateString('pt-BR')
 
 pedidosCarregados = pedidosCarregados.filter(p => {
 const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
 if (!campoOriginal) return false
-const campoData = new Date(campoOriginal).toISOString().split('T')[0]
-return campoData === dataFiltro
+const dataCampo = new Date(campoOriginal).toLocaleDateString('pt-BR')
+return dataCampo === dataFiltroLocal
 })
-}
 
 setPedidos(pedidosCarregados)
 } catch (err) {
