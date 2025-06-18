@@ -1,4 +1,3 @@
-
 // frontend/src/components/PainelPedidosFarmacia.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
@@ -335,8 +334,46 @@ onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
 <div className="pedido-conteudo">
 
 <div className="pedido-info flex items-center gap-1">
+<Tippy
+content={
+logsPorPedido[p.id]?.find(log => log.etapa === 'Inclusão')
+? (() => {
+const log = logsPorPedido[p.id].find(l => l.etapa === 'Inclusão')
+const dt = new Date(log.data_hora)
+const data = dt.toLocaleDateString('pt-BR')
+const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
+return (
+<div className="text-[12px] text-gray-700 leading-tight max-w-[240px]">
+<div className="font-semibold text-farol-primary mb-1">Inclusão</div>
+<hr className="my-1 border-t border-gray-300" />
+<div className="flex items-center gap-1 mb-0.5">
+<User size={12} className="text-gray-500" />
+<span>{log.usuario_confirmador}</span>
+</div>
+<div className="flex items-center gap-1">
+<Calendar size={12} className="text-gray-500" />
+<span>{data} {hora}</span>
+</div>
+{log.observacao && (
+<div className="mt-1 text-farol-primary">{log.observacao}</div>
+)}
+</div>
+)
+})()
+: <span className="text-[10px] text-gray-500">Sem dados de inclusão</span>
+}
+placement="top-end"
+animation="text"
+arrow={true}
+theme="light-border"
+delay={[200, 0]}
+>
+<span className="inline-block text-gray-600">
 <PillBottle size={16} />
+</span>
+</Tippy>
 <span>{p.registro}</span>
+
 {logsPorPedido[p.id]?.map((log, i) => {
 const etapa = log.etapa?.toLowerCase()
 if (etapa !== 'conferência') return null
