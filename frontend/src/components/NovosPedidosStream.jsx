@@ -23,7 +23,7 @@ export default function NovosPedidosStream({ farmaciaId }) {
     }
 
     console.log('[SSE] 🔌 Conectando à stream...')
-    const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream?farmacia_id=${farmaciaId}`)
+    const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/pedidos/stream`)
 
     eventSource.onopen = () => {
       console.log('[SSE] ✅ Conexão aberta com sucesso')
