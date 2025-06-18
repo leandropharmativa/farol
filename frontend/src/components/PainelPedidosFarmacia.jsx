@@ -308,7 +308,6 @@ theme="light-border"
 >
 <button
 onClick={() => {
-onClick={() => {
 setFiltroPorPrevisao(prev => {
 const novo = !prev
 setTimeout(() => {
