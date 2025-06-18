@@ -654,8 +654,8 @@ locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.resid
 ) return null
 
 const Icone = et.icone
-const pedidoAtual = pedidos.find(ped => ped.id === p.id)
-const ativo = pedidoAtual?.[et.campo]
+const pedidoAtual = pedidos.find(ped => ped.id === p.id) || p
+const ativo = pedidoAtual[et.campo]
 
 let podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
 
