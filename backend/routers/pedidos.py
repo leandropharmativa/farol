@@ -83,7 +83,6 @@ async def criar_pedido(
 async def editar_pedido(
     pedido_id: int,
     registro: str = Form(...),
-    numero_itens: int = Form(...),
     atendente_id: int = Form(...),
     origem_id: int = Form(...),
     destino_id: int = Form(...),
@@ -127,8 +126,6 @@ async def editar_pedido(
         # Verifica alterações de campos principais
         if registro != anterior_dict['registro']:
             alteracoes.append(f"registro: {anterior_dict['registro']} → {registro}")
-        if numero_itens != anterior_dict['numero_itens']:
-            alteracoes.append(f"nº itens: {anterior_dict['numero_itens']} → {numero_itens}")
         if atendente_id != anterior_dict['atendente_id']:
             alteracoes.append("atendente alterado")
         if origem_id != anterior_dict['origem_id']:
@@ -162,7 +159,7 @@ async def editar_pedido(
         # Monta SQL final
         sql = f"""
             UPDATE farol_farmacia_pedidos SET
-                registro=%s, numero_itens=%s, atendente_id=%s,
+                registro=%s, atendente_id=%s,
                 origem_id=%s, destino_id=%s, previsao_entrega=%s
                 {", receita_arquivo = %s" if remover_receita or receita else ""}
                 {',' if status_sql else ''}
@@ -171,7 +168,7 @@ async def editar_pedido(
         """
 
         base_params = [
-            registro, numero_itens, atendente_id,
+            registro, atendente_id,
             origem_id, destino_id, previsao_dt
         ]
         if remover_receita:
