@@ -141,9 +141,8 @@ export default function NovosPedidosStream({ farmaciaId }) {
                     href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline"
+                    className="text-farol-primary hover:text-farol-sexondary"
                   >
-                    Receita
                   </a>
                 </div>
               )}
