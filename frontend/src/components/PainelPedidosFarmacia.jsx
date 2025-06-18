@@ -274,45 +274,53 @@ setFormEdicao({})
 }
 
 const salvarEdicao = async (pedidoId) => {
-const formData = new FormData()
+  const formData = new FormData()
 
-formData.append('registro', formEdicao.registro || '')
-formData.append('atendente_id', formEdicao.atendente_id || '')
-formData.append('origem_id', formEdicao.origem_id || '')
-formData.append('destino_id', formEdicao.destino_id || '')
-formData.append('previsao_entrega', formEdicao.previsao_entrega || '')
+  // Campos obrigatórios
+  formData.append('registro', formEdicao.registro || '')
+  formData.append('atendente_id', formEdicao.atendente_id || '')
+  formData.append('origem_id', formEdicao.origem_id || '')
+  formData.append('destino_id', formEdicao.destino_id || '')
+  formData.append('previsao_entrega', formEdicao.previsao_entrega || '')
 
-// ⚠️ Converte o código do usuário em ID
-const usuario = usuarios.find(u => u.codigo === formEdicao.codigo_usuario_logado)
-if (!usuario) {
-toast.error('Código de usuário não encontrado')
-return
-}
-formData.append('usuario_logado_id', usuario.id)
+  // ⚠️ Converte o código do usuário em ID
+  if (!formEdicao.codigo_usuario_logado) {
+    toast.error('Informe o código do usuário que está editando')
+    return
+  }
 
-if (formEdicao.remover_receita) {
-formData.append('remover_receita', 'true')
-}
-if (formEdicao.receita) {
-formData.append('receita', formEdicao.receita)
-}
+  const usuario = usuarios.find(u => u.codigo?.toString() === formEdicao.codigo_usuario_logado?.toString())
+  if (!usuario) {
+    toast.error('Código de usuário não encontrado')
+    return
+  }
 
-console.log('🔍 Enviando para /pedidos/editar:')
-for (let pair of formData.entries()) {
-console.log(`${pair[0]}:`, pair[1])
-}
+  formData.append('usuario_logado_id', usuario.id)
 
-try {
-await api.post(`/pedidos/editar/${pedidoId}`, formData)
-toast.success('Pedido atualizado')
-setEditandoId(null)
-carregarPedidos()
-} catch (err) {
-console.error('❌ Erro ao editar pedido:', err)
-toast.error('Erro ao salvar edição')
-}
-}
+  // Receita
+  if (formEdicao.remover_receita) {
+    formData.append('remover_receita', 'true')
+  }
+  if (formEdicao.receita) {
+    formData.append('receita', formEdicao.receita)
+  }
 
+  // 🔍 Log dos dados enviados
+  console.log('🔍 Enviando para /pedidos/editar:')
+  for (let pair of formData.entries()) {
+    console.log(`${pair[0]}:`, pair[1])
+  }
+
+  try {
+    await api.post(`/pedidos/editar/${pedidoId}`, formData)
+    toast.success('Pedido atualizado')
+    setEditandoId(null)
+    carregarPedidos()
+  } catch (err) {
+    console.error('❌ Erro ao editar pedido:', err)
+    toast.error('Erro ao salvar edição')
+  }
+}
 
 return (
 <div>
