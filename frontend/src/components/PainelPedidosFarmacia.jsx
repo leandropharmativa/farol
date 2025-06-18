@@ -800,7 +800,7 @@ onClick={() => iniciarEdicao(p)}
 {abrirModal && (
 <ModalConfirmacao
 titulo={etapaSelecionada}
-destinoEhResidencia={destinoEhResidencia(pedidoSelecionado)}
+destinoEhResidencia={destinoEhResidencia(pedidos.find(p => p.id === pedidoSelecionado))}
 onConfirmar={confirmarEtapa}
 onCancelar={() => setAbrirModal(false)}
 IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
