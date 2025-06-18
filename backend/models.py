@@ -50,6 +50,7 @@ class LocalFarmaciaCreate(BaseModel):
     nome: str
     origem: bool
     destino: bool
+    residencia: bool = False
 
 class LogoUpdate(BaseModel):
     logo_url: str
