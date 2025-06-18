@@ -741,7 +741,6 @@ return (
 <Tippy
 key={et.campo}
 content={
-content={
 tooltip.loading ? (
 <span className="flex items-center gap-1 text-[10px] text-gray-500">
 <Loader2 className="animate-spin w-3 h-3" />
