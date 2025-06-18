@@ -308,15 +308,12 @@ theme="light-border"
 >
 <button
 onClick={() => {
-setFiltroPorPrevisao(prev => {
-const novo = !prev
-setTimeout(() => {
-carregarPedidos()  // força recarregamento após mudança de filtro
-}, 0)
-return novo
-})
+const novoValor = !filtroPorPrevisao
+setFiltroPorPrevisao(novoValor)
+if (!novoValor) {
+setDataSelecionada(new Date())
+}
 }}
-
 className="text-farol-primary hover:text-farol-secondary transition flex items-center"
 >
 {filtroPorPrevisao ? (
