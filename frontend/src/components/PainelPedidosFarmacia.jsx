@@ -663,15 +663,15 @@ if (et.nome === 'Produção' && !p.status_conferencia) podeExecutar = false
 if (et.nome === 'Despacho' && !p.status_producao) podeExecutar = false
 
 if (et.nome === 'Entrega') {
-  const destinoResidencial = locais.find(l =>
-    l.nome === p.destino_nome || l.nome === p.destino?.nome
-  )?.residencia
+const destinoResidencial = locais.find(l =>
+l.nome === p.destino_nome || l.nome === p.destino?.nome
+)?.residencia
 
-  if (destinoResidencial) {
-    if (!p.status_despacho) podeExecutar = false
-  } else {
-    if (!p.status_recebimento) podeExecutar = false
-  }
+if (destinoResidencial) {
+if (!p.status_despacho) podeExecutar = false
+} else {
+if (!p.status_recebimento) podeExecutar = false
+}
 }
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
@@ -731,11 +731,23 @@ return (
 <Tippy
 key={et.campo}
 content={
-tooltip.loading
-? <span className="flex items-center gap-1 text-[10px] text-gray-500"><Loader2 className="animate-spin w-3 h-3" /></span>
-: <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
+tooltip.loading ? (
+<span className="flex items-center gap-1 text-[10px] text-gray-500">
+<Loader2 className="animate-spin w-3 h-3" />
+</span>
+) : ativo ? (
+<span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
+) : !podeExecutar ? (
+<span className="text-[11px] text-red-500 font-medium">
+Aguardando conclusão de etapas anteriores
+</span>
+) : (
+<span dangerouslySetInnerHTML={{ __html: tooltip.html || `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>` }} />
+)
 }
-onShow={handleTooltipShow}
+onShow={() => {
+if (podeExecutar || ativo) handleTooltipShow()
+}}
 placement="top-end"
 animation="text"
 arrow={false}
@@ -743,12 +755,13 @@ theme="light-border"
 delay={[200, 0]}
 offset={[15, 0]}
 >
+
 <span className="inline-block">
 <button
 onClick={(e) => {
 if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome, e)
 }}
-disabled={!podeExecutar || ativo}
+disabled={ativo || !podeExecutar}
 className={`rounded-full p-1
 ${ativo ? 'text-green-600' : 'text-gray-400'}
 ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}`}
@@ -756,6 +769,7 @@ ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default
 <Icone size={18} />
 </button>
 </span>
+
 </Tippy>
 )
 })}
