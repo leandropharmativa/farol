@@ -774,7 +774,7 @@ onClick={() => iniciarEdicao(p)}
 </div>
 </div>
 </div>
-)} 
+))}
 </div>
 
 {abrirModal && (
