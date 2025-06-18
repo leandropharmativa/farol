@@ -263,7 +263,8 @@ atendente_id: usuarios.find(u => u.nome === p.atendente)?.id || '',
 origem_id: locais.find(l => l.nome === p.origem_nome)?.id || '',
 destino_id: locais.find(l => l.nome === p.destino_nome)?.id || '',
 previsao_entrega: p.previsao_entrega,
-receita: null
+receita: null,
+codigo_usuario_logado: ''
 })
 }
 
@@ -273,41 +274,44 @@ setFormEdicao({})
 }
 
 const salvarEdicao = async (pedidoId) => {
-  const formData = new FormData()
+const formData = new FormData()
 
-  // Campos obrigatórios (nunca podem faltar)
-  formData.append('registro', formEdicao.registro || '')
-  formData.append('atendente_id', formEdicao.atendente_id || '')
-  formData.append('origem_id', formEdicao.origem_id || '')
-  formData.append('destino_id', formEdicao.destino_id || '')
-  formData.append('previsao_entrega', formEdicao.previsao_entrega || '')
-  formData.append('usuario_logado_id', usuarioLogado.id)
-
-  // Receita
-  if (formEdicao.remover_receita) {
-    formData.append('remover_receita', 'true')
-  }
-  if (formEdicao.receita) {
-    formData.append('receita', formEdicao.receita)
-  }
-
-  // 🔎 Log dos dados enviados
-  console.log('🔍 Enviando para /pedidos/editar:')
-  for (let pair of formData.entries()) {
-    console.log(`${pair[0]}:`, pair[1])
-  }
-
-  try {
-    await api.post(`/pedidos/editar/${pedidoId}`, formData)
-    toast.success('Pedido atualizado')
-    setEditandoId(null)
-    carregarPedidos()
-  } catch (err) {
-    console.error('❌ Erro ao editar pedido:', err)
-    toast.error('Erro ao salvar edição')
-  }
+// Campos obrigatórios (nunca podem faltar)
+formData.append('registro', formEdicao.registro || '')
+formData.append('atendente_id', formEdicao.atendente_id || '')
+formData.append('origem_id', formEdicao.origem_id || '')
+formData.append('destino_id', formEdicao.destino_id || '')
+formData.append('previsao_entrega', formEdicao.previsao_entrega || '')
+if (!formEdicao.codigo_usuario_logado) {
+toast.error('Informe o código do usuário que está editando')
+return
 }
-  
+formData.append('usuario_logado_id', formEdicao.codigo_usuario_logado)
+// Receita
+if (formEdicao.remover_receita) {
+formData.append('remover_receita', 'true')
+}
+if (formEdicao.receita) {
+formData.append('receita', formEdicao.receita)
+}
+
+// 🔎 Log dos dados enviados
+console.log('🔍 Enviando para /pedidos/editar:')
+for (let pair of formData.entries()) {
+console.log(`${pair[0]}:`, pair[1])
+}
+
+try {
+await api.post(`/pedidos/editar/${pedidoId}`, formData)
+toast.success('Pedido atualizado')
+setEditandoId(null)
+carregarPedidos()
+} catch (err) {
+console.error('❌ Erro ao editar pedido:', err)
+toast.error('Erro ao salvar edição')
+}
+}
+
 return (
 <div>
 <div className="flex items-center justify-between mb-4">
@@ -538,6 +542,15 @@ setFormEdicao({ ...formEdicao, previsao_entrega: data.toISOString() })
 ) : (
 <span>{new Date(p.previsao_entrega).getHours()}h</span>
 )}
+
+<input
+type="number"
+className="text-xs border border-gray-300 rounded px-1 py-[1px]"
+placeholder="Código do usuário"
+value={formEdicao.codigo_usuario_logado || ''}
+onChange={e => setFormEdicao({ ...formEdicao, codigo_usuario_logado: e.target.value })}
+/>
+
 </div>
 
 <div className="pedido-info flex items-center gap-1">
@@ -605,8 +618,7 @@ className="pedido-info"
 </div>
 
 <div className="flex items-center gap-2">
-
-{etapas.map(et => {
+{editandoId !== p.id && etapas.map(et => {
 // ❗ Esconder botão "Recebimento" se destino for residência
 if (
 et.nome === 'Recebimento' &&
@@ -755,23 +767,19 @@ onClick={() => iniciarEdicao(p)}
 >
 <FilePenLine size={18} />
 </button>
-{editandoId === p.id && (
+{editandoId === p.id ? (
 <>
-<button
-title="Salvar"
-className="text-green-600 hover:text-green-800 p-1"
-onClick={() => salvarEdicao(p.id)}
->
-<CircleCheckBig size={18} />
+<button title="Salvar edição" className="text-green-600 hover:text-green-800 p-1" onClick={() => salvarEdicao(p.id)}>
+<FilePenLine size={18} />
 </button>
-<button
-title="Cancelar"
-className="text-gray-400 hover:text-red-500 p-1"
-onClick={cancelarEdicao}
->
+<button title="Cancelar" className="text-gray-400 hover:text-red-500 p-1" onClick={cancelarEdicao}>
 <X size={18} />
 </button>
 </>
+) : (
+<button title="Editar pedido" className="text-gray-400 hover:text-blue-500 p-1" onClick={() => iniciarEdicao(p)}>
+<FilePenLine size={18} />
+</button>
 )}
 </>
 )}
