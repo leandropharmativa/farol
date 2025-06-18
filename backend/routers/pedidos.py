@@ -1,4 +1,4 @@
-#backend/routers/pedidos.py
+# backend/routers/pedidos.py
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Query, Request
 from fastapi.responses import JSONResponse
 from sse_starlette.sse import EventSourceResponse
@@ -19,10 +19,8 @@ router = APIRouter()
 UPLOAD_DIR = "receitas"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# 🔔 Filas ativas para SSE
 clientes_ativos = []
 
-# 📌 Criar pedido
 @router.post("/pedidos/criar")
 async def criar_pedido(
     farmacia_id: UUID = Form(...),
@@ -41,20 +39,14 @@ async def criar_pedido(
     filename = None
     if receita:
         ext = os.path.splitext(receita.filename)[-1].lower()
-        # Salva temporariamente
         temp_filename = f"temp_{registro}{ext}"
         temp_path = os.path.join("/tmp", temp_filename)
         with open(temp_path, "wb") as f:
             f.write(await receita.read())
-
-        # Envia para o Google Drive
         arquivo_id, link = upload_arquivo_para_drive(temp_path, f"{registro}{ext}")
-
-        # Remove temporário
         os.remove(temp_path)
+        filename = link
 
-        filename = link  # salva o link direto no banco
-        
     cursor.execute("""
         INSERT INTO farol_farmacia_pedidos (
             farmacia_id, registro, atendente_id,
@@ -77,7 +69,6 @@ async def criar_pedido(
         pedido_id, "Inclusão", atendente_id, atendente_id, observacao
     ))
 
-    # 🔔 Notificar clientes SSE
     evento = f"novo_pedido:{farmacia_id}:{pedido_id}"
     for q in clientes_ativos:
         await q.put(evento)
@@ -88,8 +79,6 @@ async def criar_pedido(
         "pedido_id": pedido_id
     }
 
-
-# 📌 Editar pedido
 @router.post("/pedidos/editar/{pedido_id}")
 async def editar_pedido(
     pedido_id: int,
@@ -135,7 +124,6 @@ async def editar_pedido(
             filename = f"{registro}_{uuid.uuid4().hex[:6]}{ext}"
             with open(os.path.join(UPLOAD_DIR, filename), "wb") as f:
                 f.write(await receita.read())
-
             update_sql = f"""
                 UPDATE farol_farmacia_pedidos SET
                     registro=%s, numero_itens=%s, atendente_id=%s,
@@ -166,11 +154,9 @@ async def editar_pedido(
             ))
 
         return {"status": "ok", "mensagem": "Pedido atualizado com sucesso"}
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao editar pedido: {str(e)}")
 
-# 📌 Excluir pedido
 @router.delete("/pedidos/excluir/{pedido_id}")
 async def excluir_pedido(pedido_id: int):
     try:
@@ -179,7 +165,6 @@ async def excluir_pedido(pedido_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao excluir pedido: {str(e)}")
 
-# 📌 Registrar etapa
 @router.post("/pedidos/{pedido_id}/registrar-etapa")
 def registrar_etapa(
     pedido_id: int,
@@ -198,7 +183,6 @@ def registrar_etapa(
     usuario_confirmador_id = row[0]
 
     etapa_normalizada = remover_acentos(etapa.lower())
-
     coluna_permissao = {
         "impressao": "permissao_impressao",
         "conferencia": "permissao_conferencia",
@@ -254,7 +238,6 @@ def registrar_etapa(
 
     return {"status": "ok", "mensagem": f"Etapa '{etapa}' registrada com sucesso"}
 
-# 📌 Listar pedidos
 @router.get("/pedidos/listar")
 def listar_pedidos(farmacia_id: UUID):
     cursor.execute("""
@@ -281,10 +264,11 @@ def listar_pedidos(farmacia_id: UUID):
         WHERE p.farmacia_id = %s
         ORDER BY p.data_criacao DESC
     """, (str(farmacia_id),))
+    if cursor.description is None:
+        return []
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
-# 📌 Logs do pedido
 @router.get("/pedidos/{pedido_id}/logs")
 def listar_logs_pedido(pedido_id: int):
     cursor.execute("""
@@ -304,10 +288,11 @@ def listar_logs_pedido(pedido_id: int):
         WHERE l.pedido_id = %s
         ORDER BY l.data_hora DESC
     """, (pedido_id,))
+    if cursor.description is None:
+        return []
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
-# 📌 SSE: stream de novos pedidos
 @router.get("/pedidos/stream")
 async def stream_pedidos(request: Request):
     async def event_generator():
@@ -321,7 +306,6 @@ async def stream_pedidos(request: Request):
                 yield f"data: {evento}\n\n"
         finally:
             clientes_ativos.remove(queue)
-
     return EventSourceResponse(event_generator())
 
 @router.get("/pedidos/{pedido_id}")
@@ -348,7 +332,7 @@ def obter_pedido(pedido_id: int):
         WHERE p.id = %s
     """, (pedido_id,))
     row = cursor.fetchone()
-    if not row:
+    if not row or cursor.description is None:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
     colunas = [desc[0] for desc in cursor.description]
     return dict(zip(colunas, row))
