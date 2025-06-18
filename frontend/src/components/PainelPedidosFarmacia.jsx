@@ -527,6 +527,7 @@ onChange={e => setFormEdicao({ ...formEdicao, previsao_entrega: e.target.value }
 <div className="pedido-info flex items-center gap-1">
 <AlarmClock size={16} />
 {editandoId === p.id ? (
+<>
 <input
 type="time"
 className="text-xs border border-gray-300 rounded px-1 py-[1px]"
@@ -539,18 +540,19 @@ data.setMinutes(minuto)
 setFormEdicao({ ...formEdicao, previsao_entrega: data.toISOString() })
 }}
 />
-) : (
-<span>{new Date(p.previsao_entrega).getHours()}h</span>
-)}
-
 <input
-type="number"
+type="text"
 className="text-xs border border-gray-300 rounded px-1 py-[1px]"
 placeholder="Código do usuário"
 value={formEdicao.codigo_usuario_logado || ''}
-onChange={e => setFormEdicao({ ...formEdicao, codigo_usuario_logado: e.target.value })}
+onChange={e =>
+setFormEdicao({ ...formEdicao, codigo_usuario_logado: e.target.value })
+}
 />
-
+</>
+) : (
+<span>{new Date(p.previsao_entrega).getHours()}h</span>
+)}
 </div>
 
 <div className="pedido-info flex items-center gap-1">
@@ -584,7 +586,9 @@ Substituir
 <input
 type="file"
 className="text-xs"
-onChange={e => setFormEdicao({ ...formEdicao, receita: e.target.files[0], remover_receita: false })}
+onChange={e =>
+setFormEdicao({ ...formEdicao, receita: e.target.files[0], remover_receita: false })
+}
 />
 ) : (
 <span className="text-xs text-gray-400 italic">Receita removida</span>
@@ -614,25 +618,17 @@ className="pedido-info"
 )}
 </div>
 
-
-</div>
-
 <div className="flex items-center gap-2">
 {editandoId !== p.id && etapas.map(et => {
-// ❗ Esconder botão "Recebimento" se destino for residência
 if (
 et.nome === 'Recebimento' &&
 locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
-) return null;
+) return null
 
 const Icone = et.icone
 const ativo = p[et.campo]
 let podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
-
-// Etapa de Recebimento só pode ser executada se Despacho estiver feito
-if (et.nome === 'Recebimento' && !p.status_despacho) {
-podeExecutar = false
-}
+if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
 const idEtapa = `${p.id}-${et.nome}`
 const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
@@ -642,15 +638,12 @@ setTooltipStates(prev => ({
 ...prev,
 [idEtapa]: { loading: true, html: '' }
 }))
-// já carregado
-
 try {
 const res = await api.get(`/pedidos/${p.id}/logs`)
 const logs = res.data || []
 const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
 
 let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
-
 if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
 const dt = new Date(logEtapa.data_hora)
 const data = dt.toLocaleDateString('pt-BR')
@@ -673,26 +666,15 @@ html = `
 </svg>
 <span>${data} ${hora}</span>
 </div>
-${logEtapa.observacao
-? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>`
-: ''}
-</div>
-`
-// Atualiza o status local do pedido se necessário
-if (!p[et.campo]) {
-setPedidos(prev =>
-prev.map(ped =>
-ped.id === p.id ? { ...ped, [et.campo]: true } : ped
-)
-)
-}
+${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>` : ''}
+</div>`
 }
 
 setTooltipStates(prev => ({
 ...prev,
 [idEtapa]: { loading: false, html }
 }))
-} catch (e) {
+} catch {
 setTooltipStates(prev => ({
 ...prev,
 [idEtapa]: { loading: false, html: `<div class='text-[10px] text-red-400'>Erro ao carregar</div>` }
@@ -757,9 +739,26 @@ className="text-red-500 animate-pulse cursor-pointer"
 </Tippy>
 )}
 
-{/* Exibe botão de edição apenas se email for o da farmácia */}
 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
 <>
+{editandoId === p.id ? (
+<>
+<button
+title="Salvar edição"
+className="text-green-600 hover:text-green-800 p-1"
+onClick={() => salvarEdicao(p.id)}
+>
+<FilePenLine size={18} />
+</button>
+<button
+title="Cancelar"
+className="text-gray-400 hover:text-red-500 p-1"
+onClick={cancelarEdicao}
+>
+<X size={18} />
+</button>
+</>
+) : (
 <button
 title="Editar pedido"
 className="text-gray-400 hover:text-blue-500 p-1"
@@ -767,27 +766,11 @@ onClick={() => iniciarEdicao(p)}
 >
 <FilePenLine size={18} />
 </button>
-{editandoId === p.id ? (
-<>
-<button title="Salvar edição" className="text-green-600 hover:text-green-800 p-1" onClick={() => salvarEdicao(p.id)}>
-<FilePenLine size={18} />
-</button>
-<button title="Cancelar" className="text-gray-400 hover:text-red-500 p-1" onClick={cancelarEdicao}>
-<X size={18} />
-</button>
-</>
-) : (
-<button title="Editar pedido" className="text-gray-400 hover:text-blue-500 p-1" onClick={() => iniciarEdicao(p)}>
-<FilePenLine size={18} />
-</button>
 )}
 </>
 )}
 </div>
-</div>
-</div>
-))}
-</div>
+
 
 {abrirModal && (
 <ModalConfirmacao
