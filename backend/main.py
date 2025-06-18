@@ -14,6 +14,7 @@ origens = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origens,
+    allow_origins=["https://farol-nu.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
