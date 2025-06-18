@@ -797,15 +797,21 @@ onClick={() => iniciarEdicao(p)}
 ))}
 </div>
 
-{abrirModal && (
-<ModalConfirmacao
-titulo={etapaSelecionada}
-destinoEhResidencia={destinoEhResidencia(pedidos.find(p => p.id === pedidoSelecionado))}
-onConfirmar={confirmarEtapa}
-onCancelar={() => setAbrirModal(false)}
-IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
-/>
-)}
+{abrirModal && (() => {
+  const pedidoSelecionadoObj = pedidos.find(p => p.id === pedidoSelecionado)
+  console.log('📦 Pedido selecionado:', pedidoSelecionadoObj)
+  console.log('🏠 Destino é residência?', destinoEhResidencia(pedidoSelecionadoObj))
+
+  return (
+    <ModalConfirmacao
+      titulo={etapaSelecionada}
+      destinoEhResidencia={destinoEhResidencia(pedidoSelecionadoObj)}
+      onConfirmar={confirmarEtapa}
+      onCancelar={() => setAbrirModal(false)}
+      IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
+    />
+  )
+})()}
 
 </div>
 )
