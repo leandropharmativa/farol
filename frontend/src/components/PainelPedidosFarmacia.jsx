@@ -618,7 +618,7 @@ className="pedido-info"
 )}
 </div>
 
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-2 ml-auto">
 {editandoId !== p.id && etapas.map(et => {
 if (
 et.nome === 'Recebimento' &&
