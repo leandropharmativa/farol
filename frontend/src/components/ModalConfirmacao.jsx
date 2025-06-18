@@ -5,7 +5,7 @@ SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound
 import api from '../services/api'
 import { toast } from 'react-toastify'
 
-export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, IconeEtapa, destinoEhResidencia }) {
+export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, IconeEtapa, destinoEhResidencia, farmaciaId }) {
 const [codigo, setCodigo] = useState('')
 const [obs, setObs] = useState('')
 const [solidos, setSolidos] = useState(0)
