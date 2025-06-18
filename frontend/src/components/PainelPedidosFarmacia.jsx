@@ -4,7 +4,7 @@ import api from '../services/api'
 import { toast } from 'react-toastify'
 import {
 User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock, AlertCircle,
-PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserRound,
+PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserRound, X,
 FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine, Loader2,
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -23,6 +23,12 @@ const [dataSelecionada, setDataSelecionada] = useState(new Date())
 const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
 const [logsPorPedido, setLogsPorPedido] = useState({})
 const [tooltipStates, setTooltipStates] = useState({})
+
+const [editandoId, setEditandoId] = useState(null)
+const [formEdicao, setFormEdicao] = useState({})
+const [usuarios, setUsuarios] = useState([])
+const [locais, setLocais] = useState([])
+
 
 const carregarPedidos = async () => {
 try {
@@ -78,6 +84,7 @@ const etapas = [
 { campo: 'status_conferencia', nome: 'Conferência', icone: FileCheck2, permissao: 'permissao_conferencia' },
 { campo: 'status_producao', nome: 'Produção', icone: CircleCheckBig, permissao: 'permissao_producao' },
 { campo: 'status_despacho', nome: 'Despacho', icone: Truck, permissao: 'permissao_despacho' },
+{ campo: 'status_recebimento', nome: 'Recebimento', icone: PackagePlus, permissao: 'permissao_recebimento' },
 { campo: 'status_entrega', nome: 'Entrega', icone: PackageCheck, permissao: 'permissao_entrega' },
 { campo: 'status_pagamento', nome: 'Pagamento', icone: CreditCard, permissao: 'permissao_registrar_pagamento' }
 ]
@@ -178,6 +185,14 @@ if (farmaciaId) carregarPedidos()
 }, [farmaciaId, dataSelecionada, filtroPorPrevisao])
 
 useEffect(() => {
+if (farmaciaId) {
+carregarPedidos()
+api.get(`/usuarios/${farmaciaId}`).then(r => setUsuarios(r.data))
+api.get(`/locais/${farmaciaId}`).then(r => setLocais(r.data))
+}
+}, [farmaciaId])
+
+useEffect(() => {
 const atualizarLocal = () => carregarPedidos()
 window.addEventListener("novoPedidoCriado", atualizarLocal)
 return () => window.removeEventListener("novoPedidoCriado", atualizarLocal)
@@ -247,6 +262,39 @@ const totalSaches = pedidos.reduce((total, p) => {
 const logConf = logsPorPedido[p.id]?.find(l => l.etapa?.toLowerCase() === 'conferência')
 return total + (logConf?.itens_saches || 0)
 }, 0)
+
+const iniciarEdicao = (p) => {
+setEditandoId(p.id)
+setFormEdicao({
+registro: p.registro,
+numero_itens: 1,
+atendente_id: usuarios.find(u => u.nome === p.atendente)?.id || '',
+origem_id: locais.find(l => l.nome === p.origem_nome)?.id || '',
+destino_id: locais.find(l => l.nome === p.destino_nome)?.id || '',
+previsao_entrega: p.previsao_entrega,
+receita: null
+})
+}
+
+const cancelarEdicao = () => {
+setEditandoId(null)
+setFormEdicao({})
+}
+
+const salvarEdicao = async (pedidoId) => {
+const formData = new FormData()
+Object.entries(formEdicao).forEach(([k, v]) => {
+if (v !== null && v !== undefined) formData.append(k, v)
+})
+try {
+await api.post(`/pedidos/editar/${pedidoId}`, formData)
+toast.success('Pedido atualizado')
+setEditandoId(null)
+carregarPedidos()
+} catch {
+toast.error('Erro ao salvar edição')
+}
+}
 
 return (
 <div>
@@ -390,44 +438,160 @@ return (
 })}
 </div>
 
-<div className="pedido-info"><User size={16} /><span>{p.atendente}</span></div>
+<div className="pedido-info flex items-center gap-1">
+<User size={16} />
+{editandoId === p.id ? (
+<select
+className="text-xs border border-gray-300 rounded px-1 py-[1px]"
+value={formEdicao.atendente_id}
+onChange={e => setFormEdicao({ ...formEdicao, atendente_id: e.target.value })}
+>
+<option value="">Selecione</option>
+{usuarios.map(u => (
+<option key={u.id} value={u.id}>{u.nome}</option>
+))}
+</select>
+) : (
+<span>{p.atendente}</span>
+)}
+</div>
 
 <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.origem_nome || p.origem?.nome)}`}>
 <MapPinHouse size={14} className="mr-1" />
+{editandoId === p.id ? (
+<select
+className="text-xs bg-white border border-gray-300 rounded px-1 py-[1px]"
+value={formEdicao.origem_id}
+onChange={e => setFormEdicao({ ...formEdicao, origem_id: e.target.value })}
+>
+<option value="">Origem</option>
+{locais.filter(l => l.origem).map(l => (
+<option key={l.id} value={l.id}>{l.nome}</option>
+))}
+</select>
+) : (
 <span>{p.origem_nome || p.origem?.nome || 'Origem'}</span>
+)}
 </div>
+
 
 <div className={`pedido-info px-2 py-0.5 rounded-full text-xs ${corLocalClasse(p.destino_nome || p.destino?.nome)}`}>
 <MapPinned size={14} className="mr-1" />
+{editandoId === p.id ? (
+<select
+className="text-xs bg-white border border-gray-300 rounded px-1 py-[1px]"
+value={formEdicao.destino_id}
+onChange={e => setFormEdicao({ ...formEdicao, destino_id: e.target.value })}
+>
+<option value="">Destino</option>
+{locais.filter(l => l.destino).map(l => (
+<option key={l.id} value={l.id}>{l.nome}</option>
+))}
+</select>
+) : (
 <span>{p.destino_nome || p.destino?.nome || 'Destino'}</span>
+)}
 </div>
 
-<div className="pedido-info"><Calendar size={16} /><span>{new Date(p.previsao_entrega).getDate()}</span></div>
-<div className="pedido-info"><AlarmClock size={16} /><span>{new Date(p.previsao_entrega).getHours()}h</span></div>
 
-{p.receita_arquivo && (
-<Tippy
-content={<span className="text-[12px]">Abrir Receita</span>}
-placement="top-end"
-animation="text"
-theme="light-border"
-delay={[200, 0]}
->
+<div className="pedido-info flex items-center gap-1">
+<Calendar size={16} />
+{editandoId === p.id ? (
+<input
+type="date"
+className="text-xs border border-gray-300 rounded px-1 py-[1px]"
+value={formEdicao.previsao_entrega?.split('T')[0] || ''}
+onChange={e => setFormEdicao({ ...formEdicao, previsao_entrega: e.target.value })}
+/>
+) : (
+<span>{new Date(p.previsao_entrega).getDate()}</span>
+)}
+</div>
+
+<div className="pedido-info flex items-center gap-1">
+<AlarmClock size={16} />
+{editandoId === p.id ? (
+<input
+type="time"
+className="text-xs border border-gray-300 rounded px-1 py-[1px]"
+value={formEdicao.previsao_entrega?.slice(11, 16) || ''}
+onChange={e => {
+const [hora, minuto] = e.target.value.split(':')
+const data = new Date(formEdicao.previsao_entrega || new Date())
+data.setHours(hora)
+data.setMinutes(minuto)
+setFormEdicao({ ...formEdicao, previsao_entrega: data.toISOString() })
+}}
+/>
+) : (
+<span>{new Date(p.previsao_entrega).getHours()}h</span>
+)}
+</div>
+
+<div className="pedido-info flex items-center gap-1">
+<FileText size={16} />
+{editandoId === p.id ? (
+<>
+{p.receita_arquivo && !formEdicao.receita && !formEdicao.remover_receita ? (
+<>
 <a
 href={p.receita_arquivo}
 target="_blank"
 rel="noopener noreferrer"
-className="pedido-info text-farol-primary hover:text-farol-secondary"
+className="text-blue-600 underline text-xs"
 >
-<FileText size={18} />
+Ver receita
 </a>
-</Tippy>
+<button
+onClick={() => setFormEdicao({ ...formEdicao, remover_receita: true })}
+className="text-red-600 text-xs underline"
+>
+Remover
+</button>
+<button
+onClick={() => setFormEdicao({ ...formEdicao, substituir_receita: true })}
+className="text-farol-primary text-xs underline"
+>
+Substituir
+</button>
+</>
+) : formEdicao.substituir_receita || !p.receita_arquivo ? (
+<input
+type="file"
+className="text-xs"
+onChange={e => setFormEdicao({ ...formEdicao, receita: e.target.files[0], remover_receita: false })}
+/>
+) : (
+<span className="text-xs text-gray-400 italic">Receita removida</span>
 )}
+</>
+) : (
+p.receita_arquivo ? (
+<a
+href={p.receita_arquivo}
+target="_blank"
+rel="noopener noreferrer"
+className="text-farol-primary underline text-xs"
+>
+Receita
+</a>
+) : (
+<span className="text-xs text-gray-400 italic">Sem receita</span>
+)
+)}
+</div>
+
 </div>
 
 <div className="flex items-center gap-2">
 
 {etapas.map(et => {
+// ❗ Esconder botão "Recebimento" se destino for residência
+if (
+et.nome === 'Recebimento' &&
+locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
+) return null;
+
 const Icone = et.icone
 const ativo = p[et.campo]
 const podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
@@ -441,11 +605,6 @@ setTooltipStates(prev => ({
 [idEtapa]: { loading: true, html: '' }
 }))
 // já carregado
-
-setTooltipStates(prev => ({
-...prev,
-[idEtapa]: { loading: true, html: '' }
-}))
 
 try {
 const res = await api.get(`/pedidos/${p.id}/logs`)
@@ -565,10 +724,29 @@ className="text-red-500 animate-pulse cursor-pointer"
 <button
 title="Editar pedido"
 className="text-gray-400 hover:text-blue-500 p-1"
-onClick={() => toast.info('Editar pedido (em desenvolvimento)')}
+onClick={() => iniciarEdicao(p)}
 >
 <FilePenLine size={18} />
 </button>
+{editandoId === p.id && (
+<>
+<button
+title="Salvar"
+className="text-green-600 hover:text-green-800 p-1"
+onClick={() => salvarEdicao(p.id)}
+>
+<CircleCheckBig size={18} />
+</button>
+<button
+title="Cancelar"
+className="text-gray-400 hover:text-red-500 p-1"
+onClick={cancelarEdicao}
+>
+<X size={18} />
+</button>
+</>
+)}
+
 )}
 </div>
 </div>
