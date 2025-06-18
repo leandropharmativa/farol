@@ -334,9 +334,47 @@ onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
 <div className="pedido-linha">
 <div className="pedido-conteudo">
 
-<div className="pedido-info flex items-center gap-1">
+<Tippy
+content={
+(() => {
+const logInclusao = logsPorPedido[p.id]?.find(log => log.etapa === 'Inclusão')
+if (!logInclusao) return <span className="text-[10px] text-gray-500">Aguardando inclusão</span>
+
+const dt = new Date(logInclusao.data_hora)
+const data = dt.toLocaleDateString('pt-BR')
+const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
+
+return (
+<div className="text-[12px] text-gray-700 leading-tight">
+<div className="font-semibold text-farol-primary mb-1">Inclusão</div>
+<hr className="my-1 border-t border-gray-300" />
+<div className="flex items-center gap-1 mb-0.5">
+<UserRound size={12} className="text-gray-500" />
+<span>{logInclusao.usuario_confirmador}</span>
+</div>
+<div className="flex items-center gap-1 mb-0.5">
+<CalendarClock size={12} className="text-gray-500" />
+<span>{data} {hora}</span>
+</div>
+{logInclusao.observacao && (
+<div className="mt-1 text-farol-primary">{logInclusao.observacao}</div>
+)}
+</div>
+)
+})()
+}
+placement="bottom-start"
+animation="shift-away"
+arrow={true}
+theme="light-border"
+delay={[200, 0]}
+>
+<div className="pedido-info flex items-center gap-1 cursor-default">
 <PillBottle size={16} />
 <span>{p.registro}</span>
+</div>
+</Tippy>
+
 {logsPorPedido[p.id]?.map((log, i) => {
 const etapa = log.etapa?.toLowerCase()
 if (etapa !== 'conferência') return null
