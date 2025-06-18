@@ -745,16 +745,18 @@ tooltip.loading ? (
 <span className="flex items-center gap-1 text-[10px] text-gray-500">
 <Loader2 className="animate-spin w-3 h-3" />
 </span>
-) : tooltip.html ? (
+) : tooltip.html && podeExecutar ? (
 <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
-) : !podeExecutar && motivoBloqueio ? (
+) : motivoBloqueio ? (
 <span className="text-[11px] text-red-500 font-medium">{motivoBloqueio}</span>
 ) : (
 <span className="text-[10px] text-gray-500">Aguardando etapa</span>
 )
 }
-
-onShow={handleTooltipShow}
+onShow={() => {
+if (!podeExecutar || tooltip.html) return
+handleTooltipShow()
+}}
 placement="top-end"
 animation="text"
 arrow={false}
@@ -776,6 +778,7 @@ ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default
 </button>
 </span>
 </Tippy>
+
 )
 })}
 
