@@ -578,9 +578,9 @@ delay={[200, 0]}
 href={p.receita_arquivo}
 target="_blank"
 rel="noopener noreferrer"
-className="pedido-info text-farol-primary hover:text-farol-secondary"
+className="pedido-info"
 >
-<FileText size={18} />
+<FileText size={16} className="pedido-info text-farol-primary hover:text-farol-secondary" />
 </a>
 </Tippy>
 ) : (
