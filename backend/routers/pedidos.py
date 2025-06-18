@@ -374,9 +374,10 @@ def obter_pedido(pedido_id: int):
 
 @router.get("/pedidos/stream")
 async def stream_pedidos(request: Request):
+    queue = asyncio.Queue()
+    clientes_ativos.append(queue)
+
     async def event_generator():
-        queue = asyncio.Queue()
-        clientes_ativos.append(queue)
         try:
             while True:
                 if await request.is_disconnected():
@@ -385,4 +386,5 @@ async def stream_pedidos(request: Request):
                 yield f"data: {evento}\n\n"
         finally:
             clientes_ativos.remove(queue)
+
     return EventSourceResponse(event_generator())
