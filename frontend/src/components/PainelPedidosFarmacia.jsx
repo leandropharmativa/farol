@@ -769,8 +769,14 @@ onClick={() => iniciarEdicao(p)}
 )}
 </>
 )}
-</div>
+</div> {/* fecha div dos botões finais */}
 
+</div> {/* fecha div .pedido-conteudo */}
+</div> {/* fecha div .pedido-linha */}
+</div> {/* fecha div .pedido-card */}
+))}
+
+</div> {/* fecha div .space-y-0 */}
 
 {abrirModal && (
 <ModalConfirmacao
@@ -782,6 +788,6 @@ IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
 />
 )}
 
-</div>
+</div> {/* fecha o componente inteiro */}
 )
 }
