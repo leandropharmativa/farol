@@ -38,6 +38,7 @@ params: { farmacia_id: farmaciaId }
 
 let pedidosCarregados = res.data
 
+if (!filtroRegistro.trim()) {
 const dataFiltro = new Date(dataSelecionada).toISOString().split('T')[0]
 
 pedidosCarregados = pedidosCarregados.filter(p => {
