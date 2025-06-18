@@ -3,7 +3,6 @@ import {
 SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound
 } from 'lucide-react'
 import api from '../services/api'
-import api from '../services/api'
 import { toast } from 'react-toastify'
 
 export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, IconeEtapa, destinoEhResidencia }) {
