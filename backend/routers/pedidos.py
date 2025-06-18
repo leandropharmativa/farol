@@ -341,6 +341,26 @@ def listar_logs_pedido(pedido_id: int):
     except Exception as e:
         print(f"[ERRO LOG PEDIDO {pedido_id}] {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro ao buscar logs do pedido: {str(e)}")
+
+@router.get("/pedidos/stream")
+async def stream_pedidos(request: Request, farmacia_id: str = Query(...)):
+    if not farmacia_id:
+        raise HTTPException(status_code=422, detail="farmacia_id é obrigatório")
+
+    queue = asyncio.Queue()
+    clientes_ativos.append((farmacia_id, queue))
+
+    async def event_generator():
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+                evento = await queue.get()
+                yield f"data: {evento}\n\n"
+        finally:
+            clientes_ativos.remove((farmacia_id, queue))
+
+    return EventSourceResponse(event_generator())
         
 @router.get("/pedidos/{pedido_id}")
 def obter_pedido(pedido_id: int):
@@ -371,23 +391,3 @@ def obter_pedido(pedido_id: int):
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
     colunas = [desc[0] for desc in cursor.description]
     return dict(zip(colunas, row))
-
-@router.get("/pedidos/stream")
-async def stream_pedidos(request: Request, farmacia_id: str = Query(...)):
-    if not farmacia_id:
-        raise HTTPException(status_code=422, detail="farmacia_id é obrigatório")
-
-    queue = asyncio.Queue()
-    clientes_ativos.append((farmacia_id, queue))
-
-    async def event_generator():
-        try:
-            while True:
-                if await request.is_disconnected():
-                    break
-                evento = await queue.get()
-                yield f"data: {evento}\n\n"
-        finally:
-            clientes_ativos.remove((farmacia_id, queue))
-
-    return EventSourceResponse(event_generator())
