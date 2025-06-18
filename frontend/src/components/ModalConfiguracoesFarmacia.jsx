@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-X, Plus, UserRoundPen, LocationEdit, Trash,
+X, Plus, UserRoundPen, LocationEdit, Trash, Handshake,
 PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard,
 UserPlus, Save, CircleX, MapPinPlus
 } from 'lucide-react'
