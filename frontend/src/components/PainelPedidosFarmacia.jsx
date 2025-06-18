@@ -657,33 +657,23 @@ const Icone = et.icone
 const ativo = p[et.campo]
 
 let podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
-let motivoBloqueio = null
 
-if (et.nome === 'Produção' && !p.status_conferencia) {
-podeExecutar = false
-motivoBloqueio = 'Aguardando conferência'
-}
-if (et.nome === 'Despacho' && !p.status_producao) {
-podeExecutar = false
-motivoBloqueio = 'Aguardando produção'
-}
+// Regras adicionais de dependência entre etapas
+if (et.nome === 'Produção' && !p.status_conferencia) podeExecutar = false
+if (et.nome === 'Despacho' && !p.status_producao) podeExecutar = false
+
 if (et.nome === 'Entrega') {
-const destinoResidencial = locais.find(l =>
-l.nome === p.destino_nome || l.nome === p.destino?.nome
-)?.residencia
+  const destinoResidencial = locais.find(l =>
+    l.nome === p.destino_nome || l.nome === p.destino?.nome
+  )?.residencia
 
-if (destinoResidencial && !p.status_despacho) {
-podeExecutar = false
-motivoBloqueio = 'Aguardando despacho'
-} else if (!destinoResidencial && !p.status_recebimento) {
-podeExecutar = false
-motivoBloqueio = 'Aguardando recebimento'
+  if (destinoResidencial) {
+    if (!p.status_despacho) podeExecutar = false
+  } else {
+    if (!p.status_recebimento) podeExecutar = false
+  }
 }
-}
-if (et.nome === 'Recebimento' && !p.status_despacho) {
-podeExecutar = false
-motivoBloqueio = 'Aguardando despacho'
-}
+if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
 const idEtapa = `${p.id}-${et.nome}`
 const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
@@ -741,22 +731,11 @@ return (
 <Tippy
 key={et.campo}
 content={
-tooltip.loading ? (
-<span className="flex items-center gap-1 text-[10px] text-gray-500">
-<Loader2 className="animate-spin w-3 h-3" />
-</span>
-) : tooltip.html && podeExecutar ? (
-<span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
-) : motivoBloqueio ? (
-<span className="text-[11px] text-red-500 font-medium">{motivoBloqueio}</span>
-) : (
-<span className="text-[10px] text-gray-500">Aguardando etapa</span>
-)
+tooltip.loading
+? <span className="flex items-center gap-1 text-[10px] text-gray-500"><Loader2 className="animate-spin w-3 h-3" /></span>
+: <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
 }
-onShow={() => {
-if (!podeExecutar || tooltip.html) return
-handleTooltipShow()
-}}
+onShow={handleTooltipShow}
 placement="top-end"
 animation="text"
 arrow={false}
@@ -778,7 +757,6 @@ ${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default
 </button>
 </span>
 </Tippy>
-
 )
 })}
 
