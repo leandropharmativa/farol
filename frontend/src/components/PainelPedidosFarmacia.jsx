@@ -529,9 +529,9 @@ setFormEdicao({ ...formEdicao, previsao_entrega: data.toISOString() })
 </div>
 
 <div className="pedido-info flex items-center gap-1">
-<FileText size={16} />
 {editandoId === p.id ? (
 <>
+<FileText size={16} />
 {p.receita_arquivo && !formEdicao.receita && !formEdicao.remover_receita ? (
 <>
 <a
@@ -567,19 +567,28 @@ onChange={e => setFormEdicao({ ...formEdicao, receita: e.target.files[0], remove
 </>
 ) : (
 p.receita_arquivo ? (
+<Tippy
+content={<span className="text-[12px]">Abrir Receita</span>}
+placement="top-end"
+animation="text"
+theme="light-border"
+delay={[200, 0]}
+>
 <a
 href={p.receita_arquivo}
 target="_blank"
 rel="noopener noreferrer"
-className="text-farol-primary underline text-xs"
+className="pedido-info text-farol-primary hover:text-farol-secondary"
 >
-Receita
+<FileText size={18} />
 </a>
+</Tippy>
 ) : (
 <span className="text-xs text-gray-400 italic">Sem receita</span>
 )
 )}
 </div>
+
 
 </div>
 
@@ -721,33 +730,33 @@ className="text-red-500 animate-pulse cursor-pointer"
 
 {/* Exibe botão de edição apenas se email for o da farmácia */}
 {emailFarmacia && usuarioLogado?.email === emailFarmacia && (
-  <>
-    <button
-      title="Editar pedido"
-      className="text-gray-400 hover:text-blue-500 p-1"
-      onClick={() => iniciarEdicao(p)}
-    >
-      <FilePenLine size={18} />
-    </button>
-    {editandoId === p.id && (
-      <>
-        <button
-          title="Salvar"
-          className="text-green-600 hover:text-green-800 p-1"
-          onClick={() => salvarEdicao(p.id)}
-        >
-          <CircleCheckBig size={18} />
-        </button>
-        <button
-          title="Cancelar"
-          className="text-gray-400 hover:text-red-500 p-1"
-          onClick={cancelarEdicao}
-        >
-          <X size={18} />
-        </button>
-      </>
-    )}
-  </>
+<>
+<button
+title="Editar pedido"
+className="text-gray-400 hover:text-blue-500 p-1"
+onClick={() => iniciarEdicao(p)}
+>
+<FilePenLine size={18} />
+</button>
+{editandoId === p.id && (
+<>
+<button
+title="Salvar"
+className="text-green-600 hover:text-green-800 p-1"
+onClick={() => salvarEdicao(p.id)}
+>
+<CircleCheckBig size={18} />
+</button>
+<button
+title="Cancelar"
+className="text-gray-400 hover:text-red-500 p-1"
+onClick={cancelarEdicao}
+>
+<X size={18} />
+</button>
+</>
+)}
+</>
 )}
 </div>
 </div>
