@@ -276,18 +276,20 @@ setFormEdicao({})
 const salvarEdicao = async (pedidoId) => {
 const formData = new FormData()
 
-// Campos obrigatórios (nunca podem faltar)
 formData.append('registro', formEdicao.registro || '')
 formData.append('atendente_id', formEdicao.atendente_id || '')
 formData.append('origem_id', formEdicao.origem_id || '')
 formData.append('destino_id', formEdicao.destino_id || '')
 formData.append('previsao_entrega', formEdicao.previsao_entrega || '')
-if (!formEdicao.codigo_usuario_logado) {
-toast.error('Informe o código do usuário que está editando')
+
+// ⚠️ Converte o código do usuário em ID
+const usuario = usuarios.find(u => u.codigo === formEdicao.codigo_usuario_logado)
+if (!usuario) {
+toast.error('Código de usuário não encontrado')
 return
 }
-formData.append('usuario_logado_id', formEdicao.codigo_usuario_logado)
-// Receita
+formData.append('usuario_logado_id', usuario.id)
+
 if (formEdicao.remover_receita) {
 formData.append('remover_receita', 'true')
 }
@@ -295,7 +297,6 @@ if (formEdicao.receita) {
 formData.append('receita', formEdicao.receita)
 }
 
-// 🔎 Log dos dados enviados
 console.log('🔍 Enviando para /pedidos/editar:')
 for (let pair of formData.entries()) {
 console.log(`${pair[0]}:`, pair[1])
@@ -311,6 +312,7 @@ console.error('❌ Erro ao editar pedido:', err)
 toast.error('Erro ao salvar edição')
 }
 }
+
 
 return (
 <div>
