@@ -814,6 +814,7 @@ onClick={() => iniciarEdicao(p)}
     <ModalConfirmacao
       titulo={etapaSelecionada}
       destinoEhResidencia={destinoEhResidencia(pedidoSelecionadoObj)}
+      farmaciaId={farmaciaId}
       onConfirmar={confirmarEtapa}
       onCancelar={() => setAbrirModal(false)}
       IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
