@@ -538,7 +538,7 @@ setFormEdicao({ ...formEdicao, previsao_entrega: data.toISOString() })
 href={p.receita_arquivo}
 target="_blank"
 rel="noopener noreferrer"
-className="text-blue-600 underline text-xs"
+className="text-farol-primary underline text-xs"
 >
 Ver receita
 </a>
