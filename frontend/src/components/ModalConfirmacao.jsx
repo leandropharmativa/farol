@@ -17,10 +17,12 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
   const [valorPago, setValorPago] = useState('')
   const [formaPagamento, setFormaPagamento] = useState('')
   const [codigoEntregador, setCodigoEntregador] = useState('')
-
   const [usuarios, setUsuarios] = useState([])
+
   const [usuariosEntrega, setUsuariosEntrega] = useState([])
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
+
+  const inputRef = useRef(null)
 
   const etapa = titulo?.toLowerCase()
   const isConferencia = etapa.includes('conferência')
@@ -28,14 +30,16 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
   const pagamentoJaFeito = pedidoSelecionado?.status_pagamento
 
   useEffect(() => {
-    if (farmaciaId) {
+    if (farmaciaId && isDespachoResidencial) {
       api.get(`/usuarios/${farmaciaId}`)
         .then(res => setUsuarios(res.data))
         .catch(() => toast.error('Erro ao carregar usuários'))
     }
-  }, [farmaciaId])
+  }, [farmaciaId, isDespachoResidencial])
 
   useEffect(() => {
+    if (inputRef.current) inputRef.current.focus()
+
     const ultimoPedido = window.__ULTIMO_PEDIDO_SELECIONADO
     if (ultimoPedido) {
       setPedidoSelecionado(ultimoPedido)
@@ -93,19 +97,17 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
           </span>
         </div>
 
-        {/* Select código do usuário */}
+        {/* Campo código do usuário */}
         <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mb-2">
           <UserRound className="text-gray-400 mr-2" size={16} />
-          <select
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Código do usuário"
             className="bg-transparent border-none outline-none text-sm flex-1"
             value={codigo}
             onChange={(e) => setCodigo(e.target.value)}
-          >
-            <option value="">Código do usuário</option>
-            {usuarios.map(u => (
-              <option key={u.id} value={u.codigo}>{u.nome}</option>
-            ))}
-          </select>
+          />
         </div>
 
         <input
