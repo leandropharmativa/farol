@@ -655,7 +655,24 @@ locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.resid
 
 const Icone = et.icone
 const ativo = p[et.campo]
+
 let podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
+
+// Regras adicionais de dependência entre etapas
+if (et.nome === 'Produção' && !p.status_conferencia) podeExecutar = false
+if (et.nome === 'Despacho' && !p.status_producao) podeExecutar = false
+
+if (et.nome === 'Entrega') {
+  const destinoResidencial = locais.find(l =>
+    l.nome === p.destino_nome || l.nome === p.destino?.nome
+  )?.residencia
+
+  if (destinoResidencial) {
+    if (!p.status_despacho) podeExecutar = false
+  } else {
+    if (!p.status_recebimento) podeExecutar = false
+  }
+}
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
 const idEtapa = `${p.id}-${et.nome}`
