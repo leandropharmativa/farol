@@ -131,7 +131,7 @@ const confirmarEtapa = async (codigo, observacao, extras = {}) => {
     if (
       etapaLower === 'despacho' &&
       extras.entrega &&
-      destinoEhResidencia(pedidoSelecionado)
+      destinoEhResidencia(pedidos.find(p => p.id === pedidoSelecionado))
     ) {
       const entrega = extras.entrega
       await api.post('/entregas/registrar', {
