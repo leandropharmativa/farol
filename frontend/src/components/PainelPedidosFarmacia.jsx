@@ -774,7 +774,7 @@ onClick={() => iniciarEdicao(p)}
 </div> {/* fecha div .pedido-conteudo */}
 </div> {/* fecha div .pedido-linha */}
 </div> {/* fecha div .pedido-card */}
-)))}  {/* fecha return do map */}
+)} {/* ← Remova um parêntese, pois só há um `.map` aqui */}
 </div> {/* fecha div .space-y-0 */}
 
 {abrirModal && (
