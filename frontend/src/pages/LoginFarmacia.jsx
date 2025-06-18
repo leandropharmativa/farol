@@ -143,7 +143,7 @@ return (
     <img
       src="/farol.png"
       alt="Imagem de fundo"
-      className="absolute bottom-0 left-0 z-0 pointer-events-none max-h-[70vh]"
+      className="absolute bottom-20 left-0 z-0 pointer-events-none max-h-[80vh]"
     />
 
     {/* Quadro de login sobre a imagem */}
