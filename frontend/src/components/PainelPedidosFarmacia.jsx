@@ -746,8 +746,6 @@ onClick={cancelarEdicao}
 </button>
 </>
 )}
-</>
-)}
 </div>
 </div>
 </div>
