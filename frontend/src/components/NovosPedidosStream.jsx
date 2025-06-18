@@ -136,7 +136,7 @@ export default function NovosPedidosStream({ farmaciaId }) {
 
               {p.receita_arquivo && (
                 <div className="pedido-info text-blue-600">
-                  <FileText size={16} />
+                  <FileText size={16} className="text-farol-primary hover:text-farol-sexondary" />
                   <a
                     href={`https://farol-mjtt.onrender.com/receitas/${p.receita_arquivo}`}
                     target="_blank"
