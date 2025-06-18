@@ -654,8 +654,7 @@ locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.resid
 ) return null
 
 const Icone = et.icone
-const pedidoAtual = pedidos.find(ped => ped.id === p.id) || p
-const ativo = pedidoAtual[et.campo]
+const ativo = p[et.campo]
 
 let podeExecutar = usuarioLogado?.[et.permissao] === true || usuarioLogado?.[et.permissao] === 'true'
 
@@ -664,15 +663,15 @@ if (et.nome === 'Produção' && !p.status_conferencia) podeExecutar = false
 if (et.nome === 'Despacho' && !p.status_producao) podeExecutar = false
 
 if (et.nome === 'Entrega') {
-const destinoResidencial = locais.find(l =>
-l.nome === p.destino_nome || l.nome === p.destino?.nome
-)?.residencia
+  const destinoResidencial = locais.find(l =>
+    l.nome === p.destino_nome || l.nome === p.destino?.nome
+  )?.residencia
 
-if (destinoResidencial) {
-if (!p.status_despacho) podeExecutar = false
-} else {
-if (!p.status_recebimento) podeExecutar = false
-}
+  if (destinoResidencial) {
+    if (!p.status_despacho) podeExecutar = false
+  } else {
+    if (!p.status_recebimento) podeExecutar = false
+  }
 }
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
@@ -684,25 +683,12 @@ setTooltipStates(prev => ({
 ...prev,
 [idEtapa]: { loading: true, html: '' }
 }))
-
 try {
-const [resLog, resPedido] = await Promise.all([
-api.get(`/pedidos/${p.id}/logs`),
-api.get(`/pedidos/${p.id}`),
-])
-
-const logs = resLog.data || []
-const pedidoAtualizado = resPedido.data
-
-// Atualiza o estado visual do pedido (ex: ícone ficar verde)
-setPedidos(prev =>
-prev.map(ped => (ped.id === p.id ? pedidoAtualizado : ped))
-)
-
-// Atualiza tooltip
+const res = await api.get(`/pedidos/${p.id}/logs`)
+const logs = res.data || []
 const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
-let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
 
+let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
 if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
 const dt = new Date(logEtapa.data_hora)
 const data = dt.toLocaleDateString('pt-BR')
@@ -740,7 +726,6 @@ setTooltipStates(prev => ({
 }))
 }
 }
-
 
 return (
 <Tippy
