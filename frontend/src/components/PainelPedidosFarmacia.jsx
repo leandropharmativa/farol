@@ -29,6 +29,11 @@ const [formEdicao, setFormEdicao] = useState({})
 const [usuarios, setUsuarios] = useState([])
 const [locais, setLocais] = useState([])
 
+const destinoEhResidencia = (pedido) => {
+return locais.find(l => l.id === pedido.destino_id)?.residencia
+}
+
+
 
 const carregarPedidos = async () => {
 try {
@@ -103,27 +108,51 @@ setEtapaSelecionada(etapa)
 setAbrirModal(true)
 }
 
-
-const confirmarEtapa = async (codigoConfirmacao, observacao = '', extras = {}) => {
+const confirmarEtapa = async (codigo, observacao, extras = {}) => {
 try {
+const etapa = etapaSelecionada
+const etapaLower = etapa.toLowerCase()
+
+// Primeiro, confirmar a etapa no backend
 const formData = new FormData()
-formData.append('etapa', etapaSelecionada)
-formData.append('usuario_logado_id', usuarioLogado.id)
-formData.append('codigo_confirmacao', codigoConfirmacao)
+formData.append('etapa', etapa)
+formData.append('usuario_logado_id', usuarioLogado?.id || 0)
+formData.append('codigo_confirmacao', codigo)
 formData.append('observacao', observacao)
 
-// 🟨 Apenas na conferência, envia os tipos de item
-if (etapaSelecionada === 'Conferência') {
-formData.append('itens_solidos', extras.itens_solidos || 0)
-formData.append('itens_semisolidos', extras.itens_semisolidos || 0)
-formData.append('itens_saches', extras.itens_saches || 0)
+// Se for conferência, adicionar os itens
+if (extras.itens_solidos !== undefined) formData.append('itens_solidos', extras.itens_solidos)
+if (extras.itens_semisolidos !== undefined) formData.append('itens_semisolidos', extras.itens_semisolidos)
+if (extras.itens_saches !== undefined) formData.append('itens_saches', extras.itens_saches)
+
+await api.post(`/pedidos/${pedidoSelecionado.id}/registrar-etapa`, formData)
+
+// ✅ Se for entrega residencial no despacho, registrar entrega
+if (
+etapaLower === 'despacho' &&
+extras.entrega &&
+destinoEhResidencia(pedidoSelecionado)
+) {
+const entrega = extras.entrega
+await api.post('/entregas/registrar', {
+pedido_id: pedidoSelecionado.id,
+farmacia_id: farmaciaId,
+nome_paciente: entrega.nome_paciente,
+endereco_entrega: entrega.endereco_entrega,
+valor_pago: entrega.valor_pago || null,
+forma_pagamento: entrega.forma_pagamento || null,
+entregador_codigo: entrega.entregador_codigo,
+})
 }
 
-const res = await api.post(`/pedidos/${pedidoSelecionado}/registrar-etapa`, formData)
-
-toast.success(res.data.mensagem)
+toast.success(`Etapa '${etapa}' registrada com sucesso`)
 setAbrirModal(false)
 carregarPedidos()
+} catch (err) {
+console.error(err)
+toast.error('Erro ao registrar etapa')
+}
+}
 
 // Atualiza tooltip manualmente com novo log
 const dt = new Date()
@@ -274,52 +303,52 @@ setFormEdicao({})
 }
 
 const salvarEdicao = async (pedidoId) => {
-  const formData = new FormData()
+const formData = new FormData()
 
-  // Campos obrigatórios
-  formData.append('registro', formEdicao.registro || '')
-  formData.append('atendente_id', formEdicao.atendente_id || '')
-  formData.append('origem_id', formEdicao.origem_id || '')
-  formData.append('destino_id', formEdicao.destino_id || '')
-  formData.append('previsao_entrega', formEdicao.previsao_entrega || '')
+// Campos obrigatórios
+formData.append('registro', formEdicao.registro || '')
+formData.append('atendente_id', formEdicao.atendente_id || '')
+formData.append('origem_id', formEdicao.origem_id || '')
+formData.append('destino_id', formEdicao.destino_id || '')
+formData.append('previsao_entrega', formEdicao.previsao_entrega || '')
 
-  // ⚠️ Converte o código do usuário em ID
-  if (!formEdicao.codigo_usuario_logado) {
-    toast.error('Informe o código do usuário que está editando')
-    return
-  }
+// ⚠️ Converte o código do usuário em ID
+if (!formEdicao.codigo_usuario_logado) {
+toast.error('Informe o código do usuário que está editando')
+return
+}
 
-  const usuario = usuarios.find(u => u.codigo?.toString() === formEdicao.codigo_usuario_logado?.toString())
-  if (!usuario) {
-    toast.error('Código de usuário não encontrado')
-    return
-  }
+const usuario = usuarios.find(u => u.codigo?.toString() === formEdicao.codigo_usuario_logado?.toString())
+if (!usuario) {
+toast.error('Código de usuário não encontrado')
+return
+}
 
-  formData.append('usuario_logado_id', usuario.id)
+formData.append('usuario_logado_id', usuario.id)
 
-  // Receita
-  if (formEdicao.remover_receita) {
-    formData.append('remover_receita', 'true')
-  }
-  if (formEdicao.receita) {
-    formData.append('receita', formEdicao.receita)
-  }
+// Receita
+if (formEdicao.remover_receita) {
+formData.append('remover_receita', 'true')
+}
+if (formEdicao.receita) {
+formData.append('receita', formEdicao.receita)
+}
 
-  // 🔍 Log dos dados enviados
-  console.log('🔍 Enviando para /pedidos/editar:')
-  for (let pair of formData.entries()) {
-    console.log(`${pair[0]}:`, pair[1])
-  }
+// 🔍 Log dos dados enviados
+console.log('🔍 Enviando para /pedidos/editar:')
+for (let pair of formData.entries()) {
+console.log(`${pair[0]}:`, pair[1])
+}
 
-  try {
-    await api.post(`/pedidos/editar/${pedidoId}`, formData)
-    toast.success('Pedido atualizado')
-    setEditandoId(null)
-    carregarPedidos()
-  } catch (err) {
-    console.error('❌ Erro ao editar pedido:', err)
-    toast.error('Erro ao salvar edição')
-  }
+try {
+await api.post(`/pedidos/editar/${pedidoId}`, formData)
+toast.success('Pedido atualizado')
+setEditandoId(null)
+carregarPedidos()
+} catch (err) {
+console.error('❌ Erro ao editar pedido:', err)
+toast.error('Erro ao salvar edição')
+}
 }
 
 return (
@@ -790,9 +819,9 @@ onClick={() => iniciarEdicao(p)}
 {abrirModal && (
 <ModalConfirmacao
 titulo={etapaSelecionada}
+destinoEhResidencia={destinoEhResidencia(pedidoSelecionado)}
 onConfirmar={confirmarEtapa}
 onCancelar={() => setAbrirModal(false)}
-coordenadas={coordenadasModal}
 IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
 />
 )}
