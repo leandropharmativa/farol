@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound, Home, DollarSign
+  SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound
 } from 'lucide-react'
+import api from '../services/api'
 
 export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, IconeEtapa, destinoEhResidencia }) {
   const [codigo, setCodigo] = useState('')
@@ -16,15 +17,33 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
   const [formaPagamento, setFormaPagamento] = useState('')
   const [codigoEntregador, setCodigoEntregador] = useState('')
 
+  const [usuariosEntrega, setUsuariosEntrega] = useState([])
+  const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
+
   const inputRef = useRef(null)
 
   useEffect(() => {
     if (inputRef.current) inputRef.current.focus()
+
+    const ultimoPedido = window.__ULTIMO_PEDIDO_SELECIONADO
+    if (ultimoPedido) {
+      setPedidoSelecionado(ultimoPedido)
+    }
+
+    api.get('/usuarios/todos')
+      .then(res => {
+        const filtrados = res.data.filter(u =>
+          u.permissao_entrega === true || u.permissao_entrega === 'true'
+        )
+        setUsuariosEntrega(filtrados)
+      })
+      .catch(() => setUsuariosEntrega([]))
   }, [])
 
   const etapa = titulo?.toLowerCase()
   const isConferencia = etapa.includes('conferência')
   const isDespachoResidencial = etapa.includes('despacho') && destinoEhResidencia
+  const pagamentoJaFeito = pedidoSelecionado?.status_pagamento
 
   const confirmar = () => {
     if (!codigo.trim()) return
@@ -45,8 +64,8 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
       extras.entrega = {
         nome_paciente: paciente,
         endereco_entrega: endereco,
-        valor_pago: valorPago || null,
-        forma_pagamento: formaPagamento || null,
+        valor_pago: pagamentoJaFeito ? null : valorPago || null,
+        forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
         entregador_codigo: codigoEntregador
       }
     }
@@ -106,30 +125,37 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
               value={endereco}
               onChange={(e) => setEndereco(e.target.value)}
             />
-            <input
-              type="number"
-              placeholder="Valor pago (opcional)"
-              className="w-full rounded-full border border-gray-300 px-3 py-2 text-sm mb-2"
-              value={valorPago}
-              onChange={(e) => setValorPago(e.target.value)}
-            />
+            {!pagamentoJaFeito && (
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="number"
+                  placeholder="Valor"
+                  className="w-1/2 rounded-full border border-gray-300 px-3 py-2 text-sm"
+                  value={valorPago}
+                  onChange={(e) => setValorPago(e.target.value)}
+                />
+                <select
+                  className="w-1/2 rounded-full border border-gray-300 px-3 py-2 text-sm"
+                  value={formaPagamento}
+                  onChange={(e) => setFormaPagamento(e.target.value)}
+                >
+                  <option value="">Pagamento</option>
+                  <option value="PIX">PIX</option>
+                  <option value="Dinheiro">Dinheiro</option>
+                  <option value="Cartão">Cartão</option>
+                </select>
+              </div>
+            )}
             <select
-              className="w-full rounded-full border border-gray-300 px-3 py-2 text-sm mb-2"
-              value={formaPagamento}
-              onChange={(e) => setFormaPagamento(e.target.value)}
-            >
-              <option value="">Forma de pagamento (opcional)</option>
-              <option value="PIX">PIX</option>
-              <option value="Dinheiro">Dinheiro</option>
-              <option value="Cartão">Cartão</option>
-            </select>
-            <input
-              type="text"
-              placeholder="Código do entregador"
               className="w-full rounded-full border border-gray-300 px-3 py-2 text-sm mb-2"
               value={codigoEntregador}
               onChange={(e) => setCodigoEntregador(e.target.value)}
-            />
+            >
+              <option value="">Selecionar entregador</option>
+              {usuariosEntrega.map(u => (
+                <option key={u.id} value={u.codigo}>{u.nome}</option>
+              ))}
+            </select>
           </>
         )}
 
