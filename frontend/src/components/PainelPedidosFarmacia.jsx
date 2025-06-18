@@ -749,7 +749,6 @@ className="text-red-500 animate-pulse cursor-pointer"
     )}
   </>
 )}
-)}
 </div>
 </div>
 </div>
