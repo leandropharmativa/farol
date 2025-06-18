@@ -186,7 +186,6 @@ if (farmaciaId) carregarPedidos()
 
 useEffect(() => {
 if (farmaciaId) {
-carregarPedidos()
 api.get(`/usuarios/${farmaciaId}`).then(r => setUsuarios(r.data))
 api.get(`/locais/${farmaciaId}`).then(r => setLocais(r.data))
 }
