@@ -584,7 +584,7 @@ className="pedido-info text-farol-primary hover:text-farol-secondary"
 </a>
 </Tippy>
 ) : (
-<span className="text-xs text-gray-400 italic">Sem receita</span>
+<span className="text-xs text-gray-400 italic"></span>
 )
 )}
 </div>
