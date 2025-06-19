@@ -678,11 +678,21 @@ if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 const idEtapa = `${p.id}-${et.nome}`
 const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
 
-const handleTooltipShow = async () => {
 setTooltipStates(prev => ({
-...prev,
-[idEtapa]: { loading: true, html: '' }
+  ...prev,
+  [idEtapa]: { loading: false, html }
 }))
+
+// Atualiza status da etapa se ela foi registrada, mesmo que localmente esteja como não feita
+if (logEtapa && !p[et.campo]) {
+  setPedidos(prevPedidos => prevPedidos.map(pedido => {
+    if (pedido.id === p.id) {
+      return { ...pedido, [et.campo]: true }
+    }
+    return pedido
+  }))
+}
+
 try {
 const res = await api.get(`/pedidos/${p.id}/logs`)
 const logs = res.data || []
