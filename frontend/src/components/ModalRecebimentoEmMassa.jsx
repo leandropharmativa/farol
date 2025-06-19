@@ -124,21 +124,22 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
           </div>
         )}
 
-        {destinoSelecionado && (
-          <div className="flex justify-end items-center gap-2 mt-4">
-            <button
-              className="btn-config2"
-              onClick={() => setConfirmar(true)}
-              disabled={carregando}
-              title="Confirmar recebimento"
-            >
-              <Handshake size={20} />
-            </button>
-            <button className="btn-config2" onClick={onClose} title="Fechar">
-              <SquareX size={24} />
-            </button>
-          </div>
-        )}
+{destinoSelecionado && (
+  <div className="flex justify-end items-center gap-2 mt-4">
+    <button className="btn-config2" onClick={onClose} title="Fechar">
+      <SquareX size={24} />
+    </button>
+    <button
+      className="btn-config2"
+      onClick={() => setConfirmar(true)}
+      disabled={carregando}
+      title="Confirmar recebimento"
+    >
+      <Handshake size={20} />
+    </button>
+  </div>
+)}
+
 
         {confirmar && (
           <ModalConfirmacao
