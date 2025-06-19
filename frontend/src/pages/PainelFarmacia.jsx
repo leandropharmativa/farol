@@ -129,14 +129,14 @@ const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getI
   {/* Botões extras ao passar o mouse */}
   <div className="flex flex-col items-end mb-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
     <button
-      className="botao-icone-circular botao-cinza"
+      className="botao-icone-circular botao-cinza text-farol-primary"
       title="Despacho em massa"
       onClick={() => alert('Função de despacho em massa')}
     >
       <Truck size={20} />
     </button>
     <button
-      className="botao-icone-circular botao-cinza"
+      className="botao-icone-circular botao-cinza text-farol-primary"
       title="Recebimento em massa"
       onClick={() => alert('Função de recebimento em massa')}
     >
