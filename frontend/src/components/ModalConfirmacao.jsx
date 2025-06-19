@@ -60,7 +60,12 @@ export default function ModalConfirmacao({
   const confirmar = () => {
     if (!codigo.trim()) return
 
-    const extras = isConferencia
+  if (isConferencia && solidos + semisolidos + saches === 0) {
+  toast.warning('É necessário informar pelo menos 1 item conferido')
+  return
+  }
+
+   const extras = isConferencia
       ? {
           itens_solidos: solidos,
           itens_semisolidos: semisolidos,
