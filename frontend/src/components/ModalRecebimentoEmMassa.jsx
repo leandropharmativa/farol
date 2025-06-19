@@ -1,7 +1,7 @@
 // frontend/src/components/ModalRecebimentoEmMassa.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { SquareX, LoaderCircle, Handshake, MapPinned, Square, SquareCheck } from 'lucide-react'
+import { SquareX, LoaderCircle, Handshake, Square, SquareCheck } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -111,19 +111,13 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
         {carregando ? (
           <div className="text-white flex gap-2 items-center"><LoaderCircle className="animate-spin" /> Carregando...</div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="flex flex-col gap-2">
             {pedidos.map(p => {
               const selecionado = selecionados.includes(p.id)
               return (
-                <div key={p.id} className="bg-farol-primary px-3 py-2 rounded border border-white/20 text-white">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      <button onClick={() => toggleSelecionado(p.id)}>
-                        {selecionado ? <SquareCheck size={18} /> : <Square size={18} />}
-                      </button>
-                      <span className="text-sm">{p.registro}</span>
-                    </div>
-                  </div>
+                <div key={p.id} className="flex items-center gap-2 text-white text-sm cursor-pointer" onClick={() => toggleSelecionado(p.id)}>
+                  {selecionado ? <SquareCheck size={18} /> : <Square size={18} />}
+                  <span>{p.registro}</span>
                 </div>
               )
             })}
@@ -131,7 +125,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
         )}
 
         {destinoSelecionado && (
-          <div className="flex justify-between items-center mt-4">
+          <div className="flex justify-end items-center gap-2 mt-4">
             <button
               className="btn-config2"
               onClick={() => setConfirmar(true)}
@@ -140,7 +134,6 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
             >
               <Handshake size={20} />
             </button>
-
             <button className="btn-config2" onClick={onClose} title="Fechar">
               <SquareX size={24} />
             </button>
