@@ -133,14 +133,14 @@ const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getI
       title="Despacho em massa"
       onClick={() => alert('Função de despacho em massa')}
     >
-      <Truck size={20} />
+      <Truck size={20} className="text-farol-primary" />
     </button>
     <button
-      className="botao-icone-circular botao-cinza text-farol-primary"
+      className="botao-icone-circular botao-cinza"
       title="Recebimento em massa"
       onClick={() => alert('Função de recebimento em massa')}
     >
-      <Handshake size={20} />
+      <Handshake size={20} className="text-farol-primary" />
     </button>
   </div>
 
