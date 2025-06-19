@@ -345,10 +345,10 @@ def listar_logs_pedido(pedido_id: int):
                 l.itens_solidos,
                 l.itens_semisolidos,
                 l.itens_saches,
-                COALESCE(u1.nome, '') AS usuario_logado,
-                COALESCE(u2.nome, '') AS usuario_confirmador
+                COALESCE(u1.nome, 'Desconhecido') AS usuario_logado,
+                COALESCE(u2.nome, 'Desconhecido') AS usuario_confirmador
             FROM farol_farmacia_pedido_logs l
-            JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
+            LEFT JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
             LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
             WHERE l.pedido_id = %s
             ORDER BY l.data_hora DESC
@@ -358,6 +358,7 @@ def listar_logs_pedido(pedido_id: int):
         colunas = [desc[0] for desc in cursor.description]
         return [dict(zip(colunas, row)) for row in cursor.fetchall()]
     except Exception as e:
+        print(f"[ERRO] Falha ao buscar logs do pedido {pedido_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro ao buscar logs: {str(e)}")
 
 @router.get("/pedidos/{pedido_id}")
