@@ -35,7 +35,7 @@ export default function ModalConfirmacao({
   const etapa = titulo?.toLowerCase()
   const isConferencia = etapa.includes('conferência')
   const isDespachoResidencial = etapa.includes('despacho') && destinoEhResidencia
-  const isDespachoMassa = etapa.includes('despacho') && totalPedidos && destino
+  const isMassa = totalPedidos && destino
   const pagamentoJaFeito = pedidoSelecionado?.status_pagamento
 
   useEffect(() => {
@@ -130,15 +130,18 @@ export default function ModalConfirmacao({
         />
 
         {/* Info extra para despacho em massa */}
-        {isDespachoMassa && (
-          <div className="text-xs text-gray-600 mb-2 pl-1">
-            <div className="flex items-center gap-1 mb-1">
-              <MapPinned size={14} className="text-farol-primary" />
-              <span>{destino}</span>
-            </div>
-            <span className="text-[11px] text-gray-500 ml-[22px]">{totalPedidos} pedidos selecionados</span>
-          </div>
-        )}
+{isMassa && (
+  <div className="text-xs text-gray-600 mb-2 pl-1">
+    <div className="flex items-center gap-1 mb-1">
+      <MapPinned size={14} className="text-farol-primary" />
+      <span>{destino}</span>
+    </div>
+    <span className="text-[11px] text-gray-500 ml-[22px]">
+      {totalPedidos} pedidos selecionados
+    </span>
+  </div>
+)}
+
 
         {isDespachoResidencial && (
           <>
