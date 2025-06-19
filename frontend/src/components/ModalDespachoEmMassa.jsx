@@ -1,7 +1,7 @@
 //frontend/src/components/ModalDespachoEmMassa.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { SquareX, LoaderCircle, Truck, MapPinned } from 'lucide-react'
+import { SquareX, LoaderCircle, Truck, MapPinned, Square, SquareCheck } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 
@@ -101,16 +101,23 @@ return createPortal(
                 {destino}
               </h3>
               <ul className="space-y-1 text-white text-sm mb-3">
-                {lista.map(p => (
-                  <li key={p.id} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      defaultChecked={true}
-                      onChange={() => toggleSelecionado(destino, p.id)}
-                    />
-                    <span>{p.registro}</span>
-                  </li>
-                ))}
+                {lista.map(p => {
+                  const selecionado = selecionadosPorDestino[destino]?.includes(p.id)
+                  return (
+                    <li
+                      key={p.id}
+                      className="flex items-center gap-2 cursor-pointer"
+                      onClick={() => toggleSelecionado(destino, p.id)}
+                    >
+                      {selecionado ? (
+                        <SquareCheck className="text-farol-linecolor" size={18} />
+                      ) : (
+                        <Square className="text-farol-secondary" size={18} />
+                      )}
+                      <span>{p.registro}</span>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
             <div className="flex justify-start">
