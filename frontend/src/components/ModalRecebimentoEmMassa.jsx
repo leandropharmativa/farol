@@ -4,6 +4,8 @@ import { createPortal } from 'react-dom'
 import { SquareX, LoaderCircle, Handshake, Square, SquareCheck } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
+import { Listbox } from '@headlessui/react'
+import { Check, ChevronDown } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 
 export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, usuarioLogado }) {
@@ -97,16 +99,42 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
       >
         <h2 className="text-white text-base font-bold mb-2">Recebimento em Massa</h2>
 
-<select
-  className="mb-4 w-full text-sm bg-white border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-farol-primary"
-  value={destinoSelecionado}
-  onChange={(e) => setDestinoSelecionado(e.target.value)}
->
-  <option value="" disabled>Selecione o destino</option>
-  {locais.map(l => (
-    <option key={l.id} value={l.nome}>{l.nome}</option>
-  ))}
-</select>
+<Listbox value={destinoSelecionado} onChange={setDestinoSelecionado}>
+  <div className="relative mb-4">
+    <Listbox.Button className="w-full rounded-full border border-gray-300 bg-white py-2 px-4 text-sm text-left shadow-sm cursor-pointer flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-farol-primary">
+      <span>{destinoSelecionado || 'Selecione o destino'}</span>
+      <ChevronDown size={18} className="text-gray-400" />
+    </Listbox.Button>
+
+    <Listbox.Options className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+      {locais.map((local) => (
+        <Listbox.Option
+          key={local.id}
+          value={local.nome}
+          className={({ active }) =>
+            `cursor-pointer select-none relative py-2 pl-10 pr-4 ${
+              active ? 'bg-farol-primary/10 text-farol-primary' : 'text-gray-700'
+            }`
+          }
+        >
+          {({ selected }) => (
+            <>
+              <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
+                {local.nome}
+              </span>
+              {selected ? (
+                <span className="absolute inset-y-0 left-2 flex items-center text-farol-primary">
+                  <Check size={16} />
+                </span>
+              ) : null}
+            </>
+          )}
+        </Listbox.Option>
+      ))}
+    </Listbox.Options>
+  </div>
+</Listbox>
+
 
 
         {carregando ? (
