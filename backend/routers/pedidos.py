@@ -353,10 +353,14 @@ def listar_logs_pedido(pedido_id: int):
             WHERE l.pedido_id = %s
             ORDER BY l.data_hora DESC
         """, (pedido_id,))
-        if cursor.description is None:
+        
+        linhas = cursor.fetchall()
+        if not linhas:
             return []
+
         colunas = [desc[0] for desc in cursor.description]
-        return [dict(zip(colunas, row)) for row in cursor.fetchall()]
+        return [dict(zip(colunas, row)) for row in linhas]
+    
     except Exception as e:
         print(f"[ERRO] Falha ao buscar logs do pedido {pedido_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro ao buscar logs: {str(e)}")
