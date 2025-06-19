@@ -67,7 +67,6 @@ toast.error('Erro ao carregar pedidos')
 useEffect(() => {
 const carregarLogs = async () => {
 const novosLogs = {}
-
 await Promise.all(
 pedidos.map(async (p) => {
 try {
@@ -78,30 +77,13 @@ novosLogs[p.id] = []
 }
 })
 )
-
 setLogsPorPedido(novosLogs)
-
-// Atualiza campos de etapa com base nos logs
-setPedidos(prevPedidos =>
-prevPedidos.map(p => {
-const logs = novosLogs[p.id] || []
-const atualizado = { ...p }
-
-etapas.forEach(et => {
-const logExiste = logs.some(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
-if (logExiste) atualizado[et.campo] = true
-})
-
-return atualizado
-})
-)
 }
 
 if (pedidos.length > 0) {
 carregarLogs()
 }
 }, [pedidos])
-
 
 const etapas = [
 { campo: 'status_impressao', nome: 'Impressão', icone: Printer, permissao: 'permissao_impressao' },
@@ -701,25 +683,13 @@ setTooltipStates(prev => ({
 ...prev,
 [idEtapa]: { loading: true, html: '' }
 }))
-
 try {
 const res = await api.get(`/pedidos/${p.id}/logs`)
 const logs = res.data || []
 const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
 
-// Recupera o pedido mais atualizado
-const pedidoAtual = pedidos.find(pedido => pedido.id === p.id)
-
-if (logEtapa && !pedidoAtual?.[et.campo]) {
-setPedidos(prev =>
-prev.map(pedido =>
-pedido.id === p.id ? { ...pedido, [et.campo]: true } : pedido
-)
-)
-}
-
 let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
-if (logEtapa?.data_hora && logEtapa.usuario_confirmador) {
+if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
 const dt = new Date(logEtapa.data_hora)
 const data = dt.toLocaleDateString('pt-BR')
 const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
@@ -757,7 +727,6 @@ setTooltipStates(prev => ({
 }
 }
 
-
 return (
 <Tippy
 key={et.campo}
@@ -772,30 +741,16 @@ tooltip.loading ? (
 <span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
 <span className="font-semibold text-farol-primary block mb-1">Etapa bloqueada</span>
 <span className="text-[11px] text-gray-600">
-{ativo
-? ''
-: (!p.status_conferencia && et.nome === 'Produção') ||
-(!p.status_producao && et.nome === 'Despacho') ||
-(!p.status_despacho && et.nome === 'Recebimento') ||
-((et.nome === 'Entrega') &&
-(
-locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
-? !p.status_despacho
-: !p.status_recebimento
-))
-? 'Aguardando conclusão de etapas anteriores para liberar esta etapa.'
-: `Aguardando ${et.nome}`
-}
+Aguardando conclusão de etapas anteriores para liberar esta etapa.
 </span>
 </span>
-
 
 ) : (
 <span dangerouslySetInnerHTML={{ __html: tooltip.html || `<span class='text-[10px] text-farol-secondary'>Aguardando ${et.nome}</span>` }} />
 )
 }
 onShow={() => {
-if (ativo || !podeExecutar) handleTooltipShow()
+if (podeExecutar || ativo) handleTooltipShow()
 }}
 placement="top-end"
 animation="text"
