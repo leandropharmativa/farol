@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound,
-  Truck, MapPinned
+  SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound, MapPinned
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
@@ -13,8 +12,8 @@ export default function ModalConfirmacao({
   IconeEtapa,
   destinoEhResidencia,
   farmaciaId,
-  destino = '',
-  totalPedidos = 0
+  totalPedidos,
+  destino
 }) {
   const [codigo, setCodigo] = useState('')
   const [obs, setObs] = useState('')
@@ -35,6 +34,7 @@ export default function ModalConfirmacao({
   const etapa = titulo?.toLowerCase()
   const isConferencia = etapa.includes('conferência')
   const isDespachoResidencial = etapa.includes('despacho') && destinoEhResidencia
+  const isDespachoMassa = etapa.includes('despacho') && totalPedidos && destino
   const pagamentoJaFeito = pedidoSelecionado?.status_pagamento
 
   useEffect(() => {
@@ -91,17 +91,11 @@ export default function ModalConfirmacao({
           <X size={20} />
         </button>
 
-        <div className="flex items-center gap-2 mb-1 leading-tight">
-          <Truck size={18} className="text-farol-primary" />
+        <div className="flex items-center gap-2 mb-3 leading-tight">
+          {IconeEtapa && <IconeEtapa size={18} className="text-farol-primary" />}
           <span className="text-sm font-semibold text-farol-primary relative top-[1px]">
-            {titulo.replace(/^confirmar\s*/i, '').trim()}
+            Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
           </span>
-        </div>
-
-        <div className="flex items-center gap-1 mb-3 text-xs text-gray-700">
-          <MapPinned size={14} className="text-farol-primary" />
-          <span className="font-semibold">{destino}</span>
-          <span>– {totalPedidos} pedido{totalPedidos > 1 ? 's' : ''}</span>
         </div>
 
         <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mb-2">
@@ -123,6 +117,17 @@ export default function ModalConfirmacao({
           value={obs}
           onChange={(e) => setObs(e.target.value)}
         />
+
+        {/* Info extra para despacho em massa */}
+        {isDespachoMassa && (
+          <div className="text-xs text-gray-600 mb-2 pl-1">
+            <div className="flex items-center gap-1 mb-1">
+              <MapPinned size={14} className="text-farol-primary" />
+              <span>{destino}</span>
+            </div>
+            <span className="text-[11px] text-gray-500 ml-[22px]">{totalPedidos} pedidos selecionados</span>
+          </div>
+        )}
 
         {isDespachoResidencial && (
           <>
