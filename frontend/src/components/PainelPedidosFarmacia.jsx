@@ -678,6 +678,7 @@ if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 const idEtapa = `${p.id}-${et.nome}`
 const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
 
+const handleTooltipShow = async () => {
 setTooltipStates(prev => ({
   ...prev,
   [idEtapa]: { loading: false, html }
