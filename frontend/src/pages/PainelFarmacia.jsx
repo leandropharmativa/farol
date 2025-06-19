@@ -9,6 +9,8 @@ import {
   TowerControl,
   Sun,
   UserRound,
+  TruckEletric,
+  Handshake,
 } from 'lucide-react'
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 import ModalNovoPedido from '../components/ModalNovoPedido'
@@ -114,24 +116,43 @@ const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getI
       <NovosPedidosStream farmaciaId={farmaciaId} />
       <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} filtroRegistro={filtroRegistro} emailFarmacia={emailFarmacia} />
 
-      {/* Botão de incluir pedido com transição de subida */}
-      <div
-        className={`fixed right-6 z-40 transition-all duration-300 ${
-          menuAberto
-            ? tipoLogin === 'usuario'
-              ? 'bottom-[8.5rem]'
-              : 'bottom-[12rem]'
-            : 'bottom-20'
-        }`}
-      >
-        <button
-          className="botao-icone-circular botao-azul z-40"
-          title="Incluir Pedido"
-          onClick={() => setModalPedidoAberto(true)}
-        >
-          <PackagePlus size={26} />
-        </button>
-      </div>
+{/* Botão de incluir pedido com submenu */}
+<div
+  className={`fixed right-6 z-40 group transition-all duration-300 ${
+    menuAberto
+      ? tipoLogin === 'usuario'
+        ? 'bottom-[8.5rem]'
+        : 'bottom-[12rem]'
+      : 'bottom-20'
+  }`}
+>
+  {/* Botões extras ao passar o mouse */}
+  <div className="flex flex-col items-end mb-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
+    <button
+      className="botao-icone-circular botao-cinza"
+      title="Despacho em massa"
+      onClick={() => alert('Função de despacho em massa')}
+    >
+      <Truck size={20} />
+    </button>
+    <button
+      className="botao-icone-circular botao-cinza"
+      title="Recebimento em massa"
+      onClick={() => alert('Função de recebimento em massa')}
+    >
+      <Handshake size={20} />
+    </button>
+  </div>
+
+  {/* Botão principal */}
+  <button
+    className="botao-icone-circular botao-azul z-40"
+    title="Incluir Pedido"
+    onClick={() => setModalPedidoAberto(true)}
+  >
+    <PackagePlus size={26} />
+  </button>
+</div>
 
       {/* Menu flutuante com animação */}
       <div
