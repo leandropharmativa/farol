@@ -87,7 +87,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
 
 return createPortal(
   <div
-    className="modal-overlay right-align modal-novo-pedido"
+    className="modal-overlay right-align"
     onClick={onClose}
   >
     <div
