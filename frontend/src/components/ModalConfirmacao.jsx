@@ -1,11 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
 import {
-  SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound
+  SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound,
+  Truck, MapPinned
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 
-export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, IconeEtapa, destinoEhResidencia, farmaciaId }) {
+export default function ModalConfirmacao({
+  titulo,
+  onConfirmar,
+  onCancelar,
+  IconeEtapa,
+  destinoEhResidencia,
+  farmaciaId,
+  destino = '',
+  totalPedidos = 0
+}) {
   const [codigo, setCodigo] = useState('')
   const [obs, setObs] = useState('')
   const [solidos, setSolidos] = useState(0)
@@ -81,14 +91,19 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
           <X size={20} />
         </button>
 
-        <div className="flex items-center gap-2 mb-3 leading-tight">
-          {IconeEtapa && <IconeEtapa size={18} className="text-farol-primary" />}
+        <div className="flex items-center gap-2 mb-1 leading-tight">
+          <Truck size={18} className="text-farol-primary" />
           <span className="text-sm font-semibold text-farol-primary relative top-[1px]">
-            Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
+            {titulo.replace(/^confirmar\s*/i, '').trim()}
           </span>
         </div>
 
-        {/* Campo código do usuário */}
+        <div className="flex items-center gap-1 mb-3 text-xs text-gray-700">
+          <MapPinned size={14} className="text-farol-primary" />
+          <span className="font-semibold">{destino}</span>
+          <span>– {totalPedidos} pedido{totalPedidos > 1 ? 's' : ''}</span>
+        </div>
+
         <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mb-2">
           <UserRound className="text-gray-400 mr-2" size={16} />
           <input
@@ -109,7 +124,6 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
           onChange={(e) => setObs(e.target.value)}
         />
 
-        {/* Campos extras para despacho residencial */}
         {isDespachoResidencial && (
           <>
             <input
@@ -160,7 +174,6 @@ export default function ModalConfirmacao({ titulo, onConfirmar, onCancelar, Icon
           </>
         )}
 
-        {/* Contadores para conferência */}
         {isConferencia && (
           <div className="flex gap-2 mt-2">
             <div className="contador-mini">
