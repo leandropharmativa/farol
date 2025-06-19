@@ -123,37 +123,6 @@ const etapa = etapaSelecionada
 const etapaLower = etapa.toLowerCase()
 
 // Primeiro, confirmar a etapa no backend
-const formData = new FormData()
-formData.append('etapa', etapa)
-formData.append('usuario_logado_id', usuarioLogado?.id || 0)
-formData.append('codigo_confirmacao', codigo)
-formData.append('observacao', observacao)
-
-// Se for conferência, adicionar os itens
-if (extras.itens_solidos !== undefined) formData.append('itens_solidos', extras.itens_solidos)
-if (extras.itens_semisolidos !== undefined) formData.append('itens_semisolidos', extras.itens_semisolidos)
-if (extras.itens_saches !== undefined) formData.append('itens_saches', extras.itens_saches)
-
-await api.post(`/pedidos/${pedidoSelecionado}/registrar-etapa`, formData)
-
-// ✅ Se for entrega residencial no despacho, registrar entrega
-if (
-etapaLower === 'despacho' &&
-extras.entrega &&
-destinoEhResidencia(pedidos.find(p => p.id === pedidoSelecionado))
-) {
-const entrega = extras.entrega
-await api.post('/entregas/registrar', {
-pedido_id: pedidoSelecionado.id,
-farmacia_id: farmaciaId,
-nome_paciente: entrega.nome_paciente,
-endereco_entrega: entrega.endereco_entrega,
-valor_pago: entrega.valor_pago || null,
-forma_pagamento: entrega.forma_pagamento || null,
-entregador_codigo: entrega.entregador_codigo,
-})
-}
-
 // Atualiza tooltip manualmente com novo log
 const dt = new Date()
 const data = dt.toLocaleDateString('pt-BR')
@@ -181,19 +150,27 @@ const novoTooltipHTML = `
 `
 
 setTooltipStates(prev => ({
-...prev,
-[idEtapa]: { loading: false, html: novoTooltipHTML }
+  ...prev,
+  [idEtapa]: { loading: false, html: novoTooltipHTML }
 }))
+
+// ✅ Aqui atualiza imediatamente o status visual do pedido
+setPedidos(prev =>
+  prev.map(p => p.id === pedidoSelecionado
+    ? { ...p, [etapas.find(e => e.nome === etapaSelecionada)?.campo]: true }
+    : p
+  )
+)
 
 toast.success(`Etapa '${etapa}' registrada com sucesso`)
 setAbrirModal(false)
 carregarPedidos()
+
 } catch (err) {
 console.error(err)
 toast.error('Erro ao registrar etapa')
 }
 }
-
 
 useEffect(() => {
 if (!farmaciaId) return
