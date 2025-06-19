@@ -683,25 +683,25 @@ const handleTooltipShow = async () => {
     ...prev,
     [idEtapa]: { loading: true, html: '' }
   }))
+
   try {
     const res = await api.get(`/pedidos/${p.id}/logs`)
     const logs = res.data || []
     const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
 
-    // 🟢 Se a etapa foi concluída, atualiza visualmente o status do pedido
-    if (logEtapa && !p[et.campo]) {
+    // Recupera o pedido mais atualizado
+    const pedidoAtual = pedidos.find(pedido => pedido.id === p.id)
+
+    if (logEtapa && !pedidoAtual?.[et.campo]) {
       setPedidos(prev =>
-        prev.map(pedido => {
-          if (pedido.id === p.id) {
-            return { ...pedido, [et.campo]: true }
-          }
-          return pedido
-        })
+        prev.map(pedido =>
+          pedido.id === p.id ? { ...pedido, [et.campo]: true } : pedido
+        )
       )
     }
 
     let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
-    if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
+    if (logEtapa?.data_hora && logEtapa.usuario_confirmador) {
       const dt = new Date(logEtapa.data_hora)
       const data = dt.toLocaleDateString('pt-BR')
       const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
