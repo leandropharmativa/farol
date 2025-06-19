@@ -1,4 +1,3 @@
-
 // frontend/src/components/PainelPedidosFarmacia.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
@@ -739,15 +738,11 @@ tooltip.loading ? (
 ) : ativo ? (
 <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
 ) : !podeExecutar ? (
-<span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
-<span className="font-semibold text-farol-primary block mb-1">Etapa bloqueada</span>
-<span className="text-[11px] text-gray-600">
-Aguardando conclusão de etapas anteriores para liberar esta etapa.
+<span className="text-[11px] text-red-500 font-medium">
+Aguardando conclusão de etapas anteriores
 </span>
-</span>
-
 ) : (
-<span dangerouslySetInnerHTML={{ __html: tooltip.html || `<span class='text-[10px] text-farol-secondary'>Aguardando ${et.nome}</span>` }} />
+<span dangerouslySetInnerHTML={{ __html: tooltip.html || `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>` }} />
 )
 }
 onShow={() => {
