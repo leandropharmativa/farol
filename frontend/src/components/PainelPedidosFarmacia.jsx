@@ -1,3 +1,4 @@
+
 // frontend/src/components/PainelPedidosFarmacia.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
@@ -143,7 +144,7 @@ destinoEhResidencia(pedidos.find(p => p.id === pedidoSelecionado))
 ) {
 const entrega = extras.entrega
 await api.post('/entregas/registrar', {
-pedido_id: pedidoSelecionado,
+pedido_id: pedidoSelecionado.id,
 farmacia_id: farmaciaId,
 nome_paciente: entrega.nome_paciente,
 endereco_entrega: entrega.endereco_entrega,
@@ -440,7 +441,7 @@ return (
 <hr className="my-1 border-t border-gray-300" />
 <div className="flex items-center gap-1 mb-0.5">
 <User size={12} className="text-gray-500" />
-<span>{log.usuario_confirmador || '—'}</span>
+<span>{log.usuario_confirmador}</span>
 </div>
 <div className="flex items-center gap-1">
 <Calendar size={12} className="text-gray-500" />
@@ -467,7 +468,7 @@ delay={[200, 0]}
 <span>{p.registro}</span>
 
 {logsPorPedido[p.id]?.map((log, i) => {
-const etapa = (log.etapa || '').toLowerCase()
+const etapa = log.etapa?.toLowerCase()
 if (etapa !== 'conferência') return null
 
 const { itens_solidos = 0, itens_semisolidos = 0, itens_saches = 0 } = log
