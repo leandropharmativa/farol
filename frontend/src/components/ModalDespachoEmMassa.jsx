@@ -129,7 +129,7 @@ return createPortal(
         ))}
       </div>
 
-      <div className="flex justify-end mt-6">
+      <div className="flex justify-end mt-2">
         <button className="btn-config2" onClick={onClose} title="Fechar">
           <SquareX size={24} />
         </button>
