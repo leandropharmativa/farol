@@ -738,35 +738,27 @@ tooltip.loading ? (
 ) : ativo ? (
 <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
 ) : !podeExecutar ? (
-  <>
-    {
-      // Verifica se a etapa ainda depende de outra anterior
-      (!p.status_conferencia && et.nome === 'Produção') ||
-      (!p.status_producao && et.nome === 'Despacho') ||
-      (!p.status_despacho && et.nome === 'Recebimento') ||
-      (
-        et.nome === 'Entrega' &&
-        (
-          locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
-            ? !p.status_despacho
-            : !p.status_recebimento
-        )
-      )
-    ? (
-      <span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
-        <span className="text-[11px] text-gray-600">
-          Aguardando conclusão de etapas anteriores para liberar esta etapa.
-        </span>
-      </span>
-    ) : (
-      <span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
-        <span className="font-semibold text-farol-primary block mb-1">Etapa bloqueada</span>
-        <span className="text-[11px] text-gray-600">
-          Aguardando {et.nome}
-        </span>
-      </span>
-    )}
-  </>
+<span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
+<span className="font-semibold text-farol-primary block mb-1">Etapa bloqueada</span>
+<span className="text-[11px] text-gray-600">
+{ativo
+? ''
+: (!p.status_conferencia && et.nome === 'Produção') ||
+(!p.status_producao && et.nome === 'Despacho') ||
+(!p.status_despacho && et.nome === 'Recebimento') ||
+((et.nome === 'Entrega') &&
+(
+locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
+? !p.status_despacho
+: !p.status_recebimento
+))
+? 'Aguardando conclusão de etapas anteriores para liberar esta etapa.'
+: `Aguardando ${et.nome}`
+}
+</span>
+</span>
+
+
 ) : (
 <span dangerouslySetInnerHTML={{ __html: tooltip.html || `<span class='text-[10px] text-farol-secondary'>Aguardando ${et.nome}</span>` }} />
 )
