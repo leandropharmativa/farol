@@ -130,4 +130,4 @@ return createPortal(
   </div>,
   modalRoot
 )
-
+}
