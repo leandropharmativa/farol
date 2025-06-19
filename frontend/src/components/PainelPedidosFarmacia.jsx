@@ -738,10 +738,11 @@ tooltip.loading ? (
 ) : ativo ? (
 <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
 ) : !podeExecutar ? (
+<span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
+<span className="font-semibold text-farol-primary block mb-1">Etapa bloqueada</span>
 <span className="text-[11px] text-gray-600">
-  {usuarioLogado?.[et.permissao] !== true && usuarioLogado?.[et.permissao] !== 'true'
-    ? `Aguardando ${et.nome}`
-    : 'Aguardando conclusão de etapas anteriores para liberar esta etapa.'}
+Aguardando conclusão de etapas anteriores para liberar esta etapa.
+</span>
 </span>
 
 ) : (
