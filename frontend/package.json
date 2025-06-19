@@ -20,6 +20,7 @@
     "postcss": "^8.4.21",
     "autoprefixer": "^10.4.14",
     "@tippyjs/react": "^4.2.6",
+    "@headlessui/react": "^2.1",
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
