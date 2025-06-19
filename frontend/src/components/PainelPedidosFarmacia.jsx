@@ -663,15 +663,15 @@ if (et.nome === 'Produção' && !p.status_conferencia) podeExecutar = false
 if (et.nome === 'Despacho' && !p.status_producao) podeExecutar = false
 
 if (et.nome === 'Entrega') {
-  const destinoResidencial = locais.find(l =>
-    l.nome === p.destino_nome || l.nome === p.destino?.nome
-  )?.residencia
+const destinoResidencial = locais.find(l =>
+l.nome === p.destino_nome || l.nome === p.destino?.nome
+)?.residencia
 
-  if (destinoResidencial) {
-    if (!p.status_despacho) podeExecutar = false
-  } else {
-    if (!p.status_recebimento) podeExecutar = false
-  }
+if (destinoResidencial) {
+if (!p.status_despacho) podeExecutar = false
+} else {
+if (!p.status_recebimento) podeExecutar = false
+}
 }
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
@@ -680,19 +680,9 @@ const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
 
 const handleTooltipShow = async () => {
 setTooltipStates(prev => ({
-  ...prev,
-  [idEtapa]: { loading: false, html }
+...prev,
+[idEtapa]: { loading: true, html: '' }
 }))
-
-// Atualiza status da etapa se ela foi registrada, mesmo que localmente esteja como não feita
-if (logEtapa && !p[et.campo]) {
-  setPedidos(prevPedidos => prevPedidos.map(pedido => {
-    if (pedido.id === p.id) {
-      return { ...pedido, [et.campo]: true }
-    }
-    return pedido
-  }))
-}
 
 try {
 const res = await api.get(`/pedidos/${p.id}/logs`)
@@ -726,6 +716,15 @@ ${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observa
 </div>`
 }
 
+// ✅ Atualiza status da etapa se detectado no log
+if (logEtapa && !p[et.campo]) {
+setPedidos(prevPedidos =>
+prevPedidos.map(pedido =>
+pedido.id === p.id ? { ...pedido, [et.campo]: true } : pedido
+)
+)
+}
+
 setTooltipStates(prev => ({
 ...prev,
 [idEtapa]: { loading: false, html }
@@ -737,6 +736,7 @@ setTooltipStates(prev => ({
 }))
 }
 }
+
 
 return (
 <Tippy
