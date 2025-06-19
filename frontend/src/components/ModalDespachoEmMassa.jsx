@@ -99,7 +99,7 @@ return createPortal(
         {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
           <div
             key={destino}
-            className="bg-farol-primary border-r border-white/50 rounded-none px-4 py-3 w-[160px] min-h-[220px] flex flex-col justify-between"
+            className="bg-farol-primary border-white/50 last:border-r-0 border-r rounded-none px-4 py-3 w-[150px] min-h-[220px] flex flex-col justify-between"
           >
             <div>
               <h3 className="text-white text-sm font-semibold flex items-center gap-1 mb-2">
