@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 import ModalNovoPedido from '../components/ModalNovoPedido'
+import ModalDespachoEmMassa from '../components/ModalDespachoEmMassa'
 import PainelPedidosFarmacia from '../components/PainelPedidosFarmacia'
 import NovosPedidosStream from '../components/NovosPedidosStream'
 
@@ -22,6 +23,7 @@ export default function PainelFarmacia() {
   const [menuAberto, setMenuAberto] = useState(false)
   const [modalConfiguracoesAberto, setModalConfiguracoesAberto] = useState(false)
   const [modalPedidoAberto, setModalPedidoAberto] = useState(false)
+  const [modalDespachoAberto, setModalDespachoAberto] = useState(false)
   const menuRef = useRef(null)
 
   const emailLogado = (localStorage.getItem('email') || '').trim().toLowerCase()
@@ -71,101 +73,92 @@ export default function PainelFarmacia() {
     }
   }, [modalConfiguracoesAberto])
 
-const usuarioLogado = {
-  id: localStorage.getItem('usuarioId'),
-  nome: localStorage.getItem('nomeUsuario'),
-  email: localStorage.getItem('email'),
-  permissao_impressao: localStorage.getItem('permissao_impressao') === 'true',
-  permissao_conferencia: localStorage.getItem('permissao_conferencia') === 'true',
-  permissao_producao: localStorage.getItem('permissao_producao') === 'true',
-  permissao_despacho: localStorage.getItem('permissao_despacho') === 'true',
-  permissao_recebimento: localStorage.getItem('permissao_recebimento') === 'true',
-  permissao_entrega: localStorage.getItem('permissao_entrega') === 'true',
-  permissao_registrar_pagamento: localStorage.getItem('permissao_registrar_pagamento') === 'true',
-}
+  const usuarioLogado = {
+    id: localStorage.getItem('usuarioId'),
+    nome: localStorage.getItem('nomeUsuario'),
+    email: localStorage.getItem('email'),
+    permissao_impressao: localStorage.getItem('permissao_impressao') === 'true',
+    permissao_conferencia: localStorage.getItem('permissao_conferencia') === 'true',
+    permissao_producao: localStorage.getItem('permissao_producao') === 'true',
+    permissao_despacho: localStorage.getItem('permissao_despacho') === 'true',
+    permissao_recebimento: localStorage.getItem('permissao_recebimento') === 'true',
+    permissao_entrega: localStorage.getItem('permissao_entrega') === 'true',
+    permissao_registrar_pagamento: localStorage.getItem('permissao_registrar_pagamento') === 'true',
+  }
 
-const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getItem('email')
+  const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getItem('email')
 
   return (
     <div className="painel-container">
-    <header className="painel-header flex flex-wrap gap-4 items-center justify-between">
-      <div className="flex items-center gap-4">
-      <h1 className="painel-titulo fonte-pacifico text-2xl">{nomeFarmacia}</h1>
-
-<div className="flex items-center bg-white rounded-full p-4 px-3 py-1 shadow-sm">
-  <Search size={16} className="text-gray-500 mr-2" />
-  <input
-    type="text"
-    placeholder="Buscar por registro..."
-    value={filtroRegistro}
-    onChange={e => setFiltroRegistro(e.target.value)}
-    className="input-busca-redonda"
-  />
-</div>
-
-    </div>
-
-      {tipoLogin === 'usuario' && (
-      <p className="text-sm text-gray-600 flex items-center gap-1">
-      <UserRound size={16} /> {nomeUsuario}
-      </p>
-      )}
+      <header className="painel-header flex flex-wrap gap-4 items-center justify-between">
+        <div className="flex items-center gap-4">
+          <h1 className="painel-titulo fonte-pacifico text-2xl">{nomeFarmacia}</h1>
+          <div className="flex items-center bg-white rounded-full p-4 px-3 py-1 shadow-sm">
+            <Search size={16} className="text-gray-500 mr-2" />
+            <input
+              type="text"
+              placeholder="Buscar por registro..."
+              value={filtroRegistro}
+              onChange={e => setFiltroRegistro(e.target.value)}
+              className="input-busca-redonda"
+            />
+          </div>
+        </div>
+        {tipoLogin === 'usuario' && (
+          <p className="text-sm text-gray-600 flex items-center gap-1">
+            <UserRound size={16} /> {nomeUsuario}
+          </p>
+        )}
       </header>
 
-      {/* Lista de pedidos do dia */}
       <NovosPedidosStream farmaciaId={farmaciaId} />
-      <PainelPedidosFarmacia farmaciaId={farmaciaId} usuarioLogado={usuarioLogado} filtroRegistro={filtroRegistro} emailFarmacia={emailFarmacia} />
+      <PainelPedidosFarmacia
+        farmaciaId={farmaciaId}
+        usuarioLogado={usuarioLogado}
+        filtroRegistro={filtroRegistro}
+        emailFarmacia={emailFarmacia}
+      />
 
-{/* Botão de incluir pedido com submenu */}
-<div
-  className={`fixed right-6 z-40 group transition-all duration-300 ${
-    menuAberto
-      ? tipoLogin === 'usuario'
-        ? 'bottom-[8.5rem]'
-        : 'bottom-[12rem]'
-      : 'bottom-20'
-  }`}
->
-  {/* Botões extras ao passar o mouse */}
-  <div className="flex flex-col items-end mb-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
-    <button
-      className="botao-icone-circular botao-cinza text-farol-primary"
-      title="Despacho em massa"
-      onClick={() => alert('Função de despacho em massa')}
-    >
-      <Truck size={20} className="text-farol-primary" />
-    </button>
-    <button
-      className="botao-icone-circular botao-cinza"
-      title="Recebimento em massa"
-      onClick={() => alert('Função de recebimento em massa')}
-    >
-      <Handshake size={20} className="text-farol-primary" />
-    </button>
-  </div>
-
-  {/* Botão principal */}
-  <button
-    className="botao-icone-circular botao-azul z-40"
-    title="Incluir Pedido"
-    onClick={() => setModalPedidoAberto(true)}
-  >
-    <PackagePlus size={26} />
-  </button>
-</div>
-
-      {/* Menu flutuante com animação */}
+      {/* Botão flutuante com submenu */}
       <div
-        ref={menuRef}
-        className="fixed bottom-6 right-6 z-30 flex flex-col items-end gap-2"
+        className={`fixed right-6 z-40 group transition-all duration-300 ${
+          menuAberto
+            ? tipoLogin === 'usuario'
+              ? 'bottom-[8.5rem]'
+              : 'bottom-[12rem]'
+            : 'bottom-20'
+        }`}
       >
+        <div className="flex flex-col items-end mb-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
+          <button
+            className="botao-icone-circular botao-cinza text-farol-primary"
+            title="Despacho em massa"
+            onClick={() => setModalDespachoAberto(true)}
+          >
+            <Truck size={20} className="text-farol-primary" />
+          </button>
+          <button
+            className="botao-icone-circular botao-cinza"
+            title="Recebimento em massa"
+            onClick={() => alert('Função de recebimento em massa')}
+          >
+            <Handshake size={20} className="text-farol-primary" />
+          </button>
+        </div>
+        <button
+          className="botao-icone-circular botao-azul z-40"
+          title="Incluir Pedido"
+          onClick={() => setModalPedidoAberto(true)}
+        >
+          <PackagePlus size={26} />
+        </button>
+      </div>
+
+      {/* Menu flutuante lateral */}
+      <div ref={menuRef} className="fixed bottom-6 right-6 z-30 flex flex-col items-end gap-2">
         <div className="relative flex flex-col items-end space-y-2">
           {tipoLogin === 'farmacia' && (
-            <div
-              className={`transition-all duration-300 transform ${
-                menuAberto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
-              }`}
-            >
+            <div className={`transition-all duration-300 transform ${menuAberto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}>
               <button
                 onClick={irParaConfiguracoes}
                 className="botao-icone-circular botao-cinza"
@@ -175,13 +168,7 @@ const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getI
               </button>
             </div>
           )}
-
-          {/* Sair */}
-          <div
-            className={`transition-all duration-300 transform ${
-              menuAberto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
-            }`}
-          >
+          <div className={`transition-all duration-300 transform ${menuAberto ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'}`}>
             <button
               onClick={handleLogout}
               className="botao-icone-circular botao-cinza"
@@ -191,8 +178,6 @@ const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getI
             </button>
           </div>
         </div>
-
-        {/* Botão principal do menu */}
         <button
           onClick={toggleMenu}
           className="botao-icone-circular botao-principal"
@@ -202,27 +187,31 @@ const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getI
         </button>
       </div>
 
-{modalPedidoAberto && (
-  <div
-    className="modal-overlay right-align"
-    onClick={() => setModalPedidoAberto(false)}
-  >
-    <div onClick={e => e.stopPropagation()}>
-      <ModalNovoPedido
-        aberto={modalPedidoAberto}
-        onClose={() => setModalPedidoAberto(false)}
-        farmaciaId={farmaciaId}
-      />
-    </div>
-  </div>
-)}
-
+      {modalPedidoAberto && (
+        <div className="modal-overlay right-align" onClick={() => setModalPedidoAberto(false)}>
+          <div onClick={e => e.stopPropagation()}>
+            <ModalNovoPedido
+              aberto={modalPedidoAberto}
+              onClose={() => setModalPedidoAberto(false)}
+              farmaciaId={farmaciaId}
+            />
+          </div>
+        </div>
+      )}
 
       <ModalConfiguracoesFarmacia
         aberto={modalConfiguracoesAberto}
         onClose={() => setModalConfiguracoesAberto(false)}
         farmaciaId={farmaciaId}
         emailFarmacia={emailLogado}
+      />
+
+      {/* Modal Despacho em Massa */}
+      <ModalDespachoEmMassa
+        aberto={modalDespachoAberto}
+        onClose={() => setModalDespachoAberto(false)}
+        farmaciaId={farmaciaId}
+        usuarioLogado={usuarioLogado}
       />
     </div>
   )
