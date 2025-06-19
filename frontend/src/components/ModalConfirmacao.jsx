@@ -1,3 +1,4 @@
+//frontend/src/components/ModalConfirmacao.jsx
 import { useState, useEffect, useRef } from 'react'
 import {
   SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound, MapPinned
