@@ -345,36 +345,20 @@ def listar_logs_pedido(pedido_id: int):
                 l.itens_solidos,
                 l.itens_semisolidos,
                 l.itens_saches,
-                u1.nome AS usuario_logado,
-                u2.nome AS usuario_confirmador
+                COALESCE(u1.nome, '') AS usuario_logado,
+                COALESCE(u2.nome, '') AS usuario_confirmador
             FROM farol_farmacia_pedido_logs l
-            LEFT JOIN farol_farmacia_usuarios u1 ON u1.id::text = l.usuario_logado_id::text
-            LEFT JOIN farol_farmacia_usuarios u2 ON u2.id::text = l.usuario_confirmador_id::text
+            JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
+            LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
             WHERE l.pedido_id = %s
             ORDER BY l.data_hora DESC
         """, (pedido_id,))
-
         if cursor.description is None:
-            print(f"[DEBUG] Nenhuma descrição de coluna retornada para pedido {pedido_id}")
             return []
-
         colunas = [desc[0] for desc in cursor.description]
-        rows = cursor.fetchall()
-
-        print(f"[DEBUG] Logs brutos do pedido {pedido_id}: {len(rows)} registros encontrados")
-
-        logs = []
-        for row in rows:
-            try:
-                logs.append(dict(zip(colunas, row)))
-            except Exception as e:
-                print(f"[ERRO ZIP LOG] pedido {pedido_id}: {e} - linha: {row}")
-
-        return logs
-
+        return [dict(zip(colunas, row)) for row in cursor.fetchall()]
     except Exception as e:
-        print(f"[ERRO LOG PEDIDO {pedido_id}] {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar logs do pedido: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar logs: {str(e)}")
 
 @router.get("/pedidos/{pedido_id}")
 def obter_pedido(pedido_id: int):
