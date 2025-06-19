@@ -315,6 +315,24 @@ def listar_pedidos(farmacia_id: UUID):
     colunas = [desc[0] for desc in cursor.description]
     return [dict(zip(colunas, row)) for row in cursor.fetchall()]
 
+@router.get("/pedidos/stream")
+async def stream_pedidos(request: Request, farmacia_id: UUID = Query(...)):
+    queue = asyncio.Queue()
+    cliente = {"fila": queue, "farmacia_id": str(farmacia_id)}
+    clientes_ativos.append(cliente)
+
+    async def event_generator():
+        try:
+            while True:
+                if await request.is_disconnected():
+                    break
+                evento = await queue.get()
+                yield f"data: {evento}\n\n"
+        finally:
+            clientes_ativos.remove(cliente)
+
+    return EventSourceResponse(event_generator())
+
 @router.get("/pedidos/{pedido_id}/logs")
 def listar_logs_pedido(pedido_id: int):
     try:
