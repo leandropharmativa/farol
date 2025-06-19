@@ -30,6 +30,12 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
       )
 
       setPedidos(pedidosFiltrados)
+      const selecionados = {}
+      pedidosFiltrados.forEach(p => {
+      if (!selecionados[p.destino_nome]) selecionados[p.destino_nome] = []
+      selecionados[p.destino_nome].push(p.id)
+      })
+      setSelecionadosPorDestino(selecionados)
     } catch {
       toast.error('Erro ao carregar dados')
     }
@@ -93,14 +99,14 @@ return createPortal(
         {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
           <div
             key={destino}
-            className="bg-farol-primary border-r border-white/50 rounded-none px-4 py-3 w-[200px] min-h-[220px] flex flex-col justify-between"
+            className="bg-farol-primary border-r border-white/50 rounded-none px-4 py-3 w-[160px] min-h-[220px] flex flex-col justify-between"
           >
             <div>
               <h3 className="text-white text-sm font-semibold flex items-center gap-1 mb-2">
                 <MapPinned size={16} />
                 {destino}
               </h3>
-              <hr className="border-t border-white/30 mb-2" />
+              <hr className="border-t border-white/30 mb-2 w-[80%]" />
               <ul className="space-y-1 text-white text-sm mb-3">
                 {lista.map(p => {
                   const selecionado = selecionadosPorDestino[destino]?.includes(p.id)
@@ -122,7 +128,7 @@ return createPortal(
               </ul>
             </div>
             <div>
-              <hr className="border-t border-white/30 mb-2" />
+              <hr className="border-t border-white/30 mb-2 w-[24px]" />
               <button
                 className="btn-config2"
                 onClick={() => confirmarDespacho(destino)}
