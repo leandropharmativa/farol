@@ -85,43 +85,49 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
     pedidosPorDestino[p.destino_nome].push(p)
   })
 
-  return createPortal(
-    <div className="modal-overlay right-align modal-novo-pedido">
-      <div className="modal-novo-pedido animate-fadeIn max-h-[90vh] overflow-y-auto">
-        {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
-          <div key={destino} className="mb-4">
-            <h3 className="text-white text-md font-semibold mb-2">{destino}</h3>
-            <ul className="space-y-1 text-white text-sm">
-              {lista.map(p => (
-                <li key={p.id} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={selecionadosPorDestino[destino]?.includes(p.id) || false}
-                    onChange={() => toggleSelecionado(destino, p.id)}
-                  />
-                  <span>{p.registro}</span>
-                </li>
-              ))}
-            </ul>
-            <button
-              className="mt-2 btn-config2"
-              onClick={() => confirmarDespacho(destino)}
-              disabled={carregando}
-            >
-              {carregando ? <LoaderCircle className="animate-spin" size={20} /> : <Truck size={20} />}
-              <span className="ml-1">Confirmar Despacho</span>
-            </button>
-            <hr className="my-3 border-t border-white/30" />
-          </div>
-        ))}
-
-        <div className="top-icons">
-          <button className="btn-config2" onClick={onClose} title="Fechar">
-            <SquareX size={24} />
+return createPortal(
+  <div
+    className="modal-overlay right-align"
+    onClick={onClose}
+  >
+    <div
+      className="modal-novo-pedido animate-fadeIn max-h-[90vh] overflow-y-auto"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
+        <div key={destino} className="mb-4">
+          <h3 className="text-white text-md font-semibold mb-2">{destino}</h3>
+          <ul className="space-y-1 text-white text-sm">
+            {lista.map(p => (
+              <li key={p.id} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={selecionadosPorDestino[destino]?.includes(p.id) || false}
+                  onChange={() => toggleSelecionado(destino, p.id)}
+                />
+                <span>{p.registro}</span>
+              </li>
+            ))}
+          </ul>
+          <button
+            className="mt-2 btn-config2"
+            onClick={() => confirmarDespacho(destino)}
+            disabled={carregando}
+          >
+            {carregando ? <LoaderCircle className="animate-spin" size={20} /> : <Truck size={20} />}
+            <span className="ml-1">Confirmar Despacho</span>
           </button>
+          <hr className="my-3 border-t border-white/30" />
         </div>
+      ))}
+
+      <div className="top-icons">
+        <button className="btn-config2" onClick={onClose} title="Fechar">
+          <SquareX size={24} />
+        </button>
       </div>
-    </div>,
-    modalRoot
-  )
-}
+    </div>
+  </div>,
+  modalRoot
+)
+
