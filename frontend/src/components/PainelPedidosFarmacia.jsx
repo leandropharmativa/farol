@@ -764,7 +764,7 @@ locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.resid
 )
 }
 onShow={() => {
-if (podeExecutar || ativo) handleTooltipShow()
+if (ativo || !podeExecutar) handleTooltipShow()
 }}
 placement="top-end"
 animation="text"
