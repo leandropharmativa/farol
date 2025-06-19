@@ -58,38 +58,40 @@ export default function ModalConfirmacao({
     if (ultimoPedido) setPedidoSelecionado(ultimoPedido)
   }, [])
 
-  const confirmar = () => {
-    if (!codigo.trim()) return
+const confirmar = () => {
+  if (!codigo.trim()) return
 
   if (isConferencia && solidos + semisolidos + saches === 0) {
-  toast.warning('É necessário informar pelo menos 1 item conferido')
-  return
+    toast.warning('É necessário informar pelo menos 1 item conferido')
+    return
   }
 
-   const extras = isConferencia
-      ? {
-          itens_solidos: solidos,
-          itens_semisolidos: semisolidos,
-          itens_saches: saches,
-        }
-      : {}
-
-    if (isDespachoResidencial) {
-      if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
-        return alert('Preencha nome do paciente, endereço e código do entregador.')
+  const extras = isConferencia
+    ? {
+        itens_solidos: solidos,
+        itens_semisolidos: semisolidos,
+        itens_saches: saches,
       }
+    : {}
 
-      extras.entrega = {
-        nome_paciente: paciente,
-        endereco_entrega: endereco,
-        valor_pago: pagamentoJaFeito ? null : valorPago || null,
-        forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
-        entregador_codigo: codigoEntregador
-      }
+  if (isDespachoResidencial) {
+    if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
+      return alert('Preencha nome do paciente, endereço e código do entregador.')
     }
 
-    onConfirmar(codigo, obs, extras)
+    extras.entrega = {
+      nome_paciente: paciente,
+      endereco_entrega: endereco,
+      valor_pago: pagamentoJaFeito ? null : valorPago || null,
+      forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
+      entregador_codigo: codigoEntregador
+    }
   }
+
+  // ✅ Executa o callback e fecha o modal imediatamente
+  onConfirmar(codigo, obs, extras)
+  onCancelar()
+}
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
