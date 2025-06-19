@@ -92,7 +92,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
   })
 
   const abrirModalConfirmacao = (destino) => {
-    setDestinoParaConfirmar(destino)
+    setDestinoParaConfirmar({ nome: destino, total: lista.length })
   }
 
   return createPortal(
@@ -155,15 +155,17 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
         </div>
 
         {destinoParaConfirmar && (
-          <ModalConfirmacao
-            titulo="Confirmar Despacho"
-            mensagem={`Deseja confirmar o despacho dos pedidos para "${destinoParaConfirmar}"?`}
-            onConfirmar={(codigoConfirmacao) => {
-              confirmarDespacho(destinoParaConfirmar, codigoConfirmacao)
-              setDestinoParaConfirmar(null)
-            }}
-            onCancelar={() => setDestinoParaConfirmar(null)}
-          />
+<ModalConfirmacao
+  titulo="Confirmar Despacho"
+  destino={destinoParaConfirmar?.nome}
+  totalPedidos={destinoParaConfirmar?.total}
+  onConfirmar={(codigo, obs) => {
+    confirmarDespacho(destinoParaConfirmar.nome, codigo, obs)
+    setDestinoParaConfirmar(null)
+  }}
+  onCancelar={() => setDestinoParaConfirmar(null)}
+/>
+
         )}
       </div>
     </div>,
