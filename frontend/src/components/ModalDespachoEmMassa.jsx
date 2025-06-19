@@ -86,7 +86,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
  return createPortal(
   <div className="modal-overlay right-align" onClick={onClose}>
     <div
-      className="modal-novo-pedido animate-fadeIn max-h-[90vh] overflow-y-auto"
+      className="modal-despacho-massa animate-fadeIn max-h-[90vh] overflow-y-auto"
       onClick={(e) => e.stopPropagation()}
     >
       <div className="flex flex-wrap gap-x-4 gap-y-6 mt-2 justify-start">
