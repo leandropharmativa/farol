@@ -9,7 +9,7 @@ import {
   TowerControl,
   Sun,
   UserRound,
-  TruckEletric,
+  Truck,
   Handshake,
 } from 'lucide-react'
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
