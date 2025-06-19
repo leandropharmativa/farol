@@ -28,6 +28,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
 
       const pedidosFiltrados = resPedidos.data.filter(p =>
         p.status_producao &&
+        !p.status_despacho &&
         locaisValidos.some(l => l.nome === p.destino_nome)
       )
 
