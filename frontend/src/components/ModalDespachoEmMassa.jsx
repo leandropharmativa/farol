@@ -91,8 +91,8 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
     pedidosPorDestino[p.destino_nome].push(p)
   })
 
-  const abrirModalConfirmacao = (destino) => {
-    setDestinoParaConfirmar({ nome: destino, total: lista.length })
+  const abrirModalConfirmacao = (destino, totalPedidos) => {
+  setDestinoParaConfirmar({ nome: destino, total: totalPedidos })
   }
 
   return createPortal(
@@ -137,7 +137,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
                 <hr className="border-t border-white/30 mb-2 w-[24px]" />
                 <button
                   className="btn-config2"
-                  onClick={() => abrirModalConfirmacao(destino)}
+                  onClick={() => abrirModalConfirmacao(destino, lista.length)}
                   disabled={carregando}
                   title="Confirmar despacho"
                 >
@@ -156,7 +156,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
 
         {destinoParaConfirmar && (
 <ModalConfirmacao
-  titulo="Confirmar Despacho"
+  titulo="Despacho"
   destino={destinoParaConfirmar?.nome}
   totalPedidos={destinoParaConfirmar?.total}
   onConfirmar={(codigo, obs) => {
