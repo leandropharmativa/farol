@@ -1,7 +1,7 @@
 //frontend/src/components/ModalConfirmacao.jsx
 import { useState, useEffect, useRef } from 'react'
 import {
-  SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound, MapPinned
+  SquareCheckBig, Pill, Beaker, StickyNote, X, UserRound, MapPinned, Truck
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
