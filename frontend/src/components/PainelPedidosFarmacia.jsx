@@ -729,66 +729,77 @@ setTooltipStates(prev => ({
 
 return (
 <Tippy
-key={et.campo}
-content={
-tooltip.loading ? (
-<span className="flex items-center gap-1 text-[10px] text-gray-500">
-<Loader2 className="animate-spin w-3 h-3" />
-</span>
-) : ativo ? (
-<span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
-) : !podeExecutar ? (
-<span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
-<span className="font-semibold text-farol-primary block mb-1">Etapa bloqueada</span>
-<span className="text-[11px] text-gray-600">
-{ativo
-? ''
-: (!p.status_conferencia && et.nome === 'Produção') ||
-(!p.status_producao && et.nome === 'Despacho') ||
-(!p.status_despacho && et.nome === 'Recebimento') ||
-((et.nome === 'Entrega') &&
-(
-locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
-? !p.status_despacho
-: !p.status_recebimento
-))
-? 'Aguardando conclusão de etapas anteriores para liberar esta etapa.'
-: `Aguardando ${et.nome}`
-}
-</span>
-</span>
-
-
-) : (
-<span dangerouslySetInnerHTML={{ __html: tooltip.html || `<span class='text-[10px] text-farol-secondary'>Aguardando ${et.nome}</span>` }} />
-)
-}
-onShow={() => {
-if (podeExecutar || ativo) handleTooltipShow()
-}}
-placement="top-end"
-animation="text"
-arrow={false}
-theme="light-border"
-delay={[200, 0]}
-offset={[15, 0]}
+  key={et.campo}
+  content={
+    tooltip.loading ? (
+      <span className="flex items-center gap-1 text-[10px] text-gray-500">
+        <Loader2 className="animate-spin w-3 h-3" />
+      </span>
+    ) : ativo ? (
+      <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
+    ) : !podeExecutar ? (
+      <span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
+        <span className="font-semibold text-farol-primary block mb-1">Etapa bloqueada</span>
+        <span className="text-[11px] text-gray-600">
+          {ativo
+            ? ''
+            : (!p.status_conferencia && et.nome === 'Produção') ||
+              (!p.status_producao && et.nome === 'Despacho') ||
+              (!p.status_despacho && et.nome === 'Recebimento') ||
+              ((et.nome === 'Entrega') &&
+                (
+                  locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
+                    ? !p.status_despacho
+                    : !p.status_recebimento
+                ))
+            ? 'Aguardando conclusão de etapas anteriores para liberar esta etapa.'
+            : `Aguardando ${et.nome}`
+          }
+        </span>
+      </span>
+    ) : (
+      <span dangerouslySetInnerHTML={{ __html: tooltip.html || `<span class='text-[10px] text-farol-secondary'>Aguardando ${et.nome}</span>` }} />
+    )
+  }
+  onShow={() => {
+    if (podeExecutar || ativo) {
+      if (!tooltipStates[idEtapa]?.html && !tooltipStates[idEtapa]?.loading) {
+        handleTooltipShow()
+      }
+    }
+  }}
+  placement="top-end"
+  animation="text"
+  arrow={false}
+  theme="light-border"
+  delay={[200, 0]}
+  offset={[15, 0]}
 >
-
-<span className="inline-block">
-<button
-onClick={(e) => {
-if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome, e)
-}}
-disabled={ativo || !podeExecutar}
-className={`rounded-full p-1
-${ativo ? 'text-green-600' : 'text-gray-400'}
-${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}`}
->
-<Icone size={18} />
-</button>
-</span>
-
+  <span className="inline-block">
+    <button
+      onClick={(e) => {
+        if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome, e)
+      }}
+      disabled={ativo || !podeExecutar}
+      className={`rounded-full p-1
+        ${
+          ativo
+            ? tooltip.feitoPorOutro
+              ? 'text-green-500'
+              : 'text-green-600'
+            : 'text-gray-400'
+        }
+        ${
+          podeExecutar && !ativo
+            ? 'hover:text-red-500 cursor-pointer'
+            : 'cursor-default opacity-50'
+        }`}
+    >
+      <Icone size={18} />
+    </button>
+  </span>
 </Tippy>
+
 )
 })}
 
