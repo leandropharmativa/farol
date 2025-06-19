@@ -83,39 +83,24 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
     pedidosPorDestino[p.destino_nome].push(p)
   })
 
-  return createPortal(
-    <div className="modal-overlay right-align" onClick={onClose}>
-      <div
-        className="modal-novo-pedido animate-fadeIn max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="top-icons flex justify-end gap-2">
-          <button className="btn-config2" onClick={onClose} title="Fechar">
-            <SquareX size={24} />
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-4 mt-2">
-          {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
-            <div key={destino} className="bg-farol-primary rounded-lg p-4 w-full max-w-xs flex-1 shadow-md">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-white text-sm font-semibold flex items-center gap-1">
-                  <MapPinned size={16} />
-                  {destino}
-                </h3>
-                <button
-                  className="btn-config2"
-                  onClick={() => confirmarDespacho(destino)}
-                  disabled={carregando}
-                  title="Confirmar despacho"
-                >
-                  {carregando
-                    ? <LoaderCircle size={20} className="animate-spin" />
-                    : <Truck size={20} />}
-                </button>
-              </div>
-
-              <ul className="space-y-1 text-white text-sm">
+ return createPortal(
+  <div className="modal-overlay right-align" onClick={onClose}>
+    <div
+      className="modal-novo-pedido animate-fadeIn max-h-[90vh] overflow-y-auto"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex flex-wrap gap-x-4 gap-y-6 mt-2 justify-start">
+        {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
+          <div
+            key={destino}
+            className="bg-farol-primary rounded-lg p-4 w-[280px] min-h-[220px] flex flex-col justify-between shadow-md"
+          >
+            <div>
+              <h3 className="text-white text-sm font-semibold flex items-center gap-1 mb-2">
+                <MapPinned size={16} />
+                {destino}
+              </h3>
+              <ul className="space-y-1 text-white text-sm mb-3">
                 {lista.map(p => (
                   <li key={p.id} className="flex items-center gap-2">
                     <input
@@ -128,10 +113,30 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
                 ))}
               </ul>
             </div>
-          ))}
-        </div>
+            <div className="flex justify-end">
+              <button
+                className="btn-config2"
+                onClick={() => confirmarDespacho(destino)}
+                disabled={carregando}
+                title="Confirmar despacho"
+              >
+                {carregando
+                  ? <LoaderCircle size={20} className="animate-spin" />
+                  : <Truck size={20} />}
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
-    </div>,
-    modalRoot
-  )
+
+      <div className="flex justify-end mt-6">
+        <button className="btn-config2" onClick={onClose} title="Fechar">
+          <SquareX size={24} />
+        </button>
+      </div>
+    </div>
+  </div>,
+  modalRoot
+)
+
 }
