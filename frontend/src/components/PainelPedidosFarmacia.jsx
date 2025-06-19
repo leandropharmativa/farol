@@ -143,7 +143,7 @@ destinoEhResidencia(pedidos.find(p => p.id === pedidoSelecionado))
 ) {
 const entrega = extras.entrega
 await api.post('/entregas/registrar', {
-pedido_id: pedidoSelecionado,
+pedido_id: pedidoSelecionado.id,
 farmacia_id: farmaciaId,
 nome_paciente: entrega.nome_paciente,
 endereco_entrega: entrega.endereco_entrega,
@@ -440,7 +440,7 @@ return (
 <hr className="my-1 border-t border-gray-300" />
 <div className="flex items-center gap-1 mb-0.5">
 <User size={12} className="text-gray-500" />
-<span>{log.usuario_confirmador || '—'}</span>
+<span>{log.usuario_confirmador}</span>
 </div>
 <div className="flex items-center gap-1">
 <Calendar size={12} className="text-gray-500" />
@@ -467,7 +467,7 @@ delay={[200, 0]}
 <span>{p.registro}</span>
 
 {logsPorPedido[p.id]?.map((log, i) => {
-const etapa = (log.etapa || '').toLowerCase()
+const etapa = log.etapa?.toLowerCase()
 if (etapa !== 'conferência') return null
 
 const { itens_solidos = 0, itens_semisolidos = 0, itens_saches = 0 } = log
@@ -663,15 +663,15 @@ if (et.nome === 'Produção' && !p.status_conferencia) podeExecutar = false
 if (et.nome === 'Despacho' && !p.status_producao) podeExecutar = false
 
 if (et.nome === 'Entrega') {
-const destinoResidencial = locais.find(l =>
-l.nome === p.destino_nome || l.nome === p.destino?.nome
-)?.residencia
+  const destinoResidencial = locais.find(l =>
+    l.nome === p.destino_nome || l.nome === p.destino?.nome
+  )?.residencia
 
-if (destinoResidencial) {
-if (!p.status_despacho) podeExecutar = false
-} else {
-if (!p.status_recebimento) podeExecutar = false
-}
+  if (destinoResidencial) {
+    if (!p.status_despacho) podeExecutar = false
+  } else {
+    if (!p.status_recebimento) podeExecutar = false
+  }
 }
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
@@ -679,129 +679,84 @@ const idEtapa = `${p.id}-${et.nome}`
 const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
 
 const handleTooltipShow = async () => {
-  try {
-    const res = await api.get(`/pedidos/${p.id}/logs`)
-    const logs = res.data || []
-    const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
+setTooltipStates(prev => ({
+...prev,
+[idEtapa]: { loading: true, html: '' }
+}))
+try {
+const res = await api.get(`/pedidos/${p.id}/logs`)
+const logs = res.data || []
+const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
 
-    let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
-    if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
-      const dt = new Date(logEtapa.data_hora)
-      const data = dt.toLocaleDateString('pt-BR')
-      const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
+let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
+if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
+const dt = new Date(logEtapa.data_hora)
+const data = dt.toLocaleDateString('pt-BR')
+const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
 
-      html = `
-      <div class='text-[12px] text-gray-700 leading-tight'>
-        <div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
-        <hr class='my-1 border-t border-gray-300' />
-        <div class='flex items-center gap-1 mb-0.5'>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span>${logEtapa.usuario_confirmador}</span>
-        </div>
-        <div class='flex items-center gap-1 mb-1'>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          <span>${data} ${hora}</span>
-        </div>
-        ${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>` : ''}
-      </div>`
-    }
+html = `
+<div class='text-[12px] text-gray-700 leading-tight'>
+<div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
+<hr class='my-1 border-t border-gray-300' />
+<div class='flex items-center gap-1 mb-0.5'>
+<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+<circle cx="12" cy="7" r="4" />
+</svg>
+<span>${logEtapa.usuario_confirmador}</span>
+</div>
+<div class='flex items-center gap-1 mb-1'>
+<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+</svg>
+<span>${data} ${hora}</span>
+</div>
+${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>` : ''}
+</div>`
+}
 
-    const feitoPorOutro = logEtapa?.usuario_confirmador !== usuarioLogado.nome
-
-    setTooltipStates(prev => ({
-      ...prev,
-      [idEtapa]: { loading: false, html, feitoPorOutro }
-    }))
-  } catch {
-    setTooltipStates(prev => ({
-      ...prev,
-      [idEtapa]: {
-        loading: false,
-        html: `<div class='text-[10px] text-red-400'>Erro ao carregar</div>`,
-        feitoPorOutro: false
-      }
-    }))
-  }
+setTooltipStates(prev => ({
+...prev,
+[idEtapa]: { loading: false, html }
+}))
+} catch {
+setTooltipStates(prev => ({
+...prev,
+[idEtapa]: { loading: false, html: `<div class='text-[10px] text-red-400'>Erro ao carregar</div>` }
+}))
+}
 }
 
 return (
 <Tippy
-  key={et.campo}
-  content={
-    tooltip.loading ? (
-      <span className="flex items-center gap-1 text-[10px] text-gray-500">
-        <Loader2 className="animate-spin w-3 h-3" />
-      </span>
-    ) : ativo ? (
-      <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
-    ) : !podeExecutar ? (
-      <span className="text-[12px] text-gray-700 leading-tight block max-w-[220px]">
-        <span className="font-semibold text-farol-primary block mb-1">Etapa bloqueada</span>
-        <span className="text-[11px] text-gray-600">
-          {ativo
-            ? ''
-            : (!p.status_conferencia && et.nome === 'Produção') ||
-              (!p.status_producao && et.nome === 'Despacho') ||
-              (!p.status_despacho && et.nome === 'Recebimento') ||
-              ((et.nome === 'Entrega') &&
-                (
-                  locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
-                    ? !p.status_despacho
-                    : !p.status_recebimento
-                ))
-            ? 'Aguardando conclusão de etapas anteriores para liberar esta etapa.'
-            : `Aguardando ${et.nome}`
-          }
-        </span>
-      </span>
-    ) : (
-      <span dangerouslySetInnerHTML={{ __html: tooltip.html || `<span class='text-[10px] text-farol-secondary'>Aguardando ${et.nome}</span>` }} />
-    )
-  }
-  onShow={() => {
-    if (podeExecutar || ativo) {
-      if (!tooltipStates[idEtapa]?.html && !tooltipStates[idEtapa]?.loading) {
-        handleTooltipShow()
-      }
-    }
-  }}
-  placement="top-end"
-  animation="text"
-  arrow={false}
-  theme="light-border"
-  delay={[200, 0]}
-  offset={[15, 0]}
+key={et.campo}
+content={
+tooltip.loading
+? <span className="flex items-center gap-1 text-[10px] text-gray-500"><Loader2 className="animate-spin w-3 h-3" /></span>
+: <span dangerouslySetInnerHTML={{ __html: tooltip.html }} />
+}
+onShow={handleTooltipShow}
+placement="top-end"
+animation="text"
+arrow={false}
+theme="light-border"
+delay={[200, 0]}
+offset={[15, 0]}
 >
-  <span className="inline-block">
-    <button
-      onClick={(e) => {
-        if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome, e)
-      }}
-      disabled={ativo || !podeExecutar}
-      className={`rounded-full p-1
-        ${
-          ativo
-            ? tooltip.feitoPorOutro
-              ? 'text-green-500'
-              : 'text-green-600'
-            : 'text-gray-400'
-        }
-        ${
-          podeExecutar && !ativo
-            ? 'hover:text-red-500 cursor-pointer'
-            : 'cursor-default opacity-50'
-        }`}
-    >
-      <Icone size={18} />
-    </button>
-  </span>
+<span className="inline-block">
+<button
+onClick={(e) => {
+if (podeExecutar && !ativo) solicitarConfirmacao(p.id, et.nome, e)
+}}
+disabled={!podeExecutar || ativo}
+className={`rounded-full p-1
+${ativo ? 'text-green-600' : 'text-gray-400'}
+${podeExecutar && !ativo ? 'hover:text-red-500 cursor-pointer' : 'cursor-default opacity-50'}`}
+>
+<Icone size={18} />
+</button>
+</span>
 </Tippy>
-
 )
 })}
 
