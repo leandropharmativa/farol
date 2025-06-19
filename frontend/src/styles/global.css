@@ -505,6 +505,6 @@ p {
 }
 
 .modal-despacho-massa {
-  @apply bg-farol-primary max-w-5xl w-full p-6;
+  @apply bg-farol-primary max-w-5xl w-fit p-6;
 }
 
