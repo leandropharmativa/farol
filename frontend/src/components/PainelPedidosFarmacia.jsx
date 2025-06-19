@@ -680,8 +680,8 @@ const tooltip = tooltipStates[idEtapa] || { loading: false, html: '' }
 
 const handleTooltipShow = async () => {
 setTooltipStates(prev => ({
-...prev,
-[idEtapa]: { loading: true, html: '' }
+  ...prev,
+  [idEtapa]: { loading: false, html, feitoPorOutro }
 }))
 try {
 const res = await api.get(`/pedidos/${p.id}/logs`)
@@ -714,6 +714,8 @@ html = `
 ${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>` : ''}
 </div>`
 }
+
+const feitoPorOutro = logEtapa?.usuario_confirmador !== usuarioLogado.nome
 
 setTooltipStates(prev => ({
 ...prev,
