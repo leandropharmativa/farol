@@ -92,12 +92,17 @@ export default function ModalConfirmacao({
           <X size={20} />
         </button>
 
-        <div className="flex items-center gap-2 mb-3 leading-tight">
-          {IconeEtapa && <IconeEtapa size={18} className="text-farol-primary" />}
-          <span className="text-sm font-semibold text-farol-primary relative top-[1px]">
-            Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
-          </span>
-        </div>
+<div className="flex items-center gap-2 mb-3 leading-tight">
+  {isDespachoMassa ? (
+    <Truck size={18} className="text-farol-primary" />
+  ) : (
+    IconeEtapa && <IconeEtapa size={18} className="text-farol-primary" />
+  )}
+  <span className="text-sm font-semibold text-farol-primary relative top-[1px]">
+    Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
+  </span>
+</div>
+
 
         <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mb-2">
           <UserRound className="text-gray-400 mr-2" size={16} />
