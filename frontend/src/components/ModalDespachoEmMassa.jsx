@@ -1,6 +1,7 @@
+//frontend/src/components/ModalDespachoEmMassa.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { SquareX, LoaderCircle, Truck } from 'lucide-react'
+import { SquareX, LoaderCircle, Truck, MapPinned } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
 
@@ -11,9 +12,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
   const [carregando, setCarregando] = useState(false)
 
   useEffect(() => {
-    if (aberto) {
-      carregarDados()
-    }
+    if (aberto) carregarDados()
   }, [aberto])
 
   const carregarDados = async () => {
@@ -60,7 +59,6 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
         formData.append('usuario_logado_id', usuarioLogado?.id || '')
         formData.append('codigo_confirmacao', usuarioLogado?.codigo || '')
         formData.append('observacao', 'Despacho em massa')
-
         await api.post(`/pedidos/${id}/registrar-etapa`, formData)
       }
 
@@ -85,49 +83,55 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
     pedidosPorDestino[p.destino_nome].push(p)
   })
 
-return createPortal(
-  <div
-    className="modal-overlay right-align"
-    onClick={onClose}
-  >
-    <div
-      className="modal-novo-pedido animate-fadeIn max-h-[90vh] overflow-y-auto"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
-        <div key={destino} className="mb-4">
-          <h3 className="text-white text-md font-semibold mb-2">{destino}</h3>
-          <ul className="space-y-1 text-white text-sm">
-            {lista.map(p => (
-              <li key={p.id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={selecionadosPorDestino[destino]?.includes(p.id) || false}
-                  onChange={() => toggleSelecionado(destino, p.id)}
-                />
-                <span>{p.registro}</span>
-              </li>
-            ))}
-          </ul>
-          <button
-            className="mt-2 btn-config2"
-            onClick={() => confirmarDespacho(destino)}
-            disabled={carregando}
-          >
-            {carregando ? <LoaderCircle className="animate-spin" size={20} /> : <Truck size={20} />}
-            <span className="ml-1">Confirmar Despacho</span>
+  return createPortal(
+    <div className="modal-overlay right-align" onClick={onClose}>
+      <div
+        className="modal-novo-pedido animate-fadeIn max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="top-icons flex justify-end gap-2">
+          <button className="btn-config2" onClick={onClose} title="Fechar">
+            <SquareX size={24} />
           </button>
-          <hr className="my-3 border-t border-white/30" />
         </div>
-      ))}
 
-      <div className="top-icons">
-        <button className="btn-config2" onClick={onClose} title="Fechar">
-          <SquareX size={24} />
-        </button>
+        <div className="flex flex-wrap gap-4 mt-2">
+          {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
+            <div key={destino} className="bg-farol-primary rounded-lg p-4 w-full max-w-xs flex-1 shadow-md">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-white text-sm font-semibold flex items-center gap-1">
+                  <MapPinned size={16} />
+                  {destino}
+                </h3>
+                <button
+                  className="btn-config2"
+                  onClick={() => confirmarDespacho(destino)}
+                  disabled={carregando}
+                  title="Confirmar despacho"
+                >
+                  {carregando
+                    ? <LoaderCircle size={20} className="animate-spin" />
+                    : <Truck size={20} />}
+                </button>
+              </div>
+
+              <ul className="space-y-1 text-white text-sm">
+                {lista.map(p => (
+                  <li key={p.id} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selecionadosPorDestino[destino]?.includes(p.id) || false}
+                      onChange={() => toggleSelecionado(destino, p.id)}
+                    />
+                    <span>{p.registro}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
-  </div>,
-  modalRoot
-)
+    </div>,
+    modalRoot
+  )
 }
