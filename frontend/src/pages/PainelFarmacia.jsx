@@ -15,6 +15,7 @@ import {
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 import ModalNovoPedido from '../components/ModalNovoPedido'
 import ModalDespachoEmMassa from '../components/ModalDespachoEmMassa'
+import ModalRecebimentoEmMassa from '../components/ModalRecebimentoEmMassa'
 import PainelPedidosFarmacia from '../components/PainelPedidosFarmacia'
 import NovosPedidosStream from '../components/NovosPedidosStream'
 
@@ -24,6 +25,8 @@ export default function PainelFarmacia() {
   const [modalConfiguracoesAberto, setModalConfiguracoesAberto] = useState(false)
   const [modalPedidoAberto, setModalPedidoAberto] = useState(false)
   const [modalDespachoAberto, setModalDespachoAberto] = useState(false)
+  const [modalRecebimentoAberto, setModalRecebimentoAberto] = useState(false)
+
   const menuRef = useRef(null)
 
   const emailLogado = (localStorage.getItem('email') || '').trim().toLowerCase()
@@ -140,10 +143,11 @@ export default function PainelFarmacia() {
           <button
             className="botao-icone-circular botao-cinza"
             title="Recebimento em massa"
-            onClick={() => alert('Função de recebimento em massa')}
+            onClick={() => setModalRecebimentoAberto(true)}
           >
             <Handshake size={20} className="text-farol-primary" />
           </button>
+
         </div>
         <button
           className="botao-icone-circular botao-azul z-40"
@@ -213,6 +217,14 @@ export default function PainelFarmacia() {
         farmaciaId={farmaciaId}
         usuarioLogado={usuarioLogado}
       />
+
+      <ModalRecebimentoEmMassa
+        aberto={modalRecebimentoAberto}
+        onClose={() => setModalRecebimentoAberto(false)}
+        farmaciaId={farmaciaId}
+        usuarioLogado={usuarioLogado}
+      />
+
     </div>
   )
 }
