@@ -98,7 +98,11 @@ export default function ModalConfirmacao({
         </button>
 
 <div className="flex items-center gap-2 mb-3 leading-tight">
-{IconeEtapa && <IconeEtapa size={18} className="text-farol-primary" />}
+{IconeEtapa && (
+  <span className="text-farol-primary">
+    {IconeEtapa({ size: 18, className: 'text-farol-primary' })}
+  </span>
+)}
   <span className="text-sm font-semibold text-farol-primary relative top-[1px]">
     Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
   </span>
