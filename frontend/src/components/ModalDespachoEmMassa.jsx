@@ -100,6 +100,7 @@ return createPortal(
                 <MapPinned size={16} />
                 {destino}
               </h3>
+              <hr className="border-t border-white/30 mb-2" />
               <ul className="space-y-1 text-white text-sm mb-3">
                 {lista.map(p => {
                   const selecionado = selecionadosPorDestino[destino]?.includes(p.id)
@@ -110,9 +111,9 @@ return createPortal(
                       onClick={() => toggleSelecionado(destino, p.id)}
                     >
                       {selecionado ? (
-                        <SquareCheck className="text-farol-linecolor" size={18} />
+                        <SquareCheck className="text-white" size={18} />
                       ) : (
-                        <Square className="text-farol-secondary" size={18} />
+                        <Square className="text-white" size={18} />
                       )}
                       <span>{p.registro}</span>
                     </li>
@@ -120,7 +121,8 @@ return createPortal(
                 })}
               </ul>
             </div>
-            <div className="flex justify-start">
+            <div>
+              <hr className="border-t border-white/30 mb-2" />
               <button
                 className="btn-config2"
                 onClick={() => confirmarDespacho(destino)}
