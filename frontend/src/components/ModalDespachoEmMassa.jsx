@@ -83,7 +83,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
     pedidosPorDestino[p.destino_nome].push(p)
   })
 
- return createPortal(
+return createPortal(
   <div className="modal-overlay right-align" onClick={onClose}>
     <div
       className="modal-despacho-massa animate-fadeIn max-h-[90vh] overflow-y-auto"
@@ -93,7 +93,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
         {Object.entries(pedidosPorDestino).map(([destino, lista]) => (
           <div
             key={destino}
-            className="bg-farol-primary rounded-lg p-4 w-[280px] min-h-[220px] flex flex-col justify-between shadow-md"
+            className="bg-farol-primary border-r border-white/50 rounded-none px-4 py-3 w-[200px] min-h-[220px] flex flex-col justify-between"
           >
             <div>
               <h3 className="text-white text-sm font-semibold flex items-center gap-1 mb-2">
@@ -105,7 +105,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
                   <li key={p.id} className="flex items-center gap-2">
                     <input
                       type="checkbox"
-                      checked={selecionadosPorDestino[destino]?.includes(p.id) || false}
+                      defaultChecked={true}
                       onChange={() => toggleSelecionado(destino, p.id)}
                     />
                     <span>{p.registro}</span>
@@ -113,7 +113,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
                 ))}
               </ul>
             </div>
-            <div className="flex justify-end">
+            <div className="flex justify-start">
               <button
                 className="btn-config2"
                 onClick={() => confirmarDespacho(destino)}
@@ -138,5 +138,4 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
   </div>,
   modalRoot
 )
-
 }
