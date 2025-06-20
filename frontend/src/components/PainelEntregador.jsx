@@ -39,6 +39,12 @@ export default function PainelEntregador({ usuarioLogado }) {
 
 const confirmarEntrega = async (pedidoId, codigoConfirmacao, observacao = '') => {
   try {
+    if (!pedidoId || isNaN(pedidoId)) {
+      console.error('❌ pedidoId inválido:', pedidoId)
+      toast.error('Erro interno: ID do pedido inválido')
+      return
+    }
+
     const formData = new FormData()
     formData.append('etapa', 'Entrega')
     formData.append('usuario_logado_id', usuarioLogado?.id || 0)
@@ -48,10 +54,9 @@ const confirmarEntrega = async (pedidoId, codigoConfirmacao, observacao = '') =>
     await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formData)
 
     toast.success('Entrega confirmada com sucesso')
-    // Aqui você pode atualizar a lista de entregas
-    carregarEntregas()
+    carregarEntregas() // atualiza a lista após confirmação
   } catch (err) {
-    console.error(err)
+    console.error('❌ Erro ao confirmar entrega:', err)
     toast.error('Erro ao confirmar entrega')
   }
 }
