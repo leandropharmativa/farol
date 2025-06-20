@@ -108,16 +108,16 @@ export default function PainelFarmacia() {
 
       <NovosPedidosStream farmaciaId={farmaciaId} />
 
-      {tipoLogin === 'entregador' ? (
-        <PainelEntregador usuarioLogado={usuarioLogado} />
-      ) : (
-        <PainelPedidosFarmacia
-          farmaciaId={farmaciaId}
-          usuarioLogado={usuarioLogado}
-          filtroRegistro={filtroRegistro}
-          emailFarmacia={emailFarmacia}
-        />
-      )}
+{usuarioLogado.permissao_entrega ? (
+  <PainelEntregador usuarioLogado={usuarioLogado} />
+) : (
+  <PainelPedidosFarmacia
+    farmaciaId={farmaciaId}
+    usuarioLogado={usuarioLogado}
+    filtroRegistro={filtroRegistro}
+    emailFarmacia={emailFarmacia}
+  />
+)}
 
       {/* Botões e modais do painel (visíveis apenas para farmácia ou usuário com permissões) */}
       {tipoLogin !== 'entregador' && (
