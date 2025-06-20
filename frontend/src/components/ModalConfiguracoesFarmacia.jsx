@@ -9,6 +9,11 @@ import {
 import api from '../services/api'
 import { toast } from 'react-toastify'
 import '../styles/global.css'
+import Tippy from '@tippyjs/react'
+import 'tippy.js/dist/tippy.css' // obrigatório – base
+import 'tippy.js/themes/light.css'       // para theme="light"
+import 'tippy.js/themes/light-border.css' // para theme="light-border"
+import 'tippy.js/themes/material.css' 
 
 export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId }) {
   const [codigo, setCodigo] = useState('')
