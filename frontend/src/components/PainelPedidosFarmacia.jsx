@@ -698,10 +698,6 @@ const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
 
 let entregadorHTML = ''
 
-import { Bike } from 'lucide-react' // já importado no seu topo
-
-// ...
-
 if (et.nome === 'Despacho' && destinoEhResidencia(p)) {
 try {
 const entrega = await api.get(`/entregas/${p.id}`)
@@ -718,8 +714,6 @@ ${Bike({ size: 12 }).props.children}
 console.warn('Erro ao buscar entrega:', e)
 }
 }
-}
-
 
 html = `
 <div class='text-[12px] text-gray-700 leading-tight'>
