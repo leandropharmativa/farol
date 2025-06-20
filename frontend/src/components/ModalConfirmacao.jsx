@@ -1,4 +1,3 @@
-
 //frontend/src/components/ModalConfirmacao.jsx
 import { useState, useEffect, useRef } from 'react'
 import {
@@ -45,12 +44,10 @@ export default function ModalConfirmacao({
     if (farmaciaId && isDespachoResidencial) {
       api.get(`/usuarios/${farmaciaId}`)
         .then(res => {
-          const filtrados = res.data.filter(u =>
-            u.permissao_entrega === true || u.permissao_entrega === 'true'
-          )
-          setUsuariosEntrega(filtrados)
+          const entregadores = res.data.filter(u => u.entregador === true)
+          setUsuariosEntrega(entregadores)
         })
-        .catch(() => toast.error('Erro ao carregar usuários'))
+        .catch(() => toast.error('Erro ao carregar entregadores'))
     }
   }, [farmaciaId, isDespachoResidencial])
 
@@ -60,42 +57,43 @@ export default function ModalConfirmacao({
     if (ultimoPedido) setPedidoSelecionado(ultimoPedido)
   }, [])
 
-const confirmar = () => {
-  if (!codigo.trim()) {
-    setCodigoInvalido(true)
-    return
-  }
+  const confirmar = () => {
+    if (!codigo.trim()) {
+      setCodigoInvalido(true)
+      return
+    }
 
-  if (isConferencia && solidos + semisolidos + saches === 0) {
-    toast.warning('É necessário informar pelo menos 1 item conferido')
-    return
-  }
+    if (isConferencia && solidos + semisolidos + saches === 0) {
+      toast.warning('É necessário informar pelo menos 1 item conferido')
+      return
+    }
 
-  const extras = isConferencia
-    ? {
-        itens_solidos: solidos,
-        itens_semisolidos: semisolidos,
-        itens_saches: saches,
+    const extras = isConferencia
+      ? {
+          itens_solidos: solidos,
+          itens_semisolidos: semisolidos,
+          itens_saches: saches,
+        }
+      : {}
+
+    if (isDespachoResidencial) {
+      if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
+        return alert('Preencha nome do paciente, endereço e do entregador.')
       }
-    : {}
 
-  if (isDespachoResidencial) {
-    if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
-      return alert('Preencha nome do paciente, endereço e do entregador.')
+      extras.entrega = {
+        nome_paciente: paciente,
+        endereco_entrega: endereco,
+        valor_pago: pagamentoJaFeito ? null : valorPago || null,
+        forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
+        entregador_codigo: codigoEntregador
+      }
     }
 
-    extras.entrega = {
-      nome_paciente: paciente,
-      endereco_entrega: endereco,
-      valor_pago: pagamentoJaFeito ? null : valorPago || null,
-      forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
-      entregador_codigo: codigoEntregador
-    }
+    onConfirmar(codigo, obs, extras)
+    onCancelar()
   }
 
-  onConfirmar(codigo, obs, extras)
-  onCancelar()
-}
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-[280px] p-4 rounded-xl shadow-md animate-fadeIn max-h-screen overflow-y-auto relative">
@@ -103,31 +101,31 @@ const confirmar = () => {
           <X size={20} />
         </button>
 
-<div className="flex items-center gap-2 mb-3 leading-tight">
-  {isMassa ? (
-    <Truck size={18} className="text-farol-primary" />
-  ) : (
-    IconeEtapa && <IconeEtapa size={18} className="text-farol-primary" />
-  )}
-  <span className="text-sm font-semibold text-farol-primary relative top-[1px]">
-    Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
-  </span>
-</div>
+        <div className="flex items-center gap-2 mb-3 leading-tight">
+          {isMassa ? (
+            <Truck size={18} className="text-farol-primary" />
+          ) : (
+            IconeEtapa && <IconeEtapa size={18} className="text-farol-primary" />
+          )}
+          <span className="text-sm font-semibold text-farol-primary relative top-[1px]">
+            Confirmar {titulo.replace('etapa ', '').replace(/"/g, '')}
+          </span>
+        </div>
 
-<div className={`flex items-center rounded-full px-3 py-2 mb-2 ${codigoInvalido ? 'bg-red-100' : 'bg-gray-100'}`}>
-  <UserRound className="text-gray-400 mr-2" size={16} />
-  <input
-    ref={inputRef}
-    type="text"
-    placeholder="Código do usuário"
-    className="bg-transparent border-none outline-none text-sm flex-1"
-    value={codigo}
-    onChange={(e) => {
-      setCodigo(e.target.value)
-      if (codigoInvalido && e.target.value.trim()) setCodigoInvalido(false)
-    }}
-  />
-</div>
+        <div className={`flex items-center rounded-full px-3 py-2 mb-2 ${codigoInvalido ? 'bg-red-100' : 'bg-gray-100'}`}>
+          <UserRound className="text-gray-400 mr-2" size={16} />
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Código do usuário"
+            className="bg-transparent border-none outline-none text-sm flex-1"
+            value={codigo}
+            onChange={(e) => {
+              setCodigo(e.target.value)
+              if (codigoInvalido && e.target.value.trim()) setCodigoInvalido(false)
+            }}
+          />
+        </div>
 
         <input
           type="text"
@@ -137,19 +135,17 @@ const confirmar = () => {
           onChange={(e) => setObs(e.target.value)}
         />
 
-        {/* Info extra para despacho em massa */}
-{isMassa && (
-  <div className="text-xs text-gray-600 mb-2 pl-1">
-    <div className="flex items-center gap-1 mb-1">
-      <MapPinned size={14} className="text-farol-primary" />
-      <span>{destino}</span>
-    </div>
-    <span className="text-[11px] text-gray-500 ml-[22px]">
-      {totalPedidos} pedidos selecionados
-    </span>
-  </div>
-)}
-
+        {isMassa && (
+          <div className="text-xs text-gray-600 mb-2 pl-1">
+            <div className="flex items-center gap-1 mb-1">
+              <MapPinned size={14} className="text-farol-primary" />
+              <span>{destino}</span>
+            </div>
+            <span className="text-[11px] text-gray-500 ml-[22px]">
+              {totalPedidos} pedidos selecionados
+            </span>
+          </div>
+        )}
 
         {isDespachoResidencial && (
           <>
