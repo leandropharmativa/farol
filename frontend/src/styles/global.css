@@ -391,7 +391,7 @@ p {
 }
 
 .btn-config2 {
-  @apply text-sm text-white mt-2 rounded-full hover:text-farol-secondary transition;
+  @apply text-sm text-white mt-2 rounded-full hover:text-farol-primaryfocus transition;
 }
 
 /* lista de pedidos */
