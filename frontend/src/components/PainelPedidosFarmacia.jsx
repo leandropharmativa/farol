@@ -701,9 +701,7 @@ const handleTooltipShow = async () => {
       if (et.nome === 'Despacho' && destinoEhResidencia(p)) {
         try {
           const entrega = await api.get(`/entregas/${p.id}`)
-          const entregadorId = entrega.data.entregador_id
-          const entregador = usuarios.find(u => u.id === entregadorId)
-          const nomeEntregador = entregador?.nome
+          const nomeEntregador = entrega.data[8]  
           if (nomeEntregador) {
           entregadorHTML = `
           <div class='flex items-center gap-1 text-farol-primary mb-1'>
