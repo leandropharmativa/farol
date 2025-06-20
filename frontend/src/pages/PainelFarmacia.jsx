@@ -36,6 +36,7 @@ export default function PainelFarmacia() {
     id: localStorage.getItem('usuarioId'),
     nome: localStorage.getItem('nomeUsuario'),
     email: localStorage.getItem('email'),
+    entregador: localStorage.getItem('entregador') === 'true',
     permissao_impressao: localStorage.getItem('permissao_impressao') === 'true',
     permissao_conferencia: localStorage.getItem('permissao_conferencia') === 'true',
     permissao_producao: localStorage.getItem('permissao_producao') === 'true',
