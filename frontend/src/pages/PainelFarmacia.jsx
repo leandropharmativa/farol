@@ -123,63 +123,62 @@ export default function PainelFarmacia() {
 )}
 
       {/* Botões e modais do painel (visíveis apenas para farmácia ou usuário com permissões) */}
-      {tipoLogin !== 'entregador' && (
-        <>
-          {/* Botão flutuante */}
-          <div
-            className={`fixed right-6 z-40 group transition-all duration-300 ${
-              menuAberto
-                ? tipoLogin === 'usuario'
-                  ? 'bottom-[8.5rem]'
-                  : 'bottom-[12rem]'
-                : 'bottom-20'
-            }`}
-          >
-            <div className="flex flex-col items-end mb-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
-              <button
-                className="botao-icone-circular botao-cinza text-farol-primary"
-                title="Despacho em massa"
-                onClick={() => setModalDespachoAberto(true)}
-              >
-                <Truck size={20} className="text-farol-primary" />
-              </button>
-              <button
-                className="botao-icone-circular botao-cinza"
-                title="Recebimento em massa"
-                onClick={() => setModalRecebimentoAberto(true)}
-              >
-                <Handshake size={20} className="text-farol-primary" />
-              </button>
-            </div>
-            <button
-              className="botao-icone-circular botao-azul z-40"
-              title="Incluir Pedido"
-              onClick={() => setModalPedidoAberto(true)}
-            >
-              <PackagePlus size={26} />
-            </button>
-          </div>
+{!usuarioLogado.entregador && (
+  <>
+    {/* Botão flutuante */}
+    <div className={`fixed right-6 z-40 group transition-all duration-300 ${
+      menuAberto
+        ? tipoLogin === 'usuario'
+          ? 'bottom-[8.5rem]'
+          : 'bottom-[12rem]'
+        : 'bottom-20'
+    }`}>
+      <div className="flex flex-col items-end mb-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
+        <button
+          className="botao-icone-circular botao-cinza text-farol-primary"
+          title="Despacho em massa"
+          onClick={() => setModalDespachoAberto(true)}
+        >
+          <Truck size={20} className="text-farol-primary" />
+        </button>
+        <button
+          className="botao-icone-circular botao-cinza"
+          title="Recebimento em massa"
+          onClick={() => setModalRecebimentoAberto(true)}
+        >
+          <Handshake size={20} className="text-farol-primary" />
+        </button>
+      </div>
+      <button
+        className="botao-icone-circular botao-azul z-40"
+        title="Incluir Pedido"
+        onClick={() => setModalPedidoAberto(true)}
+      >
+        <PackagePlus size={26} />
+      </button>
+    </div>
 
-          {/* Modais */}
-          <ModalNovoPedido
-            aberto={modalPedidoAberto}
-            onClose={() => setModalPedidoAberto(false)}
-            farmaciaId={farmaciaId}
-          />
-          <ModalDespachoEmMassa
-            aberto={modalDespachoAberto}
-            onClose={() => setModalDespachoAberto(false)}
-            farmaciaId={farmaciaId}
-            usuarioLogado={usuarioLogado}
-          />
-          <ModalRecebimentoEmMassa
-            aberto={modalRecebimentoAberto}
-            onClose={() => setModalRecebimentoAberto(false)}
-            farmaciaId={farmaciaId}
-            usuarioLogado={usuarioLogado}
-          />
-        </>
-      )}
+    {/* Modais */}
+    <ModalNovoPedido
+      aberto={modalPedidoAberto}
+      onClose={() => setModalPedidoAberto(false)}
+      farmaciaId={farmaciaId}
+    />
+    <ModalDespachoEmMassa
+      aberto={modalDespachoAberto}
+      onClose={() => setModalDespachoAberto(false)}
+      farmaciaId={farmaciaId}
+      usuarioLogado={usuarioLogado}
+    />
+    <ModalRecebimentoEmMassa
+      aberto={modalRecebimentoAberto}
+      onClose={() => setModalRecebimentoAberto(false)}
+      farmaciaId={farmaciaId}
+      usuarioLogado={usuarioLogado}
+    />
+  </>
+)}
+
 
       {/* Menu lateral */}
       <div ref={menuRef} className="fixed bottom-6 right-6 z-30 flex flex-col items-end gap-2">
