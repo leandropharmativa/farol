@@ -232,6 +232,8 @@ return createPortal(
   theme="light-border"
   placement="bottom-start"
   animation="text"
+  delay={[0, 100]}
+  duration={[150, 100]}
   render={() => (
     <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
       {nomesPermissao[campo]}
@@ -310,13 +312,12 @@ return createPortal(
 
 <div className="flex flex-wrap gap-2 mb-2">
   <Tippy
-    placement="bottom-start"
+    content={<span className="text-[12px] text-farol-secondary">Origem</span>}
+    theme="light-border"
     animation="text"
-    render={() => (
-      <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
-        Origem
-      </div>
-    )}
+    placement="bottom-start"
+    delay={[0, 100]}
+    duration={[150, 100]}
   >
     <div onClick={() => setIsOrigem(!isOrigem)} className="cursor-pointer">
       <MapPin size={18} className={isOrigem ? 'text-white' : 'text-farol-primaryfocus'} />
@@ -324,13 +325,12 @@ return createPortal(
   </Tippy>
 
   <Tippy
-    placement="bottom-start"
+    content={<span className="text-[12px] text-farol-secondary">Destino</span>}
+    theme="light-border"
     animation="text"
-    render={() => (
-      <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
-        Destino
-      </div>
-    )}
+    placement="bottom-start"
+    delay={[0, 100]}
+    duration={[150, 100]}
   >
     <div onClick={() => setIsDestino(!isDestino)} className="cursor-pointer">
       <MapPinCheck size={18} className={isDestino ? 'text-white' : 'text-farol-primaryfocus'} />
@@ -338,20 +338,18 @@ return createPortal(
   </Tippy>
 
   <Tippy
-    placement="bottom-start"
+    content={<span className="text-[12px] text-farol-secondary">Residência</span>}
+    theme="light-border"
     animation="text"
-    render={() => (
-      <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
-        Residência
-      </div>
-    )}
+    placement="bottom-start"
+    delay={[0, 100]}
+    duration={[150, 100]}
   >
     <div onClick={() => setResidencia(!residencia)} className="cursor-pointer">
       <MapPinHouse size={18} className={residencia ? 'text-white' : 'text-farol-primaryfocus'} />
     </div>
   </Tippy>
 </div>
-
 
         <div className="flex gap-2 mb-2">
           <button
