@@ -64,36 +64,37 @@ return
 
 // 3. Usuário da farmácia
 try {
-const resUsuario = await api.post('/usuarios/login', {
-codigo: emailOuCodigo,
-senha,
-})
-if (resUsuario.data.status === 'ok') {
-localStorage.setItem('token', resUsuario.data.token)
-localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
-localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
-localStorage.setItem('nomeUsuario', resUsuario.data.nome)
-localStorage.setItem('nomeFarmacia', resUsuario.data.nomeFarmacia)
-localStorage.setItem('emailFarmacia', resUsuario.data.emailFarmacia)
-localStorage.setItem('permissao_impressao', resUsuario.data.permissao_impressao)
-localStorage.setItem('permissao_conferencia', resUsuario.data.permissao_conferencia)
-localStorage.setItem('permissao_producao', resUsuario.data.permissao_producao)
-localStorage.setItem('permissao_despacho', resUsuario.data.permissao_despacho)
-localStorage.setItem('permissao_recebimento', resUsuario.data.permissao_recebimento)
-localStorage.setItem('permissao_entrega', resUsuario.data.permissao_entrega)
-localStorage.setItem('permissao_registrar_pagamento', resUsuario.data.permissao_registrar_pagamento)
+  const resUsuario = await api.post('/usuarios/login', {
+    codigo: emailOuCodigo,
+    senha,
+  })
+  console.log('resUsuario.data', resUsuario.data)
 
-// 👇 AQUI definimos se é um entregador ou um usuário comum
-const tipo = resUsuario.data.permissao_entrega ? 'entregador' : 'usuario'
-localStorage.setItem('tipoLogin', tipo)
+  // Remova a verificação de status só para testar
+  localStorage.setItem('token', resUsuario.data.token)
+  localStorage.setItem('usuarioId', resUsuario.data.usuarioId)
+  localStorage.setItem('farmaciaId', resUsuario.data.farmaciaId)
+  localStorage.setItem('nomeUsuario', resUsuario.data.nome)
+  localStorage.setItem('nomeFarmacia', resUsuario.data.nomeFarmacia)
+  localStorage.setItem('emailFarmacia', resUsuario.data.emailFarmacia)
+  localStorage.setItem('permissao_impressao', resUsuario.data.permissao_impressao)
+  localStorage.setItem('permissao_conferencia', resUsuario.data.permissao_conferencia)
+  localStorage.setItem('permissao_producao', resUsuario.data.permissao_producao)
+  localStorage.setItem('permissao_despacho', resUsuario.data.permissao_despacho)
+  localStorage.setItem('permissao_recebimento', resUsuario.data.permissao_recebimento)
+  localStorage.setItem('permissao_entrega', resUsuario.data.permissao_entrega)
+  localStorage.setItem('permissao_registrar_pagamento', resUsuario.data.permissao_registrar_pagamento)
 
-toast.success(`Login como ${tipo === 'entregador' ? 'entregador' : 'usuário'}`)
-window.location.href = '/painel-farmacia'
-return
+  const tipo = resUsuario.data.permissao_entrega ? 'entregador' : 'usuario'
+  localStorage.setItem('tipoLogin', tipo)
+
+  toast.success(`Login como ${tipo}`)
+  window.location.href = '/painel-farmacia'
+  return
+} catch (e) {
+  console.log('Erro login usuário:', e)
 }
-
-} catch {}
-
+  
 toast.error('Credenciais inválidas.')
 } catch {
 toast.error('Erro ao processar login.')
