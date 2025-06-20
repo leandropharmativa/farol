@@ -4,7 +4,7 @@ import api from '../services/api'
 import { toast } from 'react-toastify'
 import {
 User, CalendarClock, MapPinHouse, MapPinned, PillBottle, Pencil, Calendar, AlarmClock, AlertCircle,
-PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserRound, X,
+PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserRound, X, Bike,
 FileText, CalendarPlus, CalendarCheck2, Boxes, Beaker, Pill, StickyNote, FilePenLine, Loader2, Handshake,
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
@@ -712,6 +712,15 @@ html = `
 </svg>
 <span>${data} ${hora}</span>
 </div>
+${et.nome === 'Despacho' && destinoEhResidencia(p) && logEtapa.usuario_logado
+  ? `<div class='flex items-center gap-1 text-farol-primary mb-1'>
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path d="M5 12h14M12 5l7 7-7 7" />
+      </svg>
+      <span>${logEtapa.usuario_logado}</span>
+    </div>`
+  : ''
+}
 ${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>` : ''}
 </div>`
 }
