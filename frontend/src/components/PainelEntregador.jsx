@@ -24,22 +24,23 @@ export default function PainelEntregador({ usuarioLogado }) {
     setDataSelecionada(novaData)
   }
 
-  const carregarEntregas = async () => {
-    try {
-      const res = await api.get('/entregas/', {
-        params: { entregador_id: usuarioLogado?.id }
-      })
+const carregarEntregas = async () => {
+  try {
+    const res = await api.get('/entregas/', {
+      params: { entregador_id: usuarioLogado?.id }
+    })
 
-      const dataFiltro = new Date(dataSelecionada).toLocaleDateString('pt-BR')
-      const entregasFiltradas = res.data.filter(entrega => {
-        const data = new Date(entrega[8]).toLocaleDateString('pt-BR') // data_despacho
-        return data === dataFiltro
-      })
-      setEntregas(entregasFiltradas)
-    } catch (err) {
-      toast.error('Erro ao carregar entregas')
-    }
+    const entregasFiltradas = res.data.filter(entrega => {
+      const status_despacho = entrega[10] // true
+      const status_entrega = entrega[11]  // false
+      return status_despacho && !status_entrega
+    })
+
+    setEntregas(entregasFiltradas)
+  } catch (err) {
+    toast.error('Erro ao carregar entregas')
   }
+}
 
   useEffect(() => {
     carregarEntregas()
