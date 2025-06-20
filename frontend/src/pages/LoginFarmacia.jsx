@@ -88,9 +88,12 @@ try {
   const tipo = resUsuario.data.permissao_entrega ? 'entregador' : 'usuario'
   localStorage.setItem('tipoLogin', tipo)
 
-  toast.success(`Login como ${tipo}`)
-  window.location.href = '/painel-farmacia'
-  return
+toast.success('Login como farmácia')
+setTimeout(() => {
+  navigate('/painel-farmacia')
+}, 100)
+return
+
 } catch (e) {
   console.log('Erro login usuário:', e)
 }
