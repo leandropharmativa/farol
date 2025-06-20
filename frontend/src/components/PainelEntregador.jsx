@@ -37,23 +37,24 @@ export default function PainelEntregador({ usuarioLogado }) {
     setAbrirModal(true)
   }
 
-  const confirmarEntrega = async (codigo, observacao) => {
-    try {
-      const formData = new FormData()
-      formData.append('etapa', 'Entrega')
-      formData.append('usuario_logado_id', usuarioLogado?.id || 0)
-      formData.append('codigo_confirmacao', codigo)
-      formData.append('observacao', observacao)
+const confirmarEntrega = async (pedidoId, codigoConfirmacao, observacao = '') => {
+  try {
+    const formData = new FormData()
+    formData.append('etapa', 'Entrega')
+    formData.append('usuario_logado_id', usuarioLogado?.id || 0)
+    formData.append('codigo_confirmacao', codigoConfirmacao)
+    formData.append('observacao', observacao)
 
-      await api.post(`/pedidos/${pedidoSelecionado.id}/registrar-etapa`, formData)
-      toast.success('Entrega confirmada com sucesso')
-      setAbrirModal(false)
-      carregarEntregas()
-    } catch (err) {
-      console.error(err)
-      toast.error('Erro ao confirmar entrega')
-    }
+    await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formData)
+
+    toast.success('Entrega confirmada com sucesso')
+    // Aqui você pode atualizar a lista de entregas
+    carregarEntregas()
+  } catch (err) {
+    console.error(err)
+    toast.error('Erro ao confirmar entrega')
   }
+}
 
   useEffect(() => {
     carregarEntregas()
