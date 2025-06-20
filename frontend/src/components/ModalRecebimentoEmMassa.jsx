@@ -34,7 +34,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
 
   const carregarPedidos = async () => {
     try {
-      setCarregando(true)
+      set(true)
       const res = await api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
       const filtrados = res.data.filter(p =>
         p.status_despacho &&
@@ -46,7 +46,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
     } catch {
       toast.error('Erro ao carregar pedidos')
     } finally {
-      setCarregando(false)
+      set(false)
     }
   }
 
@@ -62,7 +62,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
       return
     }
 
-    setCarregando(true)
+    set(true)
     try {
       for (const id of selecionados) {
         const formData = new FormData()
@@ -81,7 +81,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
     } catch {
       toast.error('Erro ao registrar recebimento')
     } finally {
-      setCarregando(false)
+      set(false)
     }
   }
 
@@ -107,21 +107,30 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
   ))}
 </select>
 
-        {carregando ? (
-          <div className="text-white flex gap-2 items-center"><LoaderCircle className="animate-spin" /> Carregando...</div>
-        ) : (
-          <div className="flex flex-col gap-2">
-            {pedidos.map(p => {
-              const selecionado = selecionados.includes(p.id)
-              return (
-                <div key={p.id} className="flex items-center gap-2 text-white text-sm cursor-pointer" onClick={() => toggleSelecionado(p.id)}>
-                  {selecionado ? <SquareCheck size={18} /> : <Square size={18} />}
-                  <span>{p.registro}</span>
-                </div>
-              )
-            })}
-          </div>
-        )}
+{carregando ? (
+  <div className="text-white flex gap-2 items-center">
+    <LoaderCircle className="animate-spin" /> Carregando...
+  </div>
+) : pedidos.length === 0 ? (
+  <div className="text-white text-sm italic">Nenhum pedido disponível para recebimento.</div>
+) : (
+  <div className="flex flex-col gap-2">
+    {pedidos.map(p => {
+      const selecionado = selecionados.includes(p.id)
+      return (
+        <div
+          key={p.id}
+          className="flex items-center gap-2 text-white text-sm cursor-pointer"
+          onClick={() => toggleSelecionado(p.id)}
+        >
+          {selecionado ? <SquareCheck size={18} /> : <Square size={18} />}
+          <span>{p.registro}</span>
+        </div>
+      )
+    })}
+  </div>
+)}
+
 
 {destinoSelecionado && (
   <div className="flex justify-end items-center gap-2 mt-4">
