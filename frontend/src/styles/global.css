@@ -510,19 +510,16 @@ p {
 
 /* Toast padrão customizado */
 .Toastify__toast--default {
-  background-color: #f97316 !important; /* fundo laranja */
-  color: white !important; /* texto branco */
+  background-color: #f97316 !important;
+  color: white !important;
 }
 
-/* Ícone do toast */
 .Toastify__toast-icon {
   color: white !important;
 }
 
-/* Spinner de loading */
 .Toastify__spinner {
   border-color: white !important;
   border-top-color: rgba(255, 255, 255, 0.6) !important;
 }
-
 
