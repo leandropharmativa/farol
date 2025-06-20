@@ -137,17 +137,18 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
     <button className="btn-config2" onClick={onClose} title="Fechar">
       <SquareX size={24} />
     </button>
-    <button
-      className="btn-config2"
-      onClick={() => setConfirmar(true)}
-      disabled={carregando}
-      title="Confirmar recebimento"
-    >
-      <Handshake size={20} />
-    </button>
+    {pedidos.length > 0 && (
+      <button
+        className="btn-config2"
+        onClick={() => setConfirmar(true)}
+        disabled={carregando}
+        title="Confirmar recebimento"
+      >
+        <Handshake size={20} />
+      </button>
+    )}
   </div>
 )}
-
 
         {confirmar && (
           <ModalConfirmacao
