@@ -78,6 +78,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
       toast.success('Despacho realizado')
       setSelecionados([])
       setConfirmar(false)
+      onClose()
       carregarDados()
       window.dispatchEvent(new Event('novoPedidoCriado'))
     } catch {
