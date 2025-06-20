@@ -1,3 +1,4 @@
+//frontend/src/components/ModalRecebimentoEmMassa.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { SquareX, LoaderCircle, Handshake, Square, SquareCheck } from 'lucide-react'
