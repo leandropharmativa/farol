@@ -91,7 +91,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
   if (!modalRoot) return null
 
   return createPortal(
-    <div className="modal-overlay right-align" onClick={onClose}>
+    <div className="modal-overlay right-align z-50" onClick={onClose}>
       <div
         className="modal-despacho-massa animate-fadeIn max-h-[70vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
