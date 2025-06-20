@@ -37,3 +37,82 @@ def registrar_entrega(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao registrar entrega: {str(e)}")
+
+@router.get("/entregas/{pedido_id}")
+def obter_entrega(pedido_id: int):
+    try:
+        cursor.execute("SELECT * FROM farol_entregas WHERE pedido_id = %s", (pedido_id,))
+        entrega = cursor.fetchone()
+        if not entrega:
+            raise HTTPException(status_code=404, detail="Entrega não encontrada.")
+        return entrega
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar entrega: {str(e)}")
+
+@router.post("/entregas/editar")
+def editar_entrega(
+    pedido_id: int = Form(...),
+    nome_paciente: str = Form(...),
+    endereco_entrega: str = Form(...),
+    entregador_id: int = Form(...),
+    valor_pago: float = Form(None),
+    forma_pagamento: str = Form(None)
+):
+    try:
+        cursor.execute("SELECT 1 FROM farol_entregas WHERE pedido_id = %s", (pedido_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Entrega não encontrada para edição.")
+
+        cursor.execute("""
+            UPDATE farol_entregas
+            SET nome_paciente = %s,
+                endereco_entrega = %s,
+                valor_pago = %s,
+                forma_pagamento = %s,
+                entregador_id = %s
+            WHERE pedido_id = %s
+        """, (
+            nome_paciente.strip(), endereco_entrega.strip(),
+            valor_pago, forma_pagamento, entregador_id,
+            pedido_id
+        ))
+
+        return {"status": "ok", "mensagem": "Entrega atualizada com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao editar entrega: {str(e)}")
+
+@router.delete("/entregas/{pedido_id}")
+def excluir_entrega(pedido_id: int):
+    try:
+        cursor.execute("SELECT 1 FROM farol_entregas WHERE pedido_id = %s", (pedido_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Entrega não encontrada para exclusão.")
+
+        cursor.execute("DELETE FROM farol_entregas WHERE pedido_id = %s", (pedido_id,))
+        return {"status": "ok", "mensagem": "Entrega excluída com sucesso"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao excluir entrega: {str(e)}")
+
+@router.get("/entregas/")
+def listar_entregas(farmacia_id: UUID = None, pedido_id: int = None):
+    try:
+        query = "SELECT * FROM farol_entregas"
+        filtros = []
+        valores = []
+
+        if farmacia_id:
+            filtros.append("farmacia_id = %s")
+            valores.append(str(farmacia_id))
+        if pedido_id:
+            filtros.append("pedido_id = %s")
+            valores.append(pedido_id)
+
+        if filtros:
+            query += " WHERE " + " AND ".join(filtros)
+
+        cursor.execute(query, tuple(valores))
+        entregas = cursor.fetchall()
+        return entregas
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro ao listar entregas: {str(e)}")
+
