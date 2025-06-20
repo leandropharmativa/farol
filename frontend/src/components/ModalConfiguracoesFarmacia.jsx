@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  X, Plus, UserRoundPen, LocationEdit, Trash, Handshake,
-  PackagePlus, Printer, FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard,
-  UserPlus, Save, CircleX, MapPinPlus, Bike
+  X, UserRoundPen, LocationEdit, Trash, Handshake, PackagePlus, Printer,
+  FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserPlus, Save,
+  CircleX, MapPinPlus, Bike, MapPin, MapPinCheck, MapPinHouse, UserSearch, Pin
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
@@ -193,151 +193,140 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   }
 
   const iconesPermissao = {
-    permissao_inclusao: <PackagePlus size={18} />,
-    permissao_impressao: <Printer size={18} />,
-    permissao_conferencia: <FileCheck2 size={18} />,
-    permissao_producao: <CircleCheckBig size={18} />,
-    permissao_despacho: <Truck size={18} />,
-    permissao_recebimento: <Handshake size={18} />,
-    permissao_entrega: <PackageCheck size={18} />,
-    permissao_registrar_pagamento: <CreditCard size={18} />,
-    entregador: <Bike size={18} />,
+    permissao_inclusao: <PackagePlus size={18} />, permissao_impressao: <Printer size={18} />, permissao_conferencia: <FileCheck2 size={18} />, permissao_producao: <CircleCheckBig size={18} />, permissao_despacho: <Truck size={18} />, permissao_recebimento: <Handshake size={18} />, permissao_entrega: <PackageCheck size={18} />, permissao_registrar_pagamento: <CreditCard size={18} />, entregador: <Bike size={18} />
   }
 
   const nomesPermissao = {
-    permissao_inclusao: 'Inclusão',
-    permissao_impressao: 'Impressão',
-    permissao_conferencia: 'Conferência',
-    permissao_producao: 'Produção',
-    permissao_despacho: 'Despacho',
-    permissao_recebimento: 'Recebimento',
-    permissao_entrega: 'Entrega',
-    permissao_registrar_pagamento: 'Pagamento',
-    entregador: 'Entregador',
+    permissao_inclusao: 'Inclusão', permissao_impressao: 'Impressão', permissao_conferencia: 'Conferência', permissao_producao: 'Produção', permissao_despacho: 'Despacho', permissao_recebimento: 'Recebimento', permissao_entrega: 'Entrega', permissao_registrar_pagamento: 'Pagamento', entregador: 'Entregador'
   }
 
   if (!aberto) return null
   const modalRoot = document.getElementById('modal-root')
   if (!modalRoot) return null
 
-  return createPortal(
-    <div className="modal-overlay">
-      <div className="modal-container animate-fade-slide max-w-[680px]">
-        <button className="btn-fechar" onClick={onClose}><X /></button>
+return createPortal(
+  <div className="modal-overlay right-align">
+    <div className="modal-despacho-massa animate-fadeIn overflow-y-auto max-h-[90vh] p-6">
+      <button className="btn-config2 absolute top-2 right-2" onClick={onClose}><X size={20} /></button>
 
-        {/* Usuários */}
-        <div>
-          <h3 className="flex items-center gap-2 mb-2">
-            Cadastrar ou editar usuário
-            <button className="btn-config" onClick={salvarUsuario} title={editandoUsuarioId ? 'Salvar' : 'Criar'}>
-              {editandoUsuarioId ? <Save size={20} /> : <UserPlus size={20} />}
+      <h3 className="text-white font-bold text-lg mb-2 mt-0">Configurações da farmácia</h3>
+
+      {/* USUÁRIO */}
+      <div className="mb-4">
+        <div className="grid grid-cols-2 gap-2 mb-2">
+          <input className="modal-novo-pedido-input" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
+          <input className="modal-novo-pedido-input" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
+          <input className="modal-novo-pedido-input col-span-2" disabled value={`Código: ${codigo}`} />
+        </div>
+
+        <div className="flex flex-wrap gap-2 mb-2">
+          {Object.entries(permissoes).map(([campo, ativo]) => (
+            <div key={campo}
+              className={`rounded-full px-3 py-1 text-sm cursor-pointer flex items-center gap-1 
+                ${ativo ? 'bg-white text-farol-primary font-bold' : 'bg-farol-primaryfocus text-white'}`}
+              title={nomesPermissao[campo]}
+              onClick={() => handlePermissaoToggle(campo)}
+            >
+              {iconesPermissao[campo]} {nomesPermissao[campo]}
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-2 mb-2">
+          <button className="btn-config2" onClick={salvarUsuario} title="Salvar usuário"><Save size={18} /></button>
+          {editandoUsuarioId && (
+            <button className="btn-config2" onClick={() => {
+              setNome('')
+              setSenha('')
+              setEditandoUsuarioId(null)
+              setPermissoes({
+                permissao_inclusao: false,
+                permissao_impressao: false,
+                permissao_conferencia: false,
+                permissao_producao: false,
+                permissao_despacho: false,
+                permissao_recebimento: false,
+                permissao_entrega: false,
+                permissao_registrar_pagamento: false,
+                entregador: false,
+              })
+            }} title="Cancelar edição">
+              <CircleX size={18} />
             </button>
-            {editandoUsuarioId && (
-              <button className="btn-config" onClick={() => {
-                setNome('')
-                setSenha('')
-                setEditandoUsuarioId(null)
-                setPermissoes({
-                  permissao_inclusao: false,
-                  permissao_impressao: false,
-                  permissao_conferencia: false,
-                  permissao_producao: false,
-                  permissao_despacho: false,
-                  permissao_recebimento: false,
-                  permissao_entrega: false,
-                  permissao_registrar_pagamento: false,
-                  entregador: false,
-                })
-              }} title="Cancelar edição">
-                <CircleX size={20} />
-              </button>
-            )}
-          </h3>
+          )}
+          <button className="btn-config2 ml-auto" onClick={() => setMostrarUsuarios(!mostrarUsuarios)} title="Mostrar usuários"><UserSearch size={18} /></button>
+        </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <input className="input-config" placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} />
-            <input className="input-config" placeholder="Senha" value={senha} onChange={e => setSenha(e.target.value)} />
-            <input className="input-config col-span-2" disabled value={`Código: ${codigo}`} />
-          </div>
-
-          <div className="lista-permissoes mt-2">
-            {Object.entries(permissoes).map(([campo, ativo]) => (
-              <div key={campo} className={`icone-permissao ${ativo ? 'selecionado' : ''}`} title={nomesPermissao[campo]} onClick={() => handlePermissaoToggle(campo)}>
-                {iconesPermissao[campo]}
-              </div>
+        {mostrarUsuarios && (
+          <ul className="text-white text-sm space-y-1 mt-2">
+            {usuarios.map(u => (
+              <li key={u.id} className="flex items-center gap-2">
+                <span>{u.nome} (código: {u.codigo})</span>
+                <button onClick={() => editarUsuario(u)} className="text-white hover:text-blue-300"><UserRoundPen size={16} /></button>
+                <button onClick={() => excluirUsuario(u.id)} className="text-white hover:text-red-300"><Trash size={16} /></button>
+              </li>
             ))}
-          </div>
-
-          <button className="text-sm text-blue-600 mt-2 underline" onClick={() => setMostrarUsuarios(v => !v)}>
-            {mostrarUsuarios ? 'Ocultar usuários' : 'Mostrar usuários'}
-          </button>
-          {mostrarUsuarios && (
-            <ul className="mt-3 space-y-1 text-sm max-h-[160px] overflow-y-auto pr-2">
-              {usuarios.map(u => (
-                <li key={u.id} className="flex items-center gap-2">
-                  <span>{u.nome} (código: {u.codigo})</span>
-                  {!editandoUsuarioId && <button onClick={() => editarUsuario(u)} className="text-blue-600 hover:text-blue-800"><UserRoundPen size={16} /></button>}
-                  {!editandoUsuarioId && <button onClick={() => excluirUsuario(u.id)} className="text-red-600 hover:text-red-800"><Trash size={16} /></button>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <hr className="my-3 border-t border-gray-300" />
-
-        {/* Locais */}
-        <div>
-          <h3 className="flex items-center gap-2 mb-2">
-            Cadastrar ou editar loja/cidade
-            <button className="btn-config" onClick={salvarLocal} title={editandoLocalId ? 'Salvar' : 'Criar'}>
-              {editandoLocalId ? <Save size={20} /> : <MapPinPlus size={20} />}
-            </button>
-            {editandoLocalId && (
-              <button className="btn-config" onClick={() => {
-                setLocalNome('')
-                setIsOrigem(false)
-                setIsDestino(false)
-                setResidencia(false)
-                setEditandoLocalId(null)
-              }} title="Cancelar edição">
-                <CircleX size={20} />
-              </button>
-            )}
-          </h3>
-
-          <input className="input-config" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
-          <div className="flex gap-4 mt-2 text-sm">
-            <label><input type="checkbox" checked={isOrigem} onChange={(e) => setIsOrigem(e.target.checked)} /> Origem</label>
-            <label><input type="checkbox" checked={isDestino} onChange={(e) => setIsDestino(e.target.checked)} /> Destino</label>
-            <label><input type="checkbox" checked={residencia} onChange={(e) => setResidencia(e.target.checked)} /> Entrega domiciliar</label>
-          </div>
-
-          <button className="text-sm text-blue-600 mt-2 underline" onClick={() => setMostrarLocais(v => !v)}>
-            {mostrarLocais ? 'Ocultar locais' : 'Mostrar locais'}
-          </button>
-          {mostrarLocais && (
-            <ul className="mt-3 space-y-1 text-sm max-h-[160px] overflow-y-auto pr-2">
-              {locais.map(l => (
-                <li key={l.id} className="flex items-center gap-2">
-                  <span>
-                    {l.nome} (
-                    {l.origem ? 'Origem' : ''}
-                    {l.origem && l.destino ? ' / ' : ''}
-                    {l.destino ? 'Destino' : ''}
-                    {(l.origem || l.destino) && l.residencia ? ' / ' : ''}
-                    {l.residencia ? 'Residência' : ''}
-                    )
-                  </span>
-                  {!editandoLocalId && <button onClick={() => editarLocal(l)} className="text-blue-600 hover:text-blue-800"><LocationEdit size={16} /></button>}
-                  {!editandoLocalId && <button onClick={() => excluirLocal(l.id)} className="text-red-600 hover:text-red-800"><Trash size={16} /></button>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+          </ul>
+        )}
       </div>
-    </div>,
-    modalRoot
-  )
+
+      {/* LOCAIS */}
+      <div>
+        <input className="modal-novo-pedido-input mb-2" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
+
+        <div className="flex flex-wrap gap-2 mb-2">
+          <div onClick={() => setIsOrigem(!isOrigem)} className={`rounded-full px-3 py-1 text-sm cursor-pointer flex items-center gap-1 
+            ${isOrigem ? 'bg-white text-farol-primary font-bold' : 'bg-farol-primaryfocus text-white'}`}>
+            <MapPin size={16} /> Origem
+          </div>
+          <div onClick={() => setIsDestino(!isDestino)} className={`rounded-full px-3 py-1 text-sm cursor-pointer flex items-center gap-1 
+            ${isDestino ? 'bg-white text-farol-primary font-bold' : 'bg-farol-primaryfocus text-white'}`}>
+            <MapPinCheck size={16} /> Destino
+          </div>
+          <div onClick={() => setResidencia(!residencia)} className={`rounded-full px-3 py-1 text-sm cursor-pointer flex items-center gap-1 
+            ${residencia ? 'bg-white text-farol-primary font-bold' : 'bg-farol-primaryfocus text-white'}`}>
+            <MapPinHouse size={16} /> Domicílio
+          </div>
+        </div>
+
+        <div className="flex gap-2 mb-2">
+          <button className="btn-config2" onClick={salvarLocal} title="Salvar local"><Save size={18} /></button>
+          {editandoLocalId && (
+            <button className="btn-config2" onClick={() => {
+              setLocalNome('')
+              setIsOrigem(false)
+              setIsDestino(false)
+              setResidencia(false)
+              setEditandoLocalId(null)
+            }} title="Cancelar edição">
+              <CircleX size={18} />
+            </button>
+          )}
+          <button className="btn-config2 ml-auto" onClick={() => setMostrarLocais(!mostrarLocais)} title="Mostrar locais"><Pin size={18} /></button>
+        </div>
+
+        {mostrarLocais && (
+          <ul className="text-white text-sm space-y-1 mt-2">
+            {locais.map(l => (
+              <li key={l.id} className="flex items-center gap-2">
+                <span>
+                  {l.nome} (
+                  {l.origem ? 'Origem' : ''}
+                  {l.origem && l.destino ? ' / ' : ''}
+                  {l.destino ? 'Destino' : ''}
+                  {(l.origem || l.destino) && l.residencia ? ' / ' : ''}
+                  {l.residencia ? 'Domicílio' : ''}
+                  )
+                </span>
+                <button onClick={() => editarLocal(l)} className="text-white hover:text-blue-300"><LocationEdit size={16} /></button>
+                <button onClick={() => excluirLocal(l.id)} className="text-white hover:text-red-300"><Trash size={16} /></button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  </div>,
+  modalRoot
+)
 }
