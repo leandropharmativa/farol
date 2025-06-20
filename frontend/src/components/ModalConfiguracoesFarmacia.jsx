@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 import {
   X, UserRoundPen, LocationEdit, Trash, Handshake, PackagePlus, Printer, Settings,
   FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserPlus, Save, UserRoundPlus, 
-  CircleX, MapPinPlus, Bike, MapPin, MapPinCheck, MapPinHouse, UserSearch, Pin, MapPinPlus
+  CircleX, MapPinPlus, Bike, MapPin, MapPinCheck, MapPinHouse, UserSearch, Pin
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
