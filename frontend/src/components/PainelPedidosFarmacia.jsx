@@ -705,7 +705,9 @@ const nomeEntregador = entrega.data[8] // posição 8 = nome do entregador
 if (nomeEntregador) {
 entregadorHTML = `
 <div class='flex items-center gap-1 text-farol-secondary mb-1'>
-${Bike({ size: 12 }).props.children}
+<svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<path d="M5 18L9 6h1l4 12h-1l-1.25-3H7.25L6 18H5zm2.25-4h4.5L9 8.5 7.25 14z" />
+</svg>
 <span>${nomeEntregador}</span>
 </div>
 `
@@ -714,6 +716,7 @@ ${Bike({ size: 12 }).props.children}
 console.warn('Erro ao buscar entrega:', e)
 }
 }
+
 
 html = `
 <div class='text-[12px] text-gray-700 leading-tight'>
