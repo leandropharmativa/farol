@@ -231,7 +231,7 @@ return createPortal(
   key={campo}
   theme="light-border"
   placement="bottom-start"
-  animation="shift-away"
+  animation="text"
   render={() => (
     <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
       {nomesPermissao[campo]}
@@ -311,7 +311,7 @@ return createPortal(
 <div className="flex flex-wrap gap-2 mb-2">
   <Tippy
     placement="bottom-start"
-    animation="shift-away"
+    animation="text"
     render={() => (
       <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
         Origem
@@ -325,7 +325,7 @@ return createPortal(
 
   <Tippy
     placement="bottom-start"
-    animation="shift-away"
+    animation="text"
     render={() => (
       <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
         Destino
@@ -339,7 +339,7 @@ return createPortal(
 
   <Tippy
     placement="bottom-start"
-    animation="shift-away"
+    animation="text"
     render={() => (
       <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
         Residência
