@@ -209,6 +209,32 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   const modalRoot = document.getElementById('modal-root')
   if (!modalRoot) return null
 
+  function IconeComTippy({ children, conteudo, onClick }) {
+  return (
+    <Tippy
+      theme="light-border"
+      placement="bottom-start"
+      animation="shift-away"
+      delay={[0, 100]}
+      duration={[150, 100]}
+      interactive={false}
+      appendTo={document.body}
+      render={() => (
+        <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
+          {conteudo}
+        </div>
+      )}
+    >
+      <div
+        className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
+        onClick={onClick}
+      >
+        {children}
+      </div>
+    </Tippy>
+  )
+}
+
 return createPortal(
   <div className="modal-overlay right-align">
     <div className="modal-despacho-massa animate-fadeIn overflow-y-auto max-h-[90vh] p-6">
@@ -227,30 +253,15 @@ return createPortal(
 
 <div className="flex flex-wrap gap-2 mb-2">
   {Object.entries(permissoes).map(([campo, ativo]) => (
-    <Tippy
+    <IconeComTippy
       key={campo}
-      theme="light-border"
-      placement="bottom-start"
-      animation="shift-away"
-      delay={[0, 100]}
-      duration={[150, 100]}
-      interactive={false}
-      appendTo={document.body}
-      render={() => (
-        <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
-          {nomesPermissao[campo]}
-        </div>
-      )}
+      conteudo={nomesPermissao[campo]}
+      onClick={() => handlePermissaoToggle(campo)}
     >
-      <div
-        className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
-        onClick={() => handlePermissaoToggle(campo)}
-      >
-        {React.cloneElement(iconesPermissao[campo], {
-          className: ativo ? 'text-white' : 'text-farol-primaryfocus'
-        })}
-      </div>
-    </Tippy>
+      {React.cloneElement(iconesPermissao[campo], {
+        className: ativo ? 'text-white' : 'text-farol-primaryfocus'
+      })}
+    </IconeComTippy>
   ))}
 </div>
 
