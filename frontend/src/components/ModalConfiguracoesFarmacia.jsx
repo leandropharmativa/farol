@@ -278,33 +278,27 @@ return createPortal(
 
 <div className="flex flex-wrap gap-2 mb-2">
   {Object.entries(permissoes).map(([campo, ativo]) => (
-<Tippy
-  key={campo}
-  render={() => (
-    <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
-      {nomesPermissao[campo]}
-    </div>
-  )}
-  theme="light-border"
-  placement="bottom"
-  animation="shift-away"
-  delay={[0, 100]}
-  duration={[150, 100]}
-  appendTo={document.body}
-  interactive={false}
->
-  <div
-    className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
-    onClick={() => handlePermissaoToggle(campo)}
-  >
-    {React.cloneElement(iconesPermissao[campo], {
-      className: ativo ? 'text-white' : 'text-farol-primaryfocus'
-    })}
-  </div>
-</Tippy>
+    <Tippy
+      key={campo}
+      content={<span className="text-[12px] text-farol-secondary">{nomesPermissao[campo]}</span>}
+      theme="light-border"
+      placement="bottom"
+      animation="shift-away"
+      delay={[0, 100]}
+      duration={[150, 100]}
+      appendTo={document.body}
+    >
+      <div
+        className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
+        onClick={() => handlePermissaoToggle(campo)}
+      >
+        {React.cloneElement(iconesPermissao[campo], {
+          className: ativo ? 'text-white' : 'text-farol-primaryfocus',
+        })}
+      </div>
+    </Tippy>
   ))}
 </div>
-
         <div className="flex gap-2 mb-2">
           <button
             className="btn-config2 ml-auto"
