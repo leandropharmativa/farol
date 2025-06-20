@@ -39,13 +39,32 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     entregador: false,
   })
 
-  useEffect(() => {
-    if (aberto) {
-      gerarCodigo()
-      carregarUsuarios()
-      carregarLocais()
-    }
-  }, [aberto])
+useEffect(() => {
+  if (aberto) {
+    gerarCodigo()
+    carregarUsuarios()
+    carregarLocais()
+    setNome('')
+    setSenha('')
+    setEditandoUsuarioId(null)
+    setLocalNome('')
+    setIsOrigem(false)
+    setIsDestino(false)
+    setResidencia(false)
+    setEditandoLocalId(null)
+    setPermissoes({
+      permissao_inclusao: false,
+      permissao_impressao: false,
+      permissao_conferencia: false,
+      permissao_producao: false,
+      permissao_despacho: false,
+      permissao_recebimento: false,
+      permissao_entrega: false,
+      permissao_registrar_pagamento: false,
+      entregador: false,
+    })
+  }
+}, [aberto])
 
   const gerarCodigo = async () => {
     try {
@@ -222,16 +241,16 @@ return createPortal(
 
         <div className="flex flex-wrap gap-2 mb-2">
           {Object.entries(permissoes).map(([campo, ativo]) => (
-            <div
-              key={campo}
-              className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
-              title={campo}
-              onClick={() => handlePermissaoToggle(campo)}
-            >
-              {React.cloneElement(iconesPermissao[campo], {
-                className: ativo ? 'text-white' : 'text-farol-primaryfocus'
-              })}
-            </div>
+            <Tippy key={campo} content={nomesPermissao[campo]} theme="light-border">
+              <div
+                className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
+                onClick={() => handlePermissaoToggle(campo)}
+              >
+                {React.cloneElement(iconesPermissao[campo], {
+                  className: ativo ? 'text-white' : 'text-farol-primaryfocus'
+                })}
+              </div>
+            </Tippy>
           ))}
         </div>
 
@@ -293,15 +312,21 @@ return createPortal(
         <input className="modal-novo-pedido-input mb-2" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
 
         <div className="flex flex-wrap gap-2 mb-2">
-          <div onClick={() => setIsOrigem(!isOrigem)} className="cursor-pointer">
-            <MapPin size={18} className={isOrigem ? 'text-white' : 'text-farol-primaryfocus'} />
-          </div>
-          <div onClick={() => setIsDestino(!isDestino)} className="cursor-pointer">
-            <MapPinCheck size={18} className={isDestino ? 'text-white' : 'text-farol-primaryfocus'} />
-          </div>
-          <div onClick={() => setResidencia(!residencia)} className="cursor-pointer">
-            <MapPinHouse size={18} className={residencia ? 'text-white' : 'text-farol-primaryfocus'} />
-          </div>
+          <Tippy content="Origem" theme="light-border">
+            <div onClick={() => setIsOrigem(!isOrigem)} className="cursor-pointer">
+              <MapPin size={18} className={isOrigem ? 'text-white' : 'text-farol-primaryfocus'} />
+            </div>
+          </Tippy>
+          <Tippy content="Destino" theme="light-border">
+            <div onClick={() => setIsDestino(!isDestino)} className="cursor-pointer">
+              <MapPinCheck size={18} className={isDestino ? 'text-white' : 'text-farol-primaryfocus'} />
+            </div>
+          </Tippy>
+          <Tippy content="Residência" theme="light-border">
+            <div onClick={() => setResidencia(!residencia)} className="cursor-pointer">
+              <MapPinHouse size={18} className={residencia ? 'text-white' : 'text-farol-primaryfocus'} />
+            </div>
+          </Tippy>
         </div>
 
         <div className="flex gap-2 mb-2">
@@ -354,7 +379,8 @@ return createPortal(
       </div>
 
       {/* Fechar modal */}
-      <div className="flex justify-end mt-6">
+      <hr className="border-white/30 my-4" />
+      <div className="flex justify-end">
         <button className="btn-config2" onClick={onClose} title="Fechar">
           <SquareX size={20} />
         </button>
