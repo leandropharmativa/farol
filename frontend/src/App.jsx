@@ -1,6 +1,8 @@
 // frontend/src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import React from 'react'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 import LoginAdmin from './pages/LoginAdmin'
 import GerarSerial from './pages/GerarSerial'
@@ -18,7 +20,6 @@ export default function App() {
       <Routes>
         <Route path="/" element={<LoginFarmacia />} />
         <Route path="/ativar/:codigo" element={<AtivarContaFarmacia />} />
-
         <Route
           path="/painel-farmacia"
           element={
@@ -27,9 +28,7 @@ export default function App() {
               : <Navigate to="/" />
           }
         />
-
         <Route path="/login" element={<LoginAdmin />} />
-
         <Route
           path="/gerar"
           element={
@@ -39,6 +38,21 @@ export default function App() {
           }
         />
       </Routes>
+
+      {/* Toast personalizado */}
+      <ToastContainer
+        position="bottom-left"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        className="toast-farol"
+      />
     </BrowserRouter>
   )
 }
+
