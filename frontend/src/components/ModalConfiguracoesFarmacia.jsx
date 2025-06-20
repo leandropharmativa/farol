@@ -282,8 +282,8 @@ return createPortal(
       key={campo}
       content={<span className="text-[12px] text-farol-secondary">{nomesPermissao[campo]}</span>}
       theme="light-border"
-      placement="bottom"
-      animation="shift-away"
+      placement="bottom-end"
+      animation="text"
       delay={[0, 100]}
       duration={[150, 100]}
       appendTo={document.body}
