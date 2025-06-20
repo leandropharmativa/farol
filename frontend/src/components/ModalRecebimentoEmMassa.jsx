@@ -76,6 +76,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
       toast.success('Recebimento registrado')
       setSelecionados([])
       setConfirmar(false)
+      onClose()
       carregarPedidos()
       window.dispatchEvent(new Event('novoPedidoCriado'))
     } catch {
