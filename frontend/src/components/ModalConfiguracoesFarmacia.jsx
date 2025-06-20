@@ -234,6 +234,7 @@ return createPortal(
   animation="text"
   delay={[0, 100]}
   duration={[150, 100]}
+  interactive={false}
   render={() => (
     <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
       {nomesPermissao[campo]}
