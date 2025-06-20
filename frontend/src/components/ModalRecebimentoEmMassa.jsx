@@ -95,14 +95,13 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
         className="modal-despacho-massa animate-fadeIn max-h-[70vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-white text-base font-bold mb-2">Recebimento em Massa</h2>
-
+      
 <select
   className="mb-4 w-full text-sm bg-white border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-farol-primary"
   value={destinoSelecionado}
   onChange={(e) => setDestinoSelecionado(e.target.value)}
 >
-  <option value="" disabled>Selecione o destino</option>
+  <option value="" disabled>Selecione a Unidade</option>
   {locais.map(l => (
     <option key={l.id} value={l.nome}>{l.nome}</option>
   ))}
