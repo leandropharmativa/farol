@@ -235,6 +235,31 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
   )
 }
 
+  const handleFecharModal = () => {
+  setNome('')
+  setSenha('')
+  setEditandoUsuarioId(null)
+  setPermissoes({
+    permissao_inclusao: false,
+    permissao_impressao: false,
+    permissao_conferencia: false,
+    permissao_producao: false,
+    permissao_despacho: false,
+    permissao_recebimento: false,
+    permissao_entrega: false,
+    permissao_registrar_pagamento: false,
+    entregador: false,
+  })
+  setMostrarUsuarios(false)
+  setMostrarLocais(false)
+  setLocalNome('')
+  setIsOrigem(false)
+  setIsDestino(false)
+  setResidencia(false)
+  setEditandoLocalId(null)
+  onClose()
+}
+
 return createPortal(
   <div className="modal-overlay right-align">
     <div className="modal-despacho-massa animate-fadeIn overflow-y-auto max-h-[90vh] p-6">
@@ -253,15 +278,30 @@ return createPortal(
 
 <div className="flex flex-wrap gap-2 mb-2">
   {Object.entries(permissoes).map(([campo, ativo]) => (
-    <IconeComTippy
-      key={campo}
-      conteudo={nomesPermissao[campo]}
-      onClick={() => handlePermissaoToggle(campo)}
-    >
-      {React.cloneElement(iconesPermissao[campo], {
-        className: ativo ? 'text-white' : 'text-farol-primaryfocus'
-      })}
-    </IconeComTippy>
+<Tippy
+  key={campo}
+  render={() => (
+    <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
+      {nomesPermissao[campo]}
+    </div>
+  )}
+  theme="light-border"
+  placement="bottom"
+  animation="shift-away"
+  delay={[0, 100]}
+  duration={[150, 100]}
+  appendTo={document.body}
+  interactive={false}
+>
+  <div
+    className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
+    onClick={() => handlePermissaoToggle(campo)}
+  >
+    {React.cloneElement(iconesPermissao[campo], {
+      className: ativo ? 'text-white' : 'text-farol-primaryfocus'
+    })}
+  </div>
+</Tippy>
   ))}
 </div>
 
@@ -415,7 +455,7 @@ return createPortal(
       {/* Fechar modal */}
       <hr className="border-white/30 my-4" />
       <div className="flex justify-end">
-        <button className="btn-config2" onClick={onClose} title="Fechar">
+        <button className="btn-config2" onClick={handleFecharModal} title="Fechar">
           <SquareX size={20} />
         </button>
       </div>
