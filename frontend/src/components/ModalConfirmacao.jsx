@@ -89,17 +89,17 @@ export default function ModalConfirmacao({
     // ⬇️ Log para verificar os dados do entregador selecionado
     console.log('Entregador selecionado:', entregador)
 
-    try {
-      await api.post('/entregas/registrar', {
-        pedido_id: pedidoSelecionado.id,
-        farmacia_id: farmaciaId,
-        nome_paciente: paciente,
-        endereco_entrega: endereco,
-        valor_pago: pagamentoJaFeito ? null : valorPago || null,
-        forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
-        entregador_id: entregador.id,
-      })
+    const formData = new FormData()
+    formData.append('pedido_id', pedidoSelecionado.id)
+    formData.append('farmacia_id', farmaciaId)
+    formData.append('nome_paciente', paciente)
+    formData.append('endereco_entrega', endereco)
+    formData.append('entregador_id', entregador.id)
+    formData.append('valor_pago', pagamentoJaFeito ? '' : valorPago || '')
+    formData.append('forma_pagamento', pagamentoJaFeito ? '' : formaPagamento || '')
 
+    try {
+      await api.post('/entregas/registrar', formData)
       toast.success('Entrega registrada com sucesso')
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erro ao registrar entrega')
