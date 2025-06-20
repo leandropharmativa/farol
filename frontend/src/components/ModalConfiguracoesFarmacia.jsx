@@ -225,34 +225,34 @@ return createPortal(
           <input className="modal-novo-pedido-input col-span-2" disabled value={`Código: ${codigo}`} />
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-2">
-          {Object.entries(permissoes).map(([campo, ativo]) => (
-<Tippy
-  key={campo}
-  theme="light-border"
-  placement="bottom-start"
-  animation="text"
-  delay={[0, 100]}
-  duration={[150, 100]}
-  interactive={false}
-  render={() => (
-    <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
-      {nomesPermissao[campo]}
-    </div>
-  )}
->
-  <div
-    className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
-    onClick={() => handlePermissaoToggle(campo)}
-  >
-    {React.cloneElement(iconesPermissao[campo], {
-      className: ativo ? 'text-white' : 'text-farol-primaryfocus'
-    })}
-  </div>
-</Tippy>
-
-          ))}
+<div className="flex flex-wrap gap-2 mb-2">
+  {Object.entries(permissoes).map(([campo, ativo]) => (
+    <Tippy
+      key={campo}
+      theme="light-border"
+      placement="bottom-start"
+      animation="shift-away"
+      delay={[0, 100]}
+      duration={[150, 100]}
+      interactive={false}
+      appendTo={document.body}
+      render={() => (
+        <div className="bg-white text-[12px] text-farol-secondary rounded shadow px-2 py-1">
+          {nomesPermissao[campo]}
         </div>
+      )}
+    >
+      <div
+        className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
+        onClick={() => handlePermissaoToggle(campo)}
+      >
+        {React.cloneElement(iconesPermissao[campo], {
+          className: ativo ? 'text-white' : 'text-farol-primaryfocus'
+        })}
+      </div>
+    </Tippy>
+  ))}
+</div>
 
         <div className="flex gap-2 mb-2">
           <button
