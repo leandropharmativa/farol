@@ -1,4 +1,4 @@
-//frontend/src/components/PainelEntregador.jsx
+// frontend/src/components/PainelEntregador.jsx
 import { useEffect, useState } from 'react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
@@ -37,29 +37,33 @@ export default function PainelEntregador({ usuarioLogado }) {
     setAbrirModal(true)
   }
 
-const confirmarEntrega = async (pedidoId, codigoConfirmacao, observacao = '') => {
-  try {
-    if (!pedidoId || isNaN(pedidoId)) {
-      console.error('❌ pedidoId inválido:', pedidoId)
-      toast.error('Erro interno: ID do pedido inválido')
-      return
+  const confirmarEntrega = async (codigoConfirmacao, observacao = '') => {
+    const pedidoId = pedidoSelecionado?.id
+    const farmaciaId = pedidoSelecionado?.farmacia_id
+
+    try {
+      if (!pedidoId || isNaN(pedidoId)) {
+        console.error('❌ pedidoId inválido:', pedidoId)
+        toast.error('Erro interno: ID do pedido inválido')
+        return
+      }
+
+      const formData = new FormData()
+      formData.append('etapa', 'Entrega')
+      formData.append('usuario_logado_id', usuarioLogado?.id || 0)
+      formData.append('codigo_confirmacao', codigoConfirmacao)
+      formData.append('observacao', observacao)
+
+      await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formData)
+
+      toast.success('Entrega confirmada com sucesso')
+      setAbrirModal(false)
+      carregarEntregas()
+    } catch (err) {
+      console.error('❌ Erro ao confirmar entrega:', err)
+      toast.error('Erro ao confirmar entrega')
     }
-
-    const formData = new FormData()
-    formData.append('etapa', 'Entrega')
-    formData.append('usuario_logado_id', usuarioLogado?.id || 0)
-    formData.append('codigo_confirmacao', codigoConfirmacao)
-    formData.append('observacao', observacao)
-
-    await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formData)
-
-    toast.success('Entrega confirmada com sucesso')
-    carregarEntregas() // atualiza a lista após confirmação
-  } catch (err) {
-    console.error('❌ Erro ao confirmar entrega:', err)
-    toast.error('Erro ao confirmar entrega')
   }
-}
 
   useEffect(() => {
     carregarEntregas()
@@ -110,7 +114,7 @@ const confirmarEntrega = async (pedidoId, codigoConfirmacao, observacao = '') =>
             <div className="mt-3">
               <button
                 className="bg-farol-primary hover:bg-farol-primaryfocus text-white px-4 py-1.5 text-sm rounded-full flex items-center gap-2"
-                onClick={(e) => solicitarConfirmacaoEntrega(e, e)}
+                onClick={(event) => solicitarConfirmacaoEntrega(e, event)}
               >
                 <CheckCircle size={16} /> Confirmar entrega
               </button>
@@ -126,7 +130,7 @@ const confirmarEntrega = async (pedidoId, codigoConfirmacao, observacao = '') =>
       {abrirModal && (
         <ModalConfirmacao
           titulo="Entrega"
-          farmaciaId={pedidoSelecionado[2]} // farmacia_uuid
+          farmaciaId={pedidoSelecionado?.farmacia_id}
           destinoEhResidencia={false}
           onConfirmar={confirmarEntrega}
           onCancelar={() => setAbrirModal(false)}
