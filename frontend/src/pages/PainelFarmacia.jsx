@@ -107,9 +107,11 @@ export default function PainelFarmacia() {
         )}
       </header>
 
-      <NovosPedidosStream farmaciaId={farmaciaId} />
+      {!usuarioLogado.entregador && (
+  <NovosPedidosStream farmaciaId={farmaciaId} />
+      )}
 
-{usuarioLogado.permissao_entrega ? (
+{usuarioLogado.entregador ? (
   <PainelEntregador usuarioLogado={usuarioLogado} />
 ) : (
   <PainelPedidosFarmacia
