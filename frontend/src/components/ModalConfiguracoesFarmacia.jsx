@@ -284,7 +284,7 @@ return createPortal(
 
       {/* LOCAIS */}
       <div>
-        <input className="modal-novo-pedido-input mb-2" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
+        <input className="modal-novo-pedido-input round-full mb-2" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
 
         <div className="flex flex-wrap gap-2 mb-2">
           <div onClick={() => setIsOrigem(!isOrigem)} className={`rounded-full p-2 cursor-pointer ${isOrigem ? 'bg-white text-farol-primary' : 'bg-farol-primaryfocus text-white'}`}>
