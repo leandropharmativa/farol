@@ -57,7 +57,7 @@ export default function ModalConfirmacao({
     if (ultimoPedido) setPedidoSelecionado(ultimoPedido)
   }, [])
 
-  const confirmar = () => {
+  const confirmar = async () => {
     if (!codigo.trim()) {
       setCodigoInvalido(true)
       return
@@ -76,19 +76,34 @@ export default function ModalConfirmacao({
         }
       : {}
 
-    if (isDespachoResidencial) {
-      if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
-        return alert('Preencha nome do paciente, endereço e do entregador.')
-      }
+if (isDespachoResidencial) {
+  if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
+    return alert('Preencha nome do paciente, endereço e do entregador.')
+  }
 
-      extras.entrega = {
-        nome_paciente: paciente,
-        endereco_entrega: endereco,
-        valor_pago: pagamentoJaFeito ? null : valorPago || null,
-        forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
-        entregador_codigo: codigoEntregador
-      }
-    }
+  const entregador = usuariosEntrega.find(u => u.codigo === codigoEntregador)
+  if (!entregador) {
+    return toast.error('Entregador não encontrado.')
+  }
+
+  try {
+    await api.post('/entregas/registrar', {
+      pedido_id: pedidoSelecionado.id,
+      farmacia_id: farmaciaId,
+      nome_paciente: paciente,
+      endereco_entrega: endereco,
+      valor_pago: pagamentoJaFeito ? null : valorPago || null,
+      forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
+      entregador_id: entregador.id,
+    })
+
+    toast.success('Entrega registrada com sucesso')
+  } catch (error) {
+    toast.error(error.response?.data?.detail || 'Erro ao registrar entrega')
+    return
+  }
+}
+
 
     onConfirmar(codigo, obs, extras)
     onCancelar()
