@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  X, UserRoundPen, LocationEdit, Trash, Handshake, PackagePlus, Printer, Settings,
+  X, UserRoundPen, LocationEdit, Trash, Handshake, PackagePlus, Printer, Settings, UserRoundMinus,
   FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserPlus, Save, UserRoundPlus, 
-  CircleX, MapPinPlus, Bike, MapPin, MapPinCheck, MapPinHouse, UserSearch, Pin
+  CircleX, MapPinPlus, Bike, MapPin, MapPinCheck, MapPinHouse, UserSearch, Pin, SquareX, MapPinMinus
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
@@ -207,7 +207,6 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 return createPortal(
   <div className="modal-overlay right-align">
     <div className="modal-despacho-massa animate-fadeIn overflow-y-auto max-h-[90vh] p-6">
-      <button className="btn-config2 absolute top-2 right-2" onClick={onClose}><X size={20} /></button>
 
       <h3 className="text-white font-bold text-lg mb-2 mt-0 flex items-center gap-2">
         <Settings size={20} /> Configurações da farmácia
@@ -281,7 +280,7 @@ return createPortal(
             {usuarios.map(u => (
               <li key={u.id} className="flex items-center gap-2">
                 <button onClick={() => editarUsuario(u)} className="text-white hover:text-blue-300"><UserRoundPen size={16} /></button>
-                <button onClick={() => excluirUsuario(u.id)} className="text-white hover:text-red-300"><Trash size={16} /></button>
+                <button onClick={() => excluirUsuario(u.id)} className="text-white hover:text-red-300"><UserRoundMinus size={16} /></button>
                 <span>{u.codigo} - {u.nome}</span>
               </li>
             ))}
@@ -294,14 +293,14 @@ return createPortal(
         <input className="modal-novo-pedido-input mb-2" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
 
         <div className="flex flex-wrap gap-2 mb-2">
-          <div onClick={() => setIsOrigem(!isOrigem)} className={`rounded-full p-2 cursor-pointer ${isOrigem ? 'bg-white text-farol-primary' : 'bg-farol-primaryfocus text-white'}`}>
-            <MapPin size={16} />
+          <div onClick={() => setIsOrigem(!isOrigem)} className="cursor-pointer">
+            <MapPin size={18} className={isOrigem ? 'text-white' : 'text-farol-primaryfocus'} />
           </div>
-          <div onClick={() => setIsDestino(!isDestino)} className={`rounded-full p-2 cursor-pointer ${isDestino ? 'bg-white text-farol-primary' : 'bg-farol-primaryfocus text-white'}`}>
-            <MapPinCheck size={16} />
+          <div onClick={() => setIsDestino(!isDestino)} className="cursor-pointer">
+            <MapPinCheck size={18} className={isDestino ? 'text-white' : 'text-farol-primaryfocus'} />
           </div>
-          <div onClick={() => setResidencia(!residencia)} className={`rounded-full p-2 cursor-pointer ${residencia ? 'bg-white text-farol-primary' : 'bg-farol-primaryfocus text-white'}`}>
-            <MapPinHouse size={16} />
+          <div onClick={() => setResidencia(!residencia)} className="cursor-pointer">
+            <MapPinHouse size={18} className={residencia ? 'text-white' : 'text-farol-primaryfocus'} />
           </div>
         </div>
 
@@ -341,7 +340,7 @@ return createPortal(
             {locais.map(l => (
               <li key={l.id} className="flex items-center gap-2">
                 <button onClick={() => editarLocal(l)} className="text-white hover:text-blue-300"><LocationEdit size={16} /></button>
-                <button onClick={() => excluirLocal(l.id)} className="text-white hover:text-red-300"><Trash size={16} /></button>
+                <button onClick={() => excluirLocal(l.id)} className="text-white hover:text-red-300"><MapPinMinus size={16} /></button>
                 <span className="flex items-center gap-1">
                   {l.nome}
                   {l.origem && <MapPin size={14} />}
@@ -353,6 +352,14 @@ return createPortal(
           </ul>
         )}
       </div>
+
+      {/* Fechar modal */}
+      <div className="flex justify-end mt-6">
+        <button className="btn-config2" onClick={onClose} title="Fechar">
+          <SquareX size={20} />
+        </button>
+      </div>
+
     </div>
   </div>,
   modalRoot
