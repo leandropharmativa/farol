@@ -261,7 +261,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 }
 
 return createPortal(
-  <div className="modal-overlay right-align">
+  <div className="modal-overlay right-align z-50">
     <div className="modal-despacho-massa animate-fadeIn overflow-y-auto max-h-[90vh] p-6">
 
       <h3 className="text-white font-bold text-lg mb-2 mt-0 flex items-center gap-2">
