@@ -673,6 +673,24 @@ if (!p.status_despacho) podeExecutar = false
 if (!p.status_recebimento) podeExecutar = false
 }
 }
+
+if (
+  et.nome === 'Entrega' &&
+  p.status_despacho &&
+  locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
+) {
+  try {
+    const entrega = await api.get(`/entregas/${p.id}`);
+    const nomeEntregador = entrega.data[8]; // posição 8 = nome do entregador
+    if (nomeEntregador && nomeEntregador !== usuarioLogado?.nome) {
+      podeExecutar = false;
+    }
+  } catch (e) {
+    console.warn('Erro ao verificar entregador do pedido:', e);
+    podeExecutar = false; // por segurança, bloqueia
+  }
+}
+  
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
 const idEtapa = `${p.id}-${et.nome}`
