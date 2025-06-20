@@ -12,6 +12,13 @@ export default function PainelEntregador({ usuarioLogado }) {
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
   const [abrirModal, setAbrirModal] = useState(false)
   const [coordenadasModal, setCoordenadasModal] = useState(null)
+  const [logsPorPedido, setLogsPorPedido] = useState({})
+
+  const ajustarFusoHorario = (isoString) => {
+    const date = new Date(isoString)
+    date.setHours(date.getHours() - 3)
+    return date
+  }
 
   const carregarEntregas = async () => {
     try {
@@ -19,6 +26,18 @@ export default function PainelEntregador({ usuarioLogado }) {
         params: { entregador_id: usuarioLogado?.id }
       })
       setEntregas(res.data)
+
+      const novosLogs = {}
+      await Promise.all(res.data.map(async (e) => {
+        try {
+          const pedidoId = e[1]
+          const r = await api.get(`/pedidos/${pedidoId}/logs`)
+          novosLogs[pedidoId] = r.data
+        } catch {
+          novosLogs[e[1]] = []
+        }
+      }))
+      setLogsPorPedido(novosLogs)
     } catch (err) {
       toast.error('Erro ao carregar entregas')
     }
@@ -31,7 +50,7 @@ export default function PainelEntregador({ usuarioLogado }) {
       left: rect.left + window.scrollX
     })
     setPedidoSelecionado({
-      id: entrega[1], // pedido_id
+      id: entrega[1],
       farmacia_id: entrega[2]
     })
     setAbrirModal(true)
@@ -39,11 +58,9 @@ export default function PainelEntregador({ usuarioLogado }) {
 
   const confirmarEntrega = async (codigoConfirmacao, observacao = '') => {
     const pedidoId = pedidoSelecionado?.id
-    const farmaciaId = pedidoSelecionado?.farmacia_id
 
     try {
       if (!pedidoId || isNaN(pedidoId)) {
-        console.error('❌ pedidoId inválido:', pedidoId)
         toast.error('Erro interno: ID do pedido inválido')
         return
       }
@@ -72,55 +89,59 @@ export default function PainelEntregador({ usuarioLogado }) {
   return (
     <div>
       <div className="space-y-2">
-        {entregas.map((e, idx) => (
-          <div key={idx} className="border border-gray-300 p-3 rounded-lg shadow-sm bg-white">
-            <div className="flex items-center gap-2 text-farol-primary font-bold text-sm mb-1">
-              <Bike size={16} /> Entrega do pedido #{e[1]}
-            </div>
-            <div className="text-sm text-gray-700 space-y-1">
-              <div className="flex items-center gap-2"><User size={14} /> {e[3]}</div>
-              <div className="flex items-center gap-2"><MapPinned size={14} /> {e[4]}</div>
+        {entregas.map((e, idx) => {
+          const pedidoId = e[1]
+          const dataDespacho = ajustarFusoHorario(e[9])
+          const previsaoEntrega = ajustarFusoHorario(e[11])
+          const logDespacho = logsPorPedido[pedidoId]?.find(l => l.etapa === 'Despacho')
+          const observacaoDespacho = logDespacho?.observacao || ''
 
-              {e[5] ? (
-                <div className="flex items-center gap-2"><CreditCard size={14} /> <span className="text-green-700">PAGO</span></div>
-              ) : (
+          return (
+            <div key={idx} className="border border-gray-300 p-3 rounded-lg shadow-sm bg-white">
+              <div className="flex items-center gap-2 text-farol-primary font-bold text-sm mb-1">
+                <Bike size={16} /> Entrega do pedido #{pedidoId}
+              </div>
+              <div className="text-sm text-gray-700 space-y-1">
+                <div className="flex items-center gap-2"><User size={14} /> {e[3]}</div>
+                <div className="flex items-center gap-2"><MapPinned size={14} /> {e[4]}</div>
+
                 <div className="flex items-center gap-2">
                   <CreditCard size={14} />
                   R$ {Number(e[5] || 0).toFixed(2)} {e[6] ? `via ${e[6]}` : ''}
                 </div>
-              )}
 
-              <div className="flex items-center gap-2">
-                <Calendar size={14} />
-                Despachado em {new Date(e[9]).toLocaleDateString('pt-BR')} às {new Date(e[9]).toLocaleTimeString('pt-BR').slice(0, 5)}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <AlarmClock size={14} />
-                Previsão: {new Date(e[11]).toLocaleDateString('pt-BR')} às {new Date(e[11]).toLocaleTimeString('pt-BR').slice(0, 5)}
-              </div>
-
-              {e[19] && (
-                <div className="text-xs text-gray-500 italic">
-                  Observação: {e[19]}
+                <div className="flex items-center gap-2">
+                  <Calendar size={14} />
+                  Despachado em {dataDespacho.toLocaleDateString('pt-BR')} às {dataDespacho.toLocaleTimeString('pt-BR').slice(0, 5)}
                 </div>
-              )}
 
-              <div className="text-xs text-gray-500">
-                Despachado por <strong>{e[16]}</strong> e confirmado por <strong>{e[17]}</strong>
+                <div className="flex items-center gap-2">
+                  <AlarmClock size={14} />
+                  Previsão: {previsaoEntrega.toLocaleDateString('pt-BR')} às {previsaoEntrega.toLocaleTimeString('pt-BR').slice(0, 5)}
+                </div>
+
+                {observacaoDespacho && (
+                  <div className="text-xs text-gray-500 italic">
+                    Observação: {observacaoDespacho}
+                  </div>
+                )}
+
+                <div className="text-xs text-gray-500">
+                  Despachado por <strong>{e[16]}</strong> e confirmado por <strong>{e[17]}</strong>
+                </div>
+              </div>
+
+              <div className="mt-3">
+                <button
+                  className="bg-farol-primary hover:bg-farol-primaryfocus text-white px-4 py-1.5 text-sm rounded-full flex items-center gap-2"
+                  onClick={(event) => solicitarConfirmacaoEntrega(e, event)}
+                >
+                  <CheckCircle size={16} /> Confirmar entrega
+                </button>
               </div>
             </div>
-
-            <div className="mt-3">
-              <button
-                className="bg-farol-primary hover:bg-farol-primaryfocus text-white px-4 py-1.5 text-sm rounded-full flex items-center gap-2"
-                onClick={(event) => solicitarConfirmacaoEntrega(e, event)}
-              >
-                <CheckCircle size={16} /> Confirmar entrega
-              </button>
-            </div>
-          </div>
-        ))}
+          )
+        })}
 
         {entregas.length === 0 && (
           <div className="text-sm text-gray-500">Nenhuma entrega pendente encontrada.</div>
@@ -140,3 +161,4 @@ export default function PainelEntregador({ usuarioLogado }) {
     </div>
   )
 }
+
