@@ -664,8 +664,8 @@ className="pedido-info"
 <div className="flex items-center gap-2 ml-auto">
 {editandoId !== p.id && etapas.map(et => {
 if (
-et.nome === 'Recebimento' &&
-locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
+  et.nome === 'Recebimento' &&
+  destinoEhResidencia(p)
 ) return null
 
 const Icone = et.icone
