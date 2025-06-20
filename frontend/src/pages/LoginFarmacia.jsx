@@ -82,6 +82,8 @@ export default function LoginFarmacia() {
           localStorage.setItem('permissao_despacho', resUsuario.data.permissao_despacho)
           localStorage.setItem('permissao_recebimento', resUsuario.data.permissao_recebimento)
           localStorage.setItem('permissao_entrega', resUsuario.data.permissao_entrega)
+          localStorage.setItem('permissao_entrega', resUsuario.data.permissao_entrega)
+          localStorage.setItem('entregador', resUsuario.data.entregador)
           localStorage.setItem('permissao_registrar_pagamento', resUsuario.data.permissao_registrar_pagamento)
           toast.success('Login como usuário')
           navigate('/painel-farmacia')
