@@ -81,7 +81,7 @@ const confirmar = () => {
 
   if (isDespachoResidencial) {
     if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
-      return alert('Preencha nome do paciente, endereço e código do entregador.')
+      return alert('Preencha nome do paciente, endereço e do entregador.')
     }
 
     extras.entrega = {
@@ -114,7 +114,7 @@ const confirmar = () => {
   </span>
 </div>
 
-<div className={`flex items-center rounded-full px-3 py-2 mb-2 ${codigoInvalido ? 'border border-farol-primary bg-white' : 'bg-gray-100'}`}>
+<div className={`flex items-center rounded-full px-3 py-2 mb-2 ${codigoInvalido ? 'bg-red-100' : 'bg-gray-100'}`}>
   <UserRound className="text-gray-400 mr-2" size={16} />
   <input
     ref={inputRef}
@@ -128,7 +128,6 @@ const confirmar = () => {
     }}
   />
 </div>
-
 
         <input
           type="text"
