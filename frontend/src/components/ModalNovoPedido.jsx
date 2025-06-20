@@ -99,8 +99,11 @@ const salvarPedido = async () => {
   if (!modalRoot) return null
 
   return createPortal(
-    <div className="modal-overlay right-align">
-      <div className="modal-novo-pedido animate-fadeIn">
+  <div className="modal-overlay right-align" onClick={onClose}>
+    <div
+      className="modal-novo-pedido animate-fadeIn"
+      onClick={(e) => e.stopPropagation()}
+    >
         <div className="flex flex-col gap-2">
           <input
             className="modal-novo-pedido-input"
