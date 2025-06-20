@@ -214,7 +214,7 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
     <Tippy
       theme="light-border"
       placement="bottom-start"
-      animation="shift-away"
+      animation="text"
       delay={[0, 100]}
       duration={[150, 100]}
       interactive={false}
