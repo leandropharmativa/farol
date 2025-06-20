@@ -111,7 +111,10 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
             <LoaderCircle className="animate-spin" /> Carregando...
           </div>
         ) : destinoSelecionado && pedidos.length === 0 ? (
-          <div className="text-white text-sm italic">Nenhum pedido disponível para recebimento.</div>
+          <div className="text-white text-sm whitespace-normal leading-snug">
+            Nenhum pedido disponível para recebimento.
+          </div>
+
         ) : (
           <div className="flex flex-col gap-2">
             {pedidos.map(p => {
