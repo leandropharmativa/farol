@@ -261,8 +261,14 @@ export default function ModalConfiguracoesFarmacia({ aberto, onClose, farmaciaId
 }
 
 return createPortal(
-  <div className="modal-overlay right-align z-50">
-    <div className="modal-despacho-massa animate-fadeIn overflow-y-auto max-h-[90vh] p-6">
+  <div
+  className="modal-overlay right-align z-50"
+  onClick={handleFecharModal}
+>
+  <div
+    className="modal-despacho-massa animate-fadeIn overflow-y-auto max-h-[90vh] p-6"
+    onClick={(e) => e.stopPropagation()}
+  >
 
       <h3 className="text-white font-bold text-lg mb-2 mt-0 flex items-center gap-2">
         <Settings size={20} /> Configurações da farmácia
