@@ -19,6 +19,7 @@ module.exports = {
       colors: {
         farol: {
           primary: '#d4674c',
+          primaryfocus: '#fa947a',
           secondary:'#67727e',
           focus: '#dde5e7',
           linecolor: '#1791b1',
