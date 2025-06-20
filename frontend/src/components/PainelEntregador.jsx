@@ -31,9 +31,9 @@ const carregarEntregas = async () => {
     })
 
     const entregasFiltradas = res.data.filter(entrega => {
-      const status_despacho = entrega[10] // true
-      const status_entrega = entrega[11]  // false
-      return status_despacho && !status_entrega
+      const statusDespacho = entrega[12] === true // ajuste conforme o índice real
+      const statusEntrega = entrega[13] === false
+      return statusDespacho && !statusEntrega
     })
 
     setEntregas(entregasFiltradas)
