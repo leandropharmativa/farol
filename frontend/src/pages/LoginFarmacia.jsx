@@ -88,8 +88,7 @@ const tipo = resUsuario.data.permissao_entrega ? 'entregador' : 'usuario'
 localStorage.setItem('tipoLogin', tipo)
 
 toast.success(`Login como ${tipo === 'entregador' ? 'entregador' : 'usuário'}`)
-navigate('/painel-farmacia')
-window.location.reload()
+window.location.href = '/painel-farmacia'
 return
 }
 
