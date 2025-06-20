@@ -237,7 +237,14 @@ return createPortal(
         </div>
 
         <div className="flex gap-2 mb-2">
-          <button className="btn-config2 ml-auto" onClick={() => setMostrarUsuarios(!mostrarUsuarios)} title="Mostrar usuários">
+          <button
+            className="btn-config2 ml-auto"
+            onClick={() => {
+              setMostrarUsuarios(!mostrarUsuarios)
+              setMostrarLocais(false)
+            }}
+            title="Mostrar usuários"
+          >
             <UserSearch size={18} />
           </button>
           {!editandoUsuarioId ? (
@@ -273,9 +280,9 @@ return createPortal(
           <ul className="text-white text-sm space-y-1 mt-2">
             {usuarios.map(u => (
               <li key={u.id} className="flex items-center gap-2">
-                <span>{u.nome} (código: {u.codigo})</span>
                 <button onClick={() => editarUsuario(u)} className="text-white hover:text-blue-300"><UserRoundPen size={16} /></button>
                 <button onClick={() => excluirUsuario(u.id)} className="text-white hover:text-red-300"><Trash size={16} /></button>
+                <span>{u.codigo} - {u.nome}</span>
               </li>
             ))}
           </ul>
@@ -284,7 +291,7 @@ return createPortal(
 
       {/* LOCAIS */}
       <div>
-        <input className="modal-novo-pedido-input round-full mb-2" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
+        <input className="modal-novo-pedido-input mb-2" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
 
         <div className="flex flex-wrap gap-2 mb-2">
           <div onClick={() => setIsOrigem(!isOrigem)} className={`rounded-full p-2 cursor-pointer ${isOrigem ? 'bg-white text-farol-primary' : 'bg-farol-primaryfocus text-white'}`}>
@@ -299,7 +306,14 @@ return createPortal(
         </div>
 
         <div className="flex gap-2 mb-2">
-          <button className="btn-config2 ml-auto" onClick={() => setMostrarLocais(!mostrarLocais)} title="Mostrar locais">
+          <button
+            className="btn-config2 ml-auto"
+            onClick={() => {
+              setMostrarLocais(!mostrarLocais)
+              setMostrarUsuarios(false)
+            }}
+            title="Mostrar locais"
+          >
             <Pin size={18} />
           </button>
           {!editandoLocalId ? (
@@ -326,17 +340,14 @@ return createPortal(
           <ul className="text-white text-sm space-y-1 mt-2">
             {locais.map(l => (
               <li key={l.id} className="flex items-center gap-2">
-                <span>
-                  {l.nome} (
-                  {l.origem ? 'Origem' : ''}
-                  {l.origem && l.destino ? ' / ' : ''}
-                  {l.destino ? 'Destino' : ''}
-                  {(l.origem || l.destino) && l.residencia ? ' / ' : ''}
-                  {l.residencia ? 'Domicílio' : ''}
-                  )
-                </span>
                 <button onClick={() => editarLocal(l)} className="text-white hover:text-blue-300"><LocationEdit size={16} /></button>
                 <button onClick={() => excluirLocal(l.id)} className="text-white hover:text-red-300"><Trash size={16} /></button>
+                <span className="flex items-center gap-1">
+                  {l.nome}
+                  {l.origem && <MapPin size={14} />}
+                  {l.destino && <MapPinCheck size={14} />}
+                  {l.residencia && <MapPinHouse size={14} />}
+                </span>
               </li>
             ))}
           </ul>
