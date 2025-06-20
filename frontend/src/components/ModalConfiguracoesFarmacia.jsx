@@ -227,7 +227,7 @@ return createPortal(
 
         <div className="flex flex-wrap gap-2 mb-2">
           {Object.entries(permissoes).map(([campo, ativo]) => (
-            <Tippy key={campo} content={nomesPermissao[campo]} theme="light-border" animation="text" placement="bottom-start">
+            <Tippy key={campo} content={nomesPermissao[campo]} className="text-[12px] text-farol-secondary" theme="light-border" animation="text" placement="bottom-start">
               <div
                 className="rounded-full p-2 text-sm cursor-pointer flex items-center justify-center"
                 onClick={() => handlePermissaoToggle(campo)}
@@ -298,17 +298,17 @@ return createPortal(
         <input className="modal-novo-pedido-input mb-2" placeholder="Nome do local" value={localNome} onChange={(e) => setLocalNome(e.target.value)} />
 
         <div className="flex flex-wrap gap-2 mb-2">
-          <Tippy content="Origem" theme="light-border" animation="text" placement="bottom-start">
+          <Tippy content="Origem" className="text-[12px] text-farol-secondary" theme="light-border" animation="text" placement="bottom-start">
             <div onClick={() => setIsOrigem(!isOrigem)} className="cursor-pointer">
               <MapPin size={18} className={isOrigem ? 'text-white' : 'text-farol-primaryfocus'} />
             </div>
           </Tippy>
-          <Tippy content="Destino" theme="light-border" animation="text" placement="bottom-start">
+          <Tippy content="Destino" className="text-[12px] text-farol-secondary" theme="light-border" animation="text" placement="bottom-start">
             <div onClick={() => setIsDestino(!isDestino)} className="cursor-pointer">
               <MapPinCheck size={18} className={isDestino ? 'text-white' : 'text-farol-primaryfocus'} />
             </div>
           </Tippy>
-          <Tippy content="Residência" theme="light-border" animation="text" placement="bottom-start">
+          <Tippy content="Residência" className="text-[12px] text-farol-secondary" theme="light-border" animation="text" placement="bottom-start">
             <div onClick={() => setResidencia(!residencia)} className="cursor-pointer">
               <MapPinHouse size={18} className={residencia ? 'text-white' : 'text-farol-primaryfocus'} />
             </div>
