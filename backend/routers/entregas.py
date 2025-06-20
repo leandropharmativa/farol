@@ -108,7 +108,7 @@ def excluir_entrega(pedido_id: int):
         raise HTTPException(status_code=500, detail=f"Erro ao excluir entrega: {str(e)}")
 
 @router.get("/entregas/")
-def listar_entregas(farmacia_id: UUID = None, pedido_id: int = None):
+def listar_entregas(farmacia_id: UUID = None, pedido_id: int = None, entregador_id: int = None):
     try:
         query = """
             SELECT
@@ -120,26 +120,50 @@ def listar_entregas(farmacia_id: UUID = None, pedido_id: int = None):
                 e.valor_pago,
                 e.forma_pagamento,
                 e.entregador_id,
-                u.nome AS nome_entregador,
-                e.data_despacho
+                fu.nome AS nome_entregador,
+                e.data_despacho,
+                p.registro,
+                p.previsao_entrega,
+                p.status_entrega,
+                l.data_hora,
+                l.usuario_logado_id,
+                l.usuario_confirmador_id,
+                ul.nome AS nome_logado,
+                uc.nome AS nome_confirmador,
+                l.observacao,
+                l.etapa,
+                l.itens_solidos,
+                l.itens_semisolidos,
+                l.itens_saches
             FROM farol_entregas e
-            LEFT JOIN farol_farmacia_usuarios u ON e.entregador_id = u.id
+            JOIN farol_farmacia_pedidos p ON e.pedido_id = p.id
+            LEFT JOIN farol_farmacia_usuarios fu ON e.entregador_id = fu.id
+            LEFT JOIN farol_farmacia_pedido_logs l ON l.pedido_id = e.pedido_id AND l.etapa = 'Despacho'
+            LEFT JOIN farol_farmacia_usuarios ul ON l.usuario_logado_id = ul.id
+            LEFT JOIN farol_farmacia_usuarios uc ON l.usuario_confirmador_id = uc.id
+            WHERE p.status_despacho = TRUE AND p.status_entrega = FALSE
         """
         filtros = []
         valores = []
-
+        
         if farmacia_id:
             filtros.append("e.farmacia_id = %s")
             valores.append(str(farmacia_id))
         if pedido_id:
             filtros.append("e.pedido_id = %s")
             valores.append(pedido_id)
-
+        if entregador_id:
+            filtros.append("e.entregador_id = %s")
+            valores.append(entregador_id)
+        
         if filtros:
-            query += " WHERE " + " AND ".join(filtros)
+            query += " AND " + " AND ".join(filtros)
+        
+        query += " ORDER BY e.data_despacho DESC"
 
         cursor.execute(query, tuple(valores))
         entregas = cursor.fetchall()
         return entregas
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao listar entregas: {str(e)}")
