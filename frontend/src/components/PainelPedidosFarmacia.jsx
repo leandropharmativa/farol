@@ -690,56 +690,57 @@ const handleTooltipShow = async () => {
     const logEtapa = logs.find(l => l.etapa?.toLowerCase() === et.nome.toLowerCase())
 
     let html = `<div class='text-[10px] text-gray-500'>Aguardando ${et.nome}</div>`
-    let linhaEntregadorHTML = ''
-
-    // 👇 Se for etapa de despacho para residência, tenta buscar o entregador
-    if (et.nome === 'Despacho' && destinoEhResidencia(p)) {
-      try {
-        const entregaRes = await api.get(`/entregas/${p.id}`)
-        const entrega = entregaRes.data
-        const entregador = usuarios.find(u => u.id === entrega.entregador_id)
-        if (entregador) {
-          linhaEntregadorHTML = `
-          <div class='flex items-center gap-1 text-farol-primary mb-1'>
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path d="M5 17l5-5-5-5M13 17l5-5-5-5" />
-            </svg>
-            <span>${entregador.nome}</span>
-          </div>`
-        }
-      } catch (e) {
-        console.warn('Erro ao buscar entrega:', e)
-      }
-    }
 
     if (logEtapa && logEtapa.data_hora && logEtapa.usuario_confirmador) {
       const dt = new Date(logEtapa.data_hora)
       const data = dt.toLocaleDateString('pt-BR')
       const hora = dt.toLocaleTimeString('pt-BR').slice(0, 5)
 
+      let entregadorHTML = ''
+
+      if (et.nome === 'Despacho' && destinoEhResidencia(p)) {
+        try {
+          const entrega = await api.get(`/entregas/${p.id}`)
+          const nomeEntregador = entrega.data.entregador_nome
+          if (nomeEntregador) {
+            entregadorHTML = `
+              <div class='flex items-center gap-1 text-farol-primary mb-1'>
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+                <span>${nomeEntregador}</span>
+              </div>
+            `
+          }
+        } catch (e) {
+          console.warn('Erro ao buscar entrega:', e)
+        }
+      }
+
       html = `
-      <div class='text-[12px] text-gray-700 leading-tight'>
-        <div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
-        <hr class='my-1 border-t border-gray-300' />
-        ${linhaEntregadorHTML}
-        <div class='flex items-center gap-1 mb-0.5'>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
-          </svg>
-          <span>${logEtapa.usuario_confirmador}</span>
+        <div class='text-[12px] text-gray-700 leading-tight'>
+          <div class='font-semibold text-farol-primary mb-1'>${et.nome}</div>
+          <hr class='my-1 border-t border-gray-300' />
+          <div class='flex items-center gap-1 mb-0.5'>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M16 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <span>${logEtapa.usuario_confirmador}</span>
+          </div>
+          <div class='flex items-center gap-1 mb-1'>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span>${data} ${hora}</span>
+          </div>
+          ${entregadorHTML}
+          ${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>` : ''}
         </div>
-        <div class='flex items-center gap-1 mb-1'>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path d="M8 2v2M16 2v2M3 8h18M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
-          <span>${data} ${hora}</span>
-        </div>
-        ${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observacao}</div>` : ''}
-      </div>`
+      `
     }
 
-    // ✅ Atualiza status da etapa se detectado no log
+    // Atualiza status visual
     if (logEtapa && !p[et.campo]) {
       setPedidos(prevPedidos =>
         prevPedidos.map(pedido =>
@@ -755,7 +756,10 @@ const handleTooltipShow = async () => {
   } catch {
     setTooltipStates(prev => ({
       ...prev,
-      [idEtapa]: { loading: false, html: `<div class='text-[10px] text-red-400'>Erro ao carregar</div>` }
+      [idEtapa]: {
+        loading: false,
+        html: `<div class='text-[10px] text-red-400'>Erro ao carregar</div>`
+      }
     }))
   }
 }
