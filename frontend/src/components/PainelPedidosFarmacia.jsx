@@ -701,17 +701,19 @@ const handleTooltipShow = async () => {
       if (et.nome === 'Despacho' && destinoEhResidencia(p)) {
         try {
           const entrega = await api.get(`/entregas/${p.id}`)
-          const nomeEntregador = entrega.data.entregador_nome
+          const entregadorId = entrega.data.entregador_id
+          const entregador = usuarios.find(u => u.id === entregadorId)
+          const nomeEntregador = entregador?.nome
           if (nomeEntregador) {
-            entregadorHTML = `
-              <div class='flex items-center gap-1 text-farol-primary mb-1'>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-                <span>${nomeEntregador}</span>
-              </div>
-            `
-          }
+          entregadorHTML = `
+          <div class='flex items-center gap-1 text-farol-primary mb-1'>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+          <span>${nomeEntregador}</span>
+          </div>
+        `
+        }
         } catch (e) {
           console.warn('Erro ao buscar entrega:', e)
         }
