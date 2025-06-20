@@ -1,4 +1,3 @@
-// frontend/src/components/ModalRecebimentoEmMassa.jsx
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { SquareX, LoaderCircle, Handshake, Square, SquareCheck } from 'lucide-react'
@@ -34,7 +33,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
 
   const carregarPedidos = async () => {
     try {
-      set(true)
+      setCarregando(true)
       const res = await api.get('/pedidos/listar', { params: { farmacia_id: farmaciaId } })
       const filtrados = res.data.filter(p =>
         p.status_despacho &&
@@ -46,7 +45,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
     } catch {
       toast.error('Erro ao carregar pedidos')
     } finally {
-      set(false)
+      setCarregando(false)
     }
   }
 
@@ -62,7 +61,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
       return
     }
 
-    set(true)
+    setCarregando(true)
     try {
       for (const id of selecionados) {
         const formData = new FormData()
@@ -81,7 +80,7 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
     } catch {
       toast.error('Erro ao registrar recebimento')
     } finally {
-      set(false)
+      setCarregando(false)
     }
   }
 
@@ -95,60 +94,59 @@ export default function ModalRecebimentoEmMassa({ aberto, onClose, farmaciaId, u
         className="modal-despacho-massa animate-fadeIn max-h-[70vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-      
-<select
-  className="mb-4 w-full text-sm bg-white border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-farol-primary"
-  value={destinoSelecionado}
-  onChange={(e) => setDestinoSelecionado(e.target.value)}
->
-  <option value="" disabled>Selecione a Unidade</option>
-  {locais.map(l => (
-    <option key={l.id} value={l.nome}>{l.nome}</option>
-  ))}
-</select>
 
-{carregando ? (
-  <div className="text-white flex gap-2 items-center">
-    <LoaderCircle className="animate-spin" /> Carregando...
-  </div>
-) : pedidos.length === 0 ? (
-  <div className="text-white text-sm italic">Nenhum pedido disponível para recebimento.</div>
-) : (
-  <div className="flex flex-col gap-2">
-    {pedidos.map(p => {
-      const selecionado = selecionados.includes(p.id)
-      return (
-        <div
-          key={p.id}
-          className="flex items-center gap-2 text-white text-sm cursor-pointer"
-          onClick={() => toggleSelecionado(p.id)}
+        <select
+          className="mb-4 w-full text-sm bg-white border border-gray-300 rounded-full px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-farol-primary"
+          value={destinoSelecionado}
+          onChange={(e) => setDestinoSelecionado(e.target.value)}
         >
-          {selecionado ? <SquareCheck size={18} /> : <Square size={18} />}
-          <span>{p.registro}</span>
-        </div>
-      )
-    })}
-  </div>
-)}
+          <option value="" disabled>Selecione a Unidade</option>
+          {locais.map(l => (
+            <option key={l.id} value={l.nome}>{l.nome}</option>
+          ))}
+        </select>
 
+        {carregando ? (
+          <div className="text-white flex gap-2 items-center">
+            <LoaderCircle className="animate-spin" /> Carregando...
+          </div>
+        ) : destinoSelecionado && pedidos.length === 0 ? (
+          <div className="text-white text-sm italic">Nenhum pedido disponível para recebimento.</div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {pedidos.map(p => {
+              const selecionado = selecionados.includes(p.id)
+              return (
+                <div
+                  key={p.id}
+                  className="flex items-center gap-2 text-white text-sm cursor-pointer"
+                  onClick={() => toggleSelecionado(p.id)}
+                >
+                  {selecionado ? <SquareCheck size={18} /> : <Square size={18} />}
+                  <span>{p.registro}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
 
-{destinoSelecionado && (
-  <div className="flex justify-end items-center gap-2 mt-4">
-    <button className="btn-config2" onClick={onClose} title="Fechar">
-      <SquareX size={24} />
-    </button>
-    {pedidos.length > 0 && (
-      <button
-        className="btn-config2"
-        onClick={() => setConfirmar(true)}
-        disabled={carregando}
-        title="Confirmar recebimento"
-      >
-        <Handshake size={20} />
-      </button>
-    )}
-  </div>
-)}
+        {destinoSelecionado && (
+          <div className="flex justify-end items-center gap-2 mt-4">
+            <button className="btn-config2" onClick={onClose} title="Fechar">
+              <SquareX size={24} />
+            </button>
+            {pedidos.length > 0 && (
+              <button
+                className="btn-config2"
+                onClick={() => setConfirmar(true)}
+                disabled={carregando}
+                title="Confirmar recebimento"
+              >
+                <Handshake size={20} />
+              </button>
+            )}
+          </div>
+        )}
 
         {confirmar && (
           <ModalConfirmacao
