@@ -36,7 +36,8 @@ class UsuarioFarmaciaBase(BaseModel):
     permissao_despacho: bool = False
     permissao_entrega: bool = False
     permissao_registrar_pagamento: bool = False
-    permissao_recebimento: bool = False 
+    permissao_recebimento: bool = False
+    entregador: bool = False
 
 class UsuarioFarmaciaCreate(UsuarioFarmaciaBase):
     farmacia_id: UUID
