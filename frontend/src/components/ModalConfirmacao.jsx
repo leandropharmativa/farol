@@ -58,56 +58,58 @@ export default function ModalConfirmacao({
   }, [])
 
   const confirmar = async () => {
-    if (!codigo.trim()) {
-      setCodigoInvalido(true)
-      return
-    }
-
-    if (isConferencia && solidos + semisolidos + saches === 0) {
-      toast.warning('É necessário informar pelo menos 1 item conferido')
-      return
-    }
-
-    const extras = isConferencia
-      ? {
-          itens_solidos: solidos,
-          itens_semisolidos: semisolidos,
-          itens_saches: saches,
-        }
-      : {}
-
-if (isDespachoResidencial) {
-  if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
-    return alert('Preencha nome do paciente, endereço e do entregador.')
-  }
-
-  const entregador = usuariosEntrega.find(u => String(u.codigo) === codigoEntregador)
-  if (!entregador) {
-    return toast.error('Entregador não encontrado.')
-  }
-
-  try {
-    await api.post('/entregas/registrar', {
-      pedido_id: pedidoSelecionado.id,
-      farmacia_id: farmaciaId,
-      nome_paciente: paciente,
-      endereco_entrega: endereco,
-      valor_pago: pagamentoJaFeito ? null : valorPago || null,
-      forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
-      entregador_id: entregador.id,
-    })
-
-    toast.success('Entrega registrada com sucesso')
-  } catch (error) {
-    toast.error(error.response?.data?.detail || 'Erro ao registrar entrega')
+  if (!codigo.trim()) {
+    setCodigoInvalido(true)
     return
   }
-}
 
-
-    onConfirmar(codigo, obs, extras)
-    onCancelar()
+  if (isConferencia && solidos + semisolidos + saches === 0) {
+    toast.warning('É necessário informar pelo menos 1 item conferido')
+    return
   }
+
+  const extras = isConferencia
+    ? {
+        itens_solidos: solidos,
+        itens_semisolidos: semisolidos,
+        itens_saches: saches,
+      }
+    : {}
+
+  if (isDespachoResidencial) {
+    if (!paciente.trim() || !endereco.trim() || !codigoEntregador.trim()) {
+      return alert('Preencha nome do paciente, endereço e do entregador.')
+    }
+
+    const entregador = usuariosEntrega.find(u => String(u.codigo) === codigoEntregador)
+    if (!entregador) {
+      return toast.error('Entregador não encontrado.')
+    }
+
+    // ⬇️ Log para verificar os dados do entregador selecionado
+    console.log('Entregador selecionado:', entregador)
+
+    try {
+      await api.post('/entregas/registrar', {
+        pedido_id: pedidoSelecionado.id,
+        farmacia_id: farmaciaId,
+        nome_paciente: paciente,
+        endereco_entrega: endereco,
+        valor_pago: pagamentoJaFeito ? null : valorPago || null,
+        forma_pagamento: pagamentoJaFeito ? null : formaPagamento || null,
+        entregador_id: entregador.id,
+      })
+
+      toast.success('Entrega registrada com sucesso')
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao registrar entrega')
+      return
+    }
+  }
+
+  onConfirmar(codigo, obs, extras)
+  onCancelar()
+}
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 z-70 flex items-center justify-center">
