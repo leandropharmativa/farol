@@ -209,7 +209,9 @@ return createPortal(
     <div className="modal-despacho-massa animate-fadeIn overflow-y-auto max-h-[90vh] p-6">
       <button className="btn-config2 absolute top-2 right-2" onClick={onClose}><X size={20} /></button>
 
-      <h3 className="text-white font-bold text-lg mb-2 mt-0">Configurações da farmácia</h3>
+      <h3 className="text-white font-bold text-lg mb-2 mt-0 flex items-center gap-2">
+        <Settings size={20} /> Configurações da farmácia
+      </h3>
 
       {/* USUÁRIO */}
       <div className="mb-4">
@@ -235,28 +237,36 @@ return createPortal(
         </div>
 
         <div className="flex gap-2 mb-2">
-          <button className="btn-config2" onClick={salvarUsuario} title="Salvar usuário"><Save size={18} /></button>
-          {editandoUsuarioId && (
-            <button className="btn-config2" onClick={() => {
-              setNome('')
-              setSenha('')
-              setEditandoUsuarioId(null)
-              setPermissoes({
-                permissao_inclusao: false,
-                permissao_impressao: false,
-                permissao_conferencia: false,
-                permissao_producao: false,
-                permissao_despacho: false,
-                permissao_recebimento: false,
-                permissao_entrega: false,
-                permissao_registrar_pagamento: false,
-                entregador: false,
-              })
-            }} title="Cancelar edição">
-              <CircleX size={18} />
+          <button className="btn-config2 ml-auto" onClick={() => setMostrarUsuarios(!mostrarUsuarios)} title="Mostrar usuários">
+            <UserSearch size={18} />
+          </button>
+          {!editandoUsuarioId ? (
+            <button className="btn-config2" onClick={salvarUsuario} title="Novo usuário">
+              <UserPlus size={18} />
             </button>
+          ) : (
+            <>
+              <button className="btn-config2" onClick={salvarUsuario} title="Salvar usuário"><Save size={18} /></button>
+              <button className="btn-config2" onClick={() => {
+                setNome('')
+                setSenha('')
+                setEditandoUsuarioId(null)
+                setPermissoes({
+                  permissao_inclusao: false,
+                  permissao_impressao: false,
+                  permissao_conferencia: false,
+                  permissao_producao: false,
+                  permissao_despacho: false,
+                  permissao_recebimento: false,
+                  permissao_entrega: false,
+                  permissao_registrar_pagamento: false,
+                  entregador: false,
+                })
+              }} title="Cancelar edição">
+                <CircleX size={18} />
+              </button>
+            </>
           )}
-          <button className="btn-config2 ml-auto" onClick={() => setMostrarUsuarios(!mostrarUsuarios)} title="Mostrar usuários"><UserSearch size={18} /></button>
         </div>
 
         {mostrarUsuarios && (
@@ -289,19 +299,27 @@ return createPortal(
         </div>
 
         <div className="flex gap-2 mb-2">
-          <button className="btn-config2" onClick={salvarLocal} title="Salvar local"><Save size={18} /></button>
-          {editandoLocalId && (
-            <button className="btn-config2" onClick={() => {
-              setLocalNome('')
-              setIsOrigem(false)
-              setIsDestino(false)
-              setResidencia(false)
-              setEditandoLocalId(null)
-            }} title="Cancelar edição">
-              <CircleX size={18} />
+          <button className="btn-config2 ml-auto" onClick={() => setMostrarLocais(!mostrarLocais)} title="Mostrar locais">
+            <Pin size={18} />
+          </button>
+          {!editandoLocalId ? (
+            <button className="btn-config2" onClick={salvarLocal} title="Novo local">
+              <MapPinPlus size={18} />
             </button>
+          ) : (
+            <>
+              <button className="btn-config2" onClick={salvarLocal} title="Salvar local"><Save size={18} /></button>
+              <button className="btn-config2" onClick={() => {
+                setLocalNome('')
+                setIsOrigem(false)
+                setIsDestino(false)
+                setResidencia(false)
+                setEditandoLocalId(null)
+              }} title="Cancelar edição">
+                <CircleX size={18} />
+              </button>
+            </>
           )}
-          <button className="btn-config2 ml-auto" onClick={() => setMostrarLocais(!mostrarLocais)} title="Mostrar locais"><Pin size={18} /></button>
         </div>
 
         {mostrarLocais && (
