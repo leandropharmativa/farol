@@ -81,7 +81,7 @@ if (isDespachoResidencial) {
     return alert('Preencha nome do paciente, endereço e do entregador.')
   }
 
-  const entregador = usuariosEntrega.find(u => u.codigo === codigoEntregador)
+  const entregador = usuariosEntrega.find(u => String(u.codigo) === codigoEntregador)
   if (!entregador) {
     return toast.error('Entregador não encontrado.')
   }
