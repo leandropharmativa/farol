@@ -718,7 +718,7 @@ ${Bike({ size: 12 }).props.children}
 console.warn('Erro ao buscar entrega:', e)
 }
 }
-
+}
 
 
 html = `
