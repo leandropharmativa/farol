@@ -95,7 +95,7 @@ export default function ModalConfirmacao({
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black bg-opacity-30 z-70 flex items-center justify-center">
       <div className="bg-white w-full max-w-[280px] p-4 rounded-xl shadow-md animate-fadeIn max-h-screen overflow-y-auto relative">
         <button onClick={onCancelar} className="absolute top-2 right-2 text-gray-400 hover:text-red-500">
           <X size={20} />
