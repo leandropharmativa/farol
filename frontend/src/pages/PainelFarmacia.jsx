@@ -48,6 +48,7 @@ export default function PainelFarmacia() {
   }
 
   const irParaConfiguracoes = () => {
+    setMenuAberto(false)
     setModalConfiguracoesAberto(true)
   }
 
