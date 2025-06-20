@@ -690,7 +690,7 @@ if (
     podeExecutar = false; // por segurança, bloqueia
   }
 }
-  
+
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
 
 const idEtapa = `${p.id}-${et.nome}`
