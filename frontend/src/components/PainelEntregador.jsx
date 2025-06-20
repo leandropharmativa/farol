@@ -4,20 +4,50 @@ import { toast } from 'react-toastify'
 import {
   Bike, Calendar, AlarmClock, CreditCard, User, MapPinned, CheckCircle
 } from 'lucide-react'
+import ModalConfirmacao from './ModalConfirmacao'
 
 export default function PainelEntregador({ usuarioLogado }) {
   const [entregas, setEntregas] = useState([])
+  const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
+  const [abrirModal, setAbrirModal] = useState(false)
+  const [coordenadasModal, setCoordenadasModal] = useState(null)
 
   const carregarEntregas = async () => {
     try {
       const res = await api.get('/entregas/', {
         params: { entregador_id: usuarioLogado?.id }
       })
-
-      // Já filtrado no backend, não precisa repetir filtro
       setEntregas(res.data)
     } catch (err) {
       toast.error('Erro ao carregar entregas')
+    }
+  }
+
+  const solicitarConfirmacaoEntrega = (entrega, event) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    setCoordenadasModal({
+      top: rect.top + window.scrollY + 30,
+      left: rect.left + window.scrollX
+    })
+    setPedidoSelecionado(entrega)
+    setAbrirModal(true)
+  }
+
+  const confirmarEntrega = async (codigo, observacao) => {
+    try {
+      const formData = new FormData()
+      formData.append('etapa', 'Entrega')
+      formData.append('usuario_logado_id', usuarioLogado?.id || 0)
+      formData.append('codigo_confirmacao', codigo)
+      formData.append('observacao', observacao)
+
+      await api.post(`/pedidos/${pedidoSelecionado[1]}/registrar-etapa`, formData)
+      toast.success('Entrega confirmada com sucesso')
+      setAbrirModal(false)
+      carregarEntregas()
+    } catch (err) {
+      console.error(err)
+      toast.error('Erro ao confirmar entrega')
     }
   }
 
@@ -27,8 +57,6 @@ export default function PainelEntregador({ usuarioLogado }) {
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-farol-primary mb-4">Entregas atribuídas</h2>
-
       <div className="space-y-2">
         {entregas.map((e, idx) => (
           <div key={idx} className="border border-gray-300 p-3 rounded-lg shadow-sm bg-white">
@@ -70,7 +98,10 @@ export default function PainelEntregador({ usuarioLogado }) {
             </div>
 
             <div className="mt-3">
-              <button className="bg-farol-primary hover:bg-farol-primaryfocus text-white px-4 py-1.5 text-sm rounded-full flex items-center gap-2">
+              <button
+                className="bg-farol-primary hover:bg-farol-primaryfocus text-white px-4 py-1.5 text-sm rounded-full flex items-center gap-2"
+                onClick={(e) => solicitarConfirmacaoEntrega(e, e)}
+              >
                 <CheckCircle size={16} /> Confirmar entrega
               </button>
             </div>
@@ -81,6 +112,17 @@ export default function PainelEntregador({ usuarioLogado }) {
           <div className="text-sm text-gray-500">Nenhuma entrega pendente encontrada.</div>
         )}
       </div>
+
+      {abrirModal && (
+        <ModalConfirmacao
+          titulo="Entrega"
+          farmaciaId={pedidoSelecionado[2]} // farmacia_uuid
+          destinoEhResidencia={false}
+          onConfirmar={confirmarEntrega}
+          onCancelar={() => setAbrirModal(false)}
+          coordenadas={coordenadasModal}
+        />
+      )}
     </div>
   )
 }
