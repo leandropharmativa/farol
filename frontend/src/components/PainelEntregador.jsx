@@ -57,30 +57,42 @@ setAbrirModal(true)
 }
 
 const confirmarEntrega = async (codigoConfirmacao, observacao = '') => {
-const pedidoId = pedidoSelecionado?.id
+  const pedidoId = pedidoSelecionado?.id
+  const farmaciaId = pedidoSelecionado?.farmacia_id
 
-try {
-if (!pedidoId || isNaN(pedidoId)) {
-toast.error('Erro interno: ID do pedido inválido')
-return
+  try {
+    if (!pedidoId || isNaN(pedidoId)) {
+      console.error('❌ pedidoId inválido:', pedidoId)
+      toast.error('Erro interno: ID do pedido inválido')
+      return
+    }
+
+    const formDataEntrega = new FormData()
+    formDataEntrega.append('etapa', 'Entrega')
+    formDataEntrega.append('usuario_logado_id', usuarioLogado?.id || 0)
+    formDataEntrega.append('codigo_confirmacao', codigoConfirmacao)
+    formDataEntrega.append('observacao', observacao)
+
+    await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formDataEntrega)
+
+    // ✅ Confirmar etapa de pagamento em seguida
+    const formDataPagamento = new FormData()
+    formDataPagamento.append('etapa', 'Pagamento')
+    formDataPagamento.append('usuario_logado_id', usuarioLogado?.id || 0)
+    formDataPagamento.append('codigo_confirmacao', codigoConfirmacao)
+    formDataPagamento.append('observacao', observacao)
+
+    await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formDataPagamento)
+
+    toast.success('Entrega e pagamento confirmados com sucesso')
+    setAbrirModal(false)
+    carregarEntregas()
+  } catch (err) {
+    console.error('❌ Erro ao confirmar entrega/pagamento:', err)
+    toast.error('Erro ao confirmar entrega')
+  }
 }
 
-const formData = new FormData()
-formData.append('etapa', 'Entrega')
-formData.append('usuario_logado_id', usuarioLogado?.id || 0)
-formData.append('codigo_confirmacao', codigoConfirmacao)
-formData.append('observacao', observacao)
-
-await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formData)
-
-toast.success('Entrega confirmada com sucesso')
-setAbrirModal(false)
-carregarEntregas()
-} catch (err) {
-console.error('❌ Erro ao confirmar entrega:', err)
-toast.error('Erro ao confirmar entrega')
-}
-}
 
 useEffect(() => {
 carregarEntregas()
