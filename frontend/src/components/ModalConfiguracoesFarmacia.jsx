@@ -1,5 +1,5 @@
 // frontend/src/components/ModalConfiguracoesFarmacia.jsx
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
   X, UserRoundPen, LocationEdit, Trash, Handshake, PackagePlus, Printer,
