@@ -30,6 +30,8 @@ export default function ModalConfirmacao({
   const [codigoEntregador, setCodigoEntregador] = useState('')
   const [usuariosEntrega, setUsuariosEntrega] = useState([])
 
+  const [codigoInvalido, setCodigoInvalido] = useState(false)
+  
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
   const inputRef = useRef(null)
 
@@ -59,7 +61,10 @@ export default function ModalConfirmacao({
   }, [])
 
 const confirmar = () => {
-  if (!codigo.trim()) return
+  if (!codigo.trim()) {
+    setCodigoInvalido(true)
+    return
+  }
 
   if (isConferencia && solidos + semisolidos + saches === 0) {
     toast.warning('É necessário informar pelo menos 1 item conferido')
@@ -88,11 +93,9 @@ const confirmar = () => {
     }
   }
 
-  // ✅ Executa o callback e fecha o modal imediatamente
   onConfirmar(codigo, obs, extras)
   onCancelar()
 }
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 z-50 flex items-center justify-center">
       <div className="bg-white w-full max-w-[280px] p-4 rounded-xl shadow-md animate-fadeIn max-h-screen overflow-y-auto relative">
@@ -111,17 +114,21 @@ const confirmar = () => {
   </span>
 </div>
 
-        <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mb-2">
-          <UserRound className="text-gray-400 mr-2" size={16} />
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Código do usuário"
-            className="bg-transparent border-none outline-none text-sm flex-1"
-            value={codigo}
-            onChange={(e) => setCodigo(e.target.value)}
-          />
-        </div>
+<div className={`flex items-center rounded-full px-3 py-2 mb-2 ${codigoInvalido ? 'border border-farol-primary bg-white' : 'bg-gray-100'}`}>
+  <UserRound className="text-gray-400 mr-2" size={16} />
+  <input
+    ref={inputRef}
+    type="text"
+    placeholder="Código do usuário"
+    className="bg-transparent border-none outline-none text-sm flex-1"
+    value={codigo}
+    onChange={(e) => {
+      setCodigo(e.target.value)
+      if (codigoInvalido && e.target.value.trim()) setCodigoInvalido(false)
+    }}
+  />
+</div>
+
 
         <input
           type="text"
