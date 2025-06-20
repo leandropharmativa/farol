@@ -24,6 +24,8 @@ const [filtroPorPrevisao, setFiltroPorPrevisao] = useState(false)
 const [logsPorPedido, setLogsPorPedido] = useState({})
 const [tooltipStates, setTooltipStates] = useState({})
 
+const [entregadoresPorPedido, setEntregadoresPorPedido] = useState({})
+
 const [editandoId, setEditandoId] = useState(null)
 const [formEdicao, setFormEdicao] = useState({})
 const [usuarios, setUsuarios] = useState([])
@@ -41,27 +43,40 @@ l.nome?.trim().toLowerCase() === pedido.destino_nome?.trim().toLowerCase()
 }
 
 const carregarPedidos = async () => {
-try {
-const res = await api.get('/pedidos/listar', {
-params: { farmacia_id: farmaciaId }
-})
+  try {
+    const res = await api.get('/pedidos/listar', {
+      params: { farmacia_id: farmaciaId }
+    })
 
-let pedidosCarregados = res.data
+    let pedidosCarregados = res.data
 
-// Aplica filtro por data (tanto para criação quanto previsão)
-const dataFiltroLocal = new Date(dataSelecionada).toLocaleDateString('pt-BR')
+    const dataFiltroLocal = new Date(dataSelecionada).toLocaleDateString('pt-BR')
 
-pedidosCarregados = pedidosCarregados.filter(p => {
-const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-if (!campoOriginal) return false
-const dataCampo = new Date(campoOriginal).toLocaleDateString('pt-BR')
-return dataCampo === dataFiltroLocal
-})
+    pedidosCarregados = pedidosCarregados.filter(p => {
+      const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+      if (!campoOriginal) return false
+      const dataCampo = new Date(campoOriginal).toLocaleDateString('pt-BR')
+      return dataCampo === dataFiltroLocal
+    })
 
-setPedidos(pedidosCarregados)
-} catch (err) {
-toast.error('Erro ao carregar pedidos')
-}
+    setPedidos(pedidosCarregados)
+
+    // 👇 Adiciona aqui a parte dos entregadores:
+    const entregadores = {}
+    await Promise.all(pedidosCarregados.map(async (p) => {
+      try {
+        const res = await api.get(`/entregas/${p.id}`)
+        const nomeEntregador = res.data?.[8]
+        if (nomeEntregador) entregadores[p.id] = nomeEntregador
+      } catch (e) {
+        console.warn(`Erro ao buscar entregador do pedido ${p.id}`, e)
+      }
+    }))
+    setEntregadoresPorPedido(entregadores)
+
+  } catch (err) {
+    toast.error('Erro ao carregar pedidos')
+  }
 }
 
 useEffect(() => {
@@ -679,16 +694,11 @@ if (
   p.status_despacho &&
   locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
 ) {
-  try {
-    const entrega = await api.get(`/entregas/${p.id}`);
-    const nomeEntregador = entrega.data[8]; // posição 8 = nome do entregador
-    if (nomeEntregador && nomeEntregador !== usuarioLogado?.nome) {
-      podeExecutar = false;
-    }
-  } catch (e) {
-    console.warn('Erro ao verificar entregador do pedido:', e);
-    podeExecutar = false; // por segurança, bloqueia
+  const nomeEntregador = entregadoresPorPedido[p.id]
+  if (nomeEntregador && nomeEntregador !== usuarioLogado?.nome) {
+    podeExecutar = false
   }
+}
 }
 
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
