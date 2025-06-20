@@ -14,13 +14,15 @@ def criar_usuario(dados: UsuarioFarmaciaCreate):
                 farmacia_id, codigo, nome, senha,
                 permissao_inclusao, permissao_impressao, permissao_conferencia,
                 permissao_producao, permissao_despacho, permissao_entrega,
-                permissao_registrar_pagamento, permissao_recebimento
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                permissao_registrar_pagamento, permissao_recebimento,
+                entregador
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             str(dados.farmacia_id), dados.codigo, dados.nome, dados.senha,
             dados.permissao_inclusao, dados.permissao_impressao, dados.permissao_conferencia,
             dados.permissao_producao, dados.permissao_despacho, dados.permissao_entrega,
-            dados.permissao_registrar_pagamento, dados.permissao_recebimento
+            dados.permissao_registrar_pagamento, dados.permissao_recebimento,
+            dados.entregador
         ))
         return {"status": "ok"}
     except Exception as e:
@@ -48,14 +50,15 @@ async def editar_usuario(id: int, request: Request):
                 permissao_despacho = %s,
                 permissao_entrega = %s,
                 permissao_registrar_pagamento = %s,
-                permissao_recebimento = %s
+                permissao_recebimento = %s,
+                entregador = %s
             WHERE id = %s
         """, (
             dados['nome'], dados['senha'],
             dados['permissao_inclusao'], dados['permissao_impressao'], dados['permissao_conferencia'],
             dados['permissao_producao'], dados['permissao_despacho'], dados['permissao_entrega'],
             dados['permissao_registrar_pagamento'], dados['permissao_recebimento'],
-            id
+            dados['entregador'], id
         ))
         return {"status": "ok"}
     except Exception as e:
@@ -90,7 +93,8 @@ def login_usuario(dados: dict = Body(...)):
             u.permissao_despacho,
             u.permissao_entrega,
             u.permissao_registrar_pagamento,
-            u.permissao_recebimento
+            u.permissao_recebimento,
+            u.entregador
         FROM farol_farmacia_usuarios u
         JOIN farol_farmacias f ON f.id = u.farmacia_id
         WHERE u.codigo = %s AND u.senha = %s
@@ -112,6 +116,7 @@ def login_usuario(dados: dict = Body(...)):
             "permissao_entrega": usuario[9],
             "permissao_registrar_pagamento": usuario[10],
             "permissao_recebimento": usuario[11],
+            "entregador": usuario[12],
         }
     else:
         return {"status": "erro", "mensagem": "Credenciais inválidas"}
