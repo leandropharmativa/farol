@@ -37,39 +37,31 @@ def registrar_entrega(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao registrar entrega: {str(e)}")
 
-
 @router.get("/entregas/{pedido_id}")
-def obter_entrega_por_pedido(pedido_id: int):
+def obter_entrega(pedido_id: int):
     try:
         cursor.execute("""
-            SELECT 
-                e.id, e.pedido_id, e.farmacia_id, e.nome_paciente, 
-                e.endereco_entrega, e.valor_pago, e.forma_pagamento, 
-                e.entregador_id, u.nome AS entregador_nome, e.data_despacho
+            SELECT
+                e.id,
+                e.pedido_id,
+                e.farmacia_id,
+                e.nome_paciente,
+                e.endereco_entrega,
+                e.valor_pago,
+                e.forma_pagamento,
+                e.entregador_id,
+                u.nome AS nome_entregador,
+                e.data_despacho
             FROM farol_entregas e
-            LEFT JOIN farol_usuarios u ON e.entregador_id = u.id
+            LEFT JOIN farol_farmacia_usuarios u ON e.entregador_id = u.id
             WHERE e.pedido_id = %s
         """, (pedido_id,))
-        row = cursor.fetchone()
-        if not row:
-            raise HTTPException(status_code=404, detail="Entrega não encontrada")
-
-        return {
-            "id": row[0],
-            "pedido_id": row[1],
-            "farmacia_id": row[2],
-            "nome_paciente": row[3],
-            "endereco_entrega": row[4],
-            "valor_pago": row[5],
-            "forma_pagamento": row[6],
-            "entregador_id": row[7],
-            "entregador_nome": row[8],
-            "data_despacho": row[9],
-        }
-
+        entrega = cursor.fetchone()
+        if not entrega:
+            raise HTTPException(status_code=404, detail="Entrega não encontrada.")
+        return entrega
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao obter entrega: {str(e)}")
-
 
 @router.post("/entregas/editar")
 def editar_entrega(
@@ -103,7 +95,6 @@ def editar_entrega(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao editar entrega: {str(e)}")
 
-
 @router.delete("/entregas/{pedido_id}")
 def excluir_entrega(pedido_id: int):
     try:
@@ -116,17 +107,23 @@ def excluir_entrega(pedido_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao excluir entrega: {str(e)}")
 
-
 @router.get("/entregas/")
 def listar_entregas(farmacia_id: UUID = None, pedido_id: int = None):
     try:
         query = """
-            SELECT 
-                e.id, e.pedido_id, e.farmacia_id, e.nome_paciente, 
-                e.endereco_entrega, e.valor_pago, e.forma_pagamento, 
-                e.entregador_id, u.nome AS entregador_nome, e.data_despacho
+            SELECT
+                e.id,
+                e.pedido_id,
+                e.farmacia_id,
+                e.nome_paciente,
+                e.endereco_entrega,
+                e.valor_pago,
+                e.forma_pagamento,
+                e.entregador_id,
+                u.nome AS nome_entregador,
+                e.data_despacho
             FROM farol_entregas e
-            LEFT JOIN farol_usuarios u ON e.entregador_id = u.id
+            LEFT JOIN farol_farmacia_usuarios u ON e.entregador_id = u.id
         """
         filtros = []
         valores = []
@@ -142,24 +139,7 @@ def listar_entregas(farmacia_id: UUID = None, pedido_id: int = None):
             query += " WHERE " + " AND ".join(filtros)
 
         cursor.execute(query, tuple(valores))
-        rows = cursor.fetchall()
-
-        entregas = []
-        for row in rows:
-            entregas.append({
-                "id": row[0],
-                "pedido_id": row[1],
-                "farmacia_id": row[2],
-                "nome_paciente": row[3],
-                "endereco_entrega": row[4],
-                "valor_pago": row[5],
-                "forma_pagamento": row[6],
-                "entregador_id": row[7],
-                "entregador_nome": row[8],
-                "data_despacho": row[9],
-            })
-
+        entregas = cursor.fetchall()
         return entregas
-
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erro ao listar entregas: {str(e)}")
