@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import {
-  X, UserRoundPen, LocationEdit, Trash, Handshake, PackagePlus, Printer,
-  FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserPlus, Save,
-  CircleX, MapPinPlus, Bike, MapPin, MapPinCheck, MapPinHouse, UserSearch, Pin
+  X, UserRoundPen, LocationEdit, Trash, Handshake, PackagePlus, Printer, Settings,
+  FileCheck2, CircleCheckBig, Truck, PackageCheck, CreditCard, UserPlus, Save, UserRoundPlus, 
+  CircleX, MapPinPlus, Bike, MapPin, MapPinCheck, MapPinHouse, UserSearch, Pin, MapPinPlus
 } from 'lucide-react'
 import api from '../services/api'
 import { toast } from 'react-toastify'
