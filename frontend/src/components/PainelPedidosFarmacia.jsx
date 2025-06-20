@@ -678,27 +678,24 @@ if (et.nome === 'Produção' && !p.status_conferencia) podeExecutar = false
 if (et.nome === 'Despacho' && !p.status_producao) podeExecutar = false
 
 if (et.nome === 'Entrega') {
-const destinoResidencial = locais.find(l =>
-l.nome === p.destino_nome || l.nome === p.destino?.nome
-)?.residencia
+  const destinoResidencial = locais.find(l =>
+    l.nome === p.destino_nome || l.nome === p.destino?.nome
+  )?.residencia
 
-if (destinoResidencial) {
-if (!p.status_despacho) podeExecutar = false
-} else {
-if (!p.status_recebimento) podeExecutar = false
-}
-}
-
-if (
-  et.nome === 'Entrega' &&
-  p.status_despacho &&
-  locais.find(l => l.nome === p.destino_nome || l.nome === p.destino?.nome)?.residencia
-) {
-  const nomeEntregador = entregadoresPorPedido[p.id]
-  if (nomeEntregador && nomeEntregador !== usuarioLogado?.nome) {
-    podeExecutar = false
+  if (destinoResidencial) {
+    if (!p.status_despacho) {
+      podeExecutar = false
+    } else {
+      const nomeEntregador = entregadoresPorPedido[p.id]
+      if (nomeEntregador && nomeEntregador !== usuarioLogado?.nome) {
+        podeExecutar = false
+      }
+    }
+  } else {
+    if (!p.status_recebimento) {
+      podeExecutar = false
+    }
   }
-}
 }
 
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
