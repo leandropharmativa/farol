@@ -1,23 +1,17 @@
-
 // frontend/src/pages/PainelFarmacia.jsx
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  LogOut,
-  PackagePlus,
-  Search,
-  Settings,
-  TowerControl,
-  Sun,
-  UserRound,
-  Truck,
-  Handshake,
+  LogOut, PackagePlus, Search, Settings, TowerControl, Sun,
+  UserRound, Truck, Handshake,
 } from 'lucide-react'
+
 import ModalConfiguracoesFarmacia from '../components/ModalConfiguracoesFarmacia'
 import ModalNovoPedido from '../components/ModalNovoPedido'
 import ModalDespachoEmMassa from '../components/ModalDespachoEmMassa'
 import ModalRecebimentoEmMassa from '../components/ModalRecebimentoEmMassa'
 import PainelPedidosFarmacia from '../components/PainelPedidosFarmacia'
+import PainelEntregador from '../components/PainelEntregador'
 import NovosPedidosStream from '../components/NovosPedidosStream'
 
 export default function PainelFarmacia() {
@@ -27,6 +21,7 @@ export default function PainelFarmacia() {
   const [modalPedidoAberto, setModalPedidoAberto] = useState(false)
   const [modalDespachoAberto, setModalDespachoAberto] = useState(false)
   const [modalRecebimentoAberto, setModalRecebimentoAberto] = useState(false)
+  const [filtroRegistro, setFiltroRegistro] = useState('')
 
   const menuRef = useRef(null)
 
@@ -35,8 +30,20 @@ export default function PainelFarmacia() {
   const tipoLogin = localStorage.getItem('tipoLogin')
   const nomeFarmacia = localStorage.getItem('nomeFarmacia') || 'Painel da Farmácia'
   const nomeUsuario = localStorage.getItem('nomeUsuario') || ''
+  const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getItem('email')
 
-  const [filtroRegistro, setFiltroRegistro] = useState('')
+  const usuarioLogado = {
+    id: localStorage.getItem('usuarioId'),
+    nome: localStorage.getItem('nomeUsuario'),
+    email: localStorage.getItem('email'),
+    permissao_impressao: localStorage.getItem('permissao_impressao') === 'true',
+    permissao_conferencia: localStorage.getItem('permissao_conferencia') === 'true',
+    permissao_producao: localStorage.getItem('permissao_producao') === 'true',
+    permissao_despacho: localStorage.getItem('permissao_despacho') === 'true',
+    permissao_recebimento: localStorage.getItem('permissao_recebimento') === 'true',
+    permissao_entrega: localStorage.getItem('permissao_entrega') === 'true',
+    permissao_registrar_pagamento: localStorage.getItem('permissao_registrar_pagamento') === 'true',
+  }
 
   const handleLogout = () => {
     localStorage.clear()
@@ -44,9 +51,7 @@ export default function PainelFarmacia() {
     navigate('/')
   }
 
-  const toggleMenu = () => {
-    setMenuAberto((prev) => !prev)
-  }
+  const toggleMenu = () => setMenuAberto((prev) => !prev)
 
   const irParaConfiguracoes = () => {
     setMenuAberto(false)
@@ -78,21 +83,6 @@ export default function PainelFarmacia() {
     }
   }, [modalConfiguracoesAberto])
 
-  const usuarioLogado = {
-    id: localStorage.getItem('usuarioId'),
-    nome: localStorage.getItem('nomeUsuario'),
-    email: localStorage.getItem('email'),
-    permissao_impressao: localStorage.getItem('permissao_impressao') === 'true',
-    permissao_conferencia: localStorage.getItem('permissao_conferencia') === 'true',
-    permissao_producao: localStorage.getItem('permissao_producao') === 'true',
-    permissao_despacho: localStorage.getItem('permissao_despacho') === 'true',
-    permissao_recebimento: localStorage.getItem('permissao_recebimento') === 'true',
-    permissao_entrega: localStorage.getItem('permissao_entrega') === 'true',
-    permissao_registrar_pagamento: localStorage.getItem('permissao_registrar_pagamento') === 'true',
-  }
-
-  const emailFarmacia = localStorage.getItem('emailFarmacia') || localStorage.getItem('email')
-
   return (
     <div className="painel-container">
       <header className="painel-header flex flex-wrap gap-4 items-center justify-between">
@@ -117,50 +107,78 @@ export default function PainelFarmacia() {
       </header>
 
       <NovosPedidosStream farmaciaId={farmaciaId} />
-      <PainelPedidosFarmacia
-        farmaciaId={farmaciaId}
-        usuarioLogado={usuarioLogado}
-        filtroRegistro={filtroRegistro}
-        emailFarmacia={emailFarmacia}
-      />
 
-      {/* Botão flutuante com submenu */}
-      <div
-        className={`fixed right-6 z-40 group transition-all duration-300 ${
-          menuAberto
-            ? tipoLogin === 'usuario'
-              ? 'bottom-[8.5rem]'
-              : 'bottom-[12rem]'
-            : 'bottom-20'
-        }`}
-      >
-        <div className="flex flex-col items-end mb-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
-          <button
-            className="botao-icone-circular botao-cinza text-farol-primary"
-            title="Despacho em massa"
-            onClick={() => setModalDespachoAberto(true)}
+      {tipoLogin === 'entregador' ? (
+        <PainelEntregador usuarioLogado={usuarioLogado} />
+      ) : (
+        <PainelPedidosFarmacia
+          farmaciaId={farmaciaId}
+          usuarioLogado={usuarioLogado}
+          filtroRegistro={filtroRegistro}
+          emailFarmacia={emailFarmacia}
+        />
+      )}
+
+      {/* Botões e modais do painel (visíveis apenas para farmácia ou usuário com permissões) */}
+      {tipoLogin !== 'entregador' && (
+        <>
+          {/* Botão flutuante */}
+          <div
+            className={`fixed right-6 z-40 group transition-all duration-300 ${
+              menuAberto
+                ? tipoLogin === 'usuario'
+                  ? 'bottom-[8.5rem]'
+                  : 'bottom-[12rem]'
+                : 'bottom-20'
+            }`}
           >
-            <Truck size={20} className="text-farol-primary" />
-          </button>
-          <button
-            className="botao-icone-circular botao-cinza"
-            title="Recebimento em massa"
-            onClick={() => setModalRecebimentoAberto(true)}
-          >
-            <Handshake size={20} className="text-farol-primary" />
-          </button>
+            <div className="flex flex-col items-end mb-2 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto">
+              <button
+                className="botao-icone-circular botao-cinza text-farol-primary"
+                title="Despacho em massa"
+                onClick={() => setModalDespachoAberto(true)}
+              >
+                <Truck size={20} className="text-farol-primary" />
+              </button>
+              <button
+                className="botao-icone-circular botao-cinza"
+                title="Recebimento em massa"
+                onClick={() => setModalRecebimentoAberto(true)}
+              >
+                <Handshake size={20} className="text-farol-primary" />
+              </button>
+            </div>
+            <button
+              className="botao-icone-circular botao-azul z-40"
+              title="Incluir Pedido"
+              onClick={() => setModalPedidoAberto(true)}
+            >
+              <PackagePlus size={26} />
+            </button>
+          </div>
 
-        </div>
-        <button
-          className="botao-icone-circular botao-azul z-40"
-          title="Incluir Pedido"
-          onClick={() => setModalPedidoAberto(true)}
-        >
-          <PackagePlus size={26} />
-        </button>
-      </div>
+          {/* Modais */}
+          <ModalNovoPedido
+            aberto={modalPedidoAberto}
+            onClose={() => setModalPedidoAberto(false)}
+            farmaciaId={farmaciaId}
+          />
+          <ModalDespachoEmMassa
+            aberto={modalDespachoAberto}
+            onClose={() => setModalDespachoAberto(false)}
+            farmaciaId={farmaciaId}
+            usuarioLogado={usuarioLogado}
+          />
+          <ModalRecebimentoEmMassa
+            aberto={modalRecebimentoAberto}
+            onClose={() => setModalRecebimentoAberto(false)}
+            farmaciaId={farmaciaId}
+            usuarioLogado={usuarioLogado}
+          />
+        </>
+      )}
 
-      {/* Menu flutuante lateral */}
+      {/* Menu lateral */}
       <div ref={menuRef} className="fixed bottom-6 right-6 z-30 flex flex-col items-end gap-2">
         <div className="relative flex flex-col items-end space-y-2">
           {tipoLogin === 'farmacia' && (
@@ -193,40 +211,12 @@ export default function PainelFarmacia() {
         </button>
       </div>
 
-      {modalPedidoAberto && (
-        <div className="modal-overlay right-align" onClick={() => setModalPedidoAberto(false)}>
-          <div onClick={e => e.stopPropagation()}>
-            <ModalNovoPedido
-              aberto={modalPedidoAberto}
-              onClose={() => setModalPedidoAberto(false)}
-              farmaciaId={farmaciaId}
-            />
-          </div>
-        </div>
-      )}
-
       <ModalConfiguracoesFarmacia
         aberto={modalConfiguracoesAberto}
         onClose={() => setModalConfiguracoesAberto(false)}
         farmaciaId={farmaciaId}
         emailFarmacia={emailLogado}
       />
-
-      {/* Modal Despacho em Massa */}
-      <ModalDespachoEmMassa
-        aberto={modalDespachoAberto}
-        onClose={() => setModalDespachoAberto(false)}
-        farmaciaId={farmaciaId}
-        usuarioLogado={usuarioLogado}
-      />
-
-      <ModalRecebimentoEmMassa
-        aberto={modalRecebimentoAberto}
-        onClose={() => setModalRecebimentoAberto(false)}
-        farmaciaId={farmaciaId}
-        usuarioLogado={usuarioLogado}
-      />
-
     </div>
   )
 }
