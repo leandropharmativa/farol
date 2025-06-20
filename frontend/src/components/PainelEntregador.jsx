@@ -30,7 +30,10 @@ export default function PainelEntregador({ usuarioLogado }) {
       top: rect.top + window.scrollY + 30,
       left: rect.left + window.scrollX
     })
-    setPedidoSelecionado(entrega)
+    setPedidoSelecionado({
+      id: entrega[1], // pedido_id
+      farmacia_id: entrega[2]
+    })
     setAbrirModal(true)
   }
 
@@ -42,7 +45,7 @@ export default function PainelEntregador({ usuarioLogado }) {
       formData.append('codigo_confirmacao', codigo)
       formData.append('observacao', observacao)
 
-      await api.post(`/pedidos/${pedidoSelecionado[1]}/registrar-etapa`, formData)
+      await api.post(`/pedidos/${pedidoSelecionado.id}/registrar-etapa`, formData)
       toast.success('Entrega confirmada com sucesso')
       setAbrirModal(false)
       carregarEntregas()
