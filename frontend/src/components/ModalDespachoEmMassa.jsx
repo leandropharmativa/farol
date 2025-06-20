@@ -104,7 +104,7 @@ export default function ModalDespachoEmMassa({ aberto, onClose, farmaciaId, usua
           value={destinoSelecionado}
           onChange={(e) => setDestinoSelecionado(e.target.value)}
         >
-          <option value="" disabled>Selecione a Unidade</option>
+          <option value="" disabled>Selecione o Destino</option>
           {locais.map(l => (
             <option key={l.id} value={l.nome}>{l.nome}</option>
           ))}
