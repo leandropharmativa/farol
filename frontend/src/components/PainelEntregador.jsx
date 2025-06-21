@@ -135,27 +135,29 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
 
       // Obter coordenadas do entregador
       const coordenadas = await obterCoordenadas()
-      let observacaoCompleta = observacao
-      
-      if (coordenadas) {
-        const coordsText = `📍 Coordenadas: ${coordenadas.latitude.toFixed(6)}, ${coordenadas.longitude.toFixed(6)} (precisão: ${coordenadas.accuracy}m)`
-        observacaoCompleta = observacao ? `${observacao}\n${coordsText}` : coordsText
-      }
 
+      // Confirmar etapa de entrega com coordenadas
       const formDataEntrega = new FormData()
       formDataEntrega.append('etapa', 'Entrega')
       formDataEntrega.append('usuario_logado_id', usuarioLogado?.id || 0)
       formDataEntrega.append('codigo_confirmacao', codigoConfirmacao)
-      formDataEntrega.append('observacao', observacaoCompleta)
+      formDataEntrega.append('observacao', observacao)
+      
+      // Adicionar coordenadas apenas se disponíveis
+      if (coordenadas) {
+        formDataEntrega.append('latitude', coordenadas.latitude)
+        formDataEntrega.append('longitude', coordenadas.longitude)
+        formDataEntrega.append('accuracy', coordenadas.accuracy)
+      }
 
       await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formDataEntrega)
 
-      // ✅ Confirmar etapa de pagamento em seguida
+      // ✅ Confirmar etapa de pagamento em seguida (sem coordenadas)
       const formDataPagamento = new FormData()
       formDataPagamento.append('etapa', 'Pagamento')
       formDataPagamento.append('usuario_logado_id', usuarioLogado?.id || 0)
       formDataPagamento.append('codigo_confirmacao', codigoConfirmacao)
-      formDataPagamento.append('observacao', observacaoCompleta)
+      formDataPagamento.append('observacao', observacao)
 
       await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formDataPagamento)
 
