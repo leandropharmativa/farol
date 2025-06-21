@@ -213,9 +213,9 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
               <Navigation size={16} />
               Navegar
             </button>
-            {e[7] && (
+            {e[6] && (
               <button
-                onClick={() => fazerLigacao(e[7])}
+                onClick={() => fazerLigacao(e[6])}
                 className="flex-1 bg-green-50 hover:bg-green-100 text-green-700 py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"
               >
                 <Phone size={16} />

@@ -12,6 +12,7 @@ def registrar_entrega(
     farmacia_id: UUID = Form(...),
     nome_paciente: str = Form(...),
     endereco_entrega: str = Form(...),
+    telefone_paciente: str = Form(None),
     entregador_id: int = Form(...),
     valor_pago: float = Form(None),
     forma_pagamento: str = Form(None)
@@ -24,11 +25,11 @@ def registrar_entrega(
         cursor.execute("""
             INSERT INTO farol_entregas (
                 pedido_id, farmacia_id, nome_paciente, endereco_entrega,
-                valor_pago, forma_pagamento, entregador_id, data_despacho
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                telefone_paciente, valor_pago, forma_pagamento, entregador_id, data_despacho
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             pedido_id, str(farmacia_id), nome_paciente.strip(), endereco_entrega.strip(),
-            valor_pago, forma_pagamento, entregador_id,
+            telefone_paciente.strip() if telefone_paciente else None, valor_pago, forma_pagamento, entregador_id,
             datetime.now()
         ))
 
@@ -50,6 +51,7 @@ def obter_entrega(pedido_id: int):
                 e.farmacia_id,
                 e.nome_paciente,
                 e.endereco_entrega,
+                e.telefone_paciente,
                 e.valor_pago,
                 e.forma_pagamento,
                 e.entregador_id,
@@ -90,6 +92,7 @@ def editar_entrega(
     pedido_id: int = Form(...),
     nome_paciente: str = Form(...),
     endereco_entrega: str = Form(...),
+    telefone_paciente: str = Form(None),
     entregador_id: int = Form(...),
     valor_pago: float = Form(None),
     forma_pagamento: str = Form(None)
@@ -103,12 +106,14 @@ def editar_entrega(
             UPDATE farol_entregas
             SET nome_paciente = %s,
                 endereco_entrega = %s,
+                telefone_paciente = %s,
                 valor_pago = %s,
                 forma_pagamento = %s,
                 entregador_id = %s
             WHERE pedido_id = %s
         """, (
             nome_paciente.strip(), endereco_entrega.strip(),
+            telefone_paciente.strip() if telefone_paciente else None,
             valor_pago, forma_pagamento, entregador_id,
             pedido_id
         ))
@@ -139,6 +144,7 @@ def listar_entregas(farmacia_id: UUID = None, pedido_id: int = None, entregador_
                 e.farmacia_id,
                 e.nome_paciente,
                 e.endereco_entrega,
+                e.telefone_paciente,
                 e.valor_pago,
                 e.forma_pagamento,
                 e.entregador_id,
