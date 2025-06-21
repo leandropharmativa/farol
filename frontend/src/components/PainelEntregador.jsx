@@ -168,8 +168,8 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
 
   const renderCardEntrega = (e, idx, isConcluida = false) => {
     const pedidoId = e[1]
-    const dataDespacho = ajustarFusoHorario(e[9])
-    const previsaoEntrega = ajustarFusoHorario(e[11])
+    const dataDespacho = ajustarFusoHorario(e[10])
+    const previsaoEntrega = ajustarFusoHorario(e[12])
     const logDespacho = logsPorPedido[pedidoId]?.find(l => l.etapa === 'Despacho')
     const observacaoDespacho = logDespacho?.observacao || ''
     const tempoRestante = formatarTempoRestante(previsaoEntrega)
@@ -213,9 +213,9 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
               <Navigation size={16} />
               Navegar
             </button>
-            {e[6] && (
+            {e[5] && (
               <button
-                onClick={() => fazerLigacao(e[6])}
+                onClick={() => fazerLigacao(e[5])}
                 className="flex-1 bg-green-50 hover:bg-green-100 text-green-700 py-2 px-3 rounded-lg text-sm font-medium flex items-center justify-center gap-2 transition-colors"
               >
                 <Phone size={16} />
@@ -231,12 +231,12 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
             <DollarSign size={18} className="text-gray-600" />
             <div className="flex-1">
-              {Number(e[5]) === 0 ? (
+              {Number(e[6]) === 0 ? (
                 <div className="text-green-700 font-medium">PAGO</div>
               ) : (
                 <div>
-                  <div className="font-medium text-gray-800">R$ {Number(e[5] || 0).toFixed(2)}</div>
-                  {e[6] && <div className="text-sm text-gray-600">via {e[6]}</div>}
+                  <div className="font-medium text-gray-800">R$ {Number(e[6] || 0).toFixed(2)}</div>
+                  {e[7] && <div className="text-sm text-gray-600">via {e[7]}</div>}
                 </div>
               )}
             </div>
@@ -270,7 +270,7 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
 
           {/* Responsável */}
           <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
-            <div>Despachado por <strong>{logDespacho?.usuario_confirmador || e[16]}</strong></div>
+            <div>Despachado por <strong>{e[19] || logDespacho?.usuario_confirmador || 'N/A'}</strong></div>
           </div>
 
           {/* Botão de Confirmação */}
