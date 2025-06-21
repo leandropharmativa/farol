@@ -681,6 +681,7 @@ className="pedido-info"
 
 <div className="flex items-center gap-2 ml-auto">
 {editandoId !== p.id && etapas.map(et => {
+// Ocultar ícone de Recebimento para pedidos domiciliares
 if (
   et.nome === 'Recebimento' &&
   destinoEhResidencia(p)
@@ -714,6 +715,11 @@ if (et.nome === 'Entrega') {
       podeExecutar = false
     }
   }
+}
+
+// Ocultar ícone de Recebimento se o pedido já foi entregue (para pedidos domiciliares)
+if (et.nome === 'Recebimento' && p.status_entrega) {
+  podeExecutar = false
 }
 
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
@@ -788,8 +794,8 @@ ${logEtapa.observacao ? `<div class='mt-1 text-farol-primary'>${logEtapa.observa
 `
 }
 
-// Atualiza status visual
-if (logEtapa && !p[et.campo]) {
+// Atualiza status visual apenas se não for Recebimento para pedidos domiciliares
+if (logEtapa && !p[et.campo] && !(et.nome === 'Recebimento' && destinoEhResidencia(p))) {
 setPedidos(prevPedidos =>
 prevPedidos.map(pedido =>
 pedido.id === p.id ? { ...pedido, [et.campo]: true } : pedido
