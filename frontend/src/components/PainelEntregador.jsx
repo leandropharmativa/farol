@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import ModalConfirmacao from './ModalConfirmacao'
 
-export default function PainelEntregador({ usuarioLogado }) {
+export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' }) {
   const [entregas, setEntregas] = useState([])
   const [pedidoSelecionado, setPedidoSelecionado] = useState(null)
   const [abrirModal, setAbrirModal] = useState(false)
@@ -24,13 +24,48 @@ export default function PainelEntregador({ usuarioLogado }) {
 
   const carregarEntregas = async () => {
     try {
-      const res = await api.get('/entregas/', {
-        params: { entregador_id: usuarioLogado?.id }
-      })
-      setEntregas(res.data)
+      let res
+      
+      // Se há filtro de registro, busca por pedido específico
+      if (filtroRegistro.trim()) {
+        try {
+          const pedidoRes = await api.get('/pedidos/buscar', {
+            params: { 
+              farmacia_id: usuarioLogado?.farmacia_id,
+              registro: filtroRegistro.trim() 
+            }
+          })
+          
+          if (pedidoRes.data.length > 0) {
+            const pedido = pedidoRes.data[0]
+            // Busca a entrega deste pedido específico
+            const entregaRes = await api.get('/entregas/', {
+              params: { entregador_id: usuarioLogado?.id }
+            })
+            
+            const entregaDoPedido = entregaRes.data.find(e => e[1] === pedido.id)
+            if (entregaDoPedido) {
+              setEntregas([entregaDoPedido])
+            } else {
+              setEntregas([])
+            }
+          } else {
+            setEntregas([])
+          }
+        } catch (err) {
+          setEntregas([])
+        }
+      } else {
+        // Busca todas as entregas do entregador
+        res = await api.get('/entregas/', {
+          params: { entregador_id: usuarioLogado?.id }
+        })
+        setEntregas(res.data)
+      }
 
+      // Carrega logs para as entregas encontradas
       const novosLogs = {}
-      await Promise.all(res.data.map(async (e) => {
+      await Promise.all(entregas.map(async (e) => {
         try {
           const pedidoId = e[1]
           const r = await api.get(`/pedidos/${pedidoId}/logs`)
@@ -117,13 +152,16 @@ export default function PainelEntregador({ usuarioLogado }) {
 
   const fazerLigacao = (telefone) => {
     if (telefone) {
-      window.open(`tel:${telefone.replace(/\D/g, '')}`, '_self')
+      // Remove todos os caracteres não numéricos e adiciona código do país se necessário
+      const numeroLimpo = telefone.replace(/\D/g, '')
+      const numeroCompleto = numeroLimpo.startsWith('55') ? numeroLimpo : `55${numeroLimpo}`
+      window.open(`tel:+${numeroCompleto}`, '_self')
     }
   }
 
   useEffect(() => {
     carregarEntregas()
-  }, [])
+  }, [filtroRegistro]) // Recarrega quando o filtro muda
 
   const entregasFiltradas = filtroStatus === 'pendentes' 
     ? entregas.filter(e => !logsPorPedido[e[1]]?.some(l => l.etapa === 'Entrega'))
@@ -131,19 +169,8 @@ export default function PainelEntregador({ usuarioLogado }) {
 
   return (
     <div className="max-w-md mx-auto p-4 space-y-4">
-      {/* Header */}
+      {/* Filtros */}
       <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="bg-farol-primary p-2 rounded-full">
-            <Bike size={24} className="text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-gray-800">Painel Entregador</h1>
-            <p className="text-sm text-gray-600">{usuarioLogado?.nome}</p>
-          </div>
-        </div>
-        
-        {/* Filtros */}
         <div className="flex gap-2">
           <button
             onClick={() => setFiltroStatus('pendentes')}
@@ -188,7 +215,7 @@ export default function PainelEntregador({ usuarioLogado }) {
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Package size={20} className="text-farol-primary" />
-                    <span className="font-bold text-gray-800">Pedido #{pedidoId}</span>
+                    <span className="font-bold text-gray-800">{pedidoId}</span>
                   </div>
                   <div className={`px-2 py-1 rounded-full text-xs font-medium ${tempoRestante.bg} ${tempoRestante.cor}`}>
                     {tempoRestante.texto}
@@ -303,15 +330,19 @@ export default function PainelEntregador({ usuarioLogado }) {
           <div className="bg-white rounded-lg shadow-sm p-8 text-center">
             <Package size={48} className="text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500 font-medium">
-              {filtroStatus === 'pendentes' 
-                ? 'Nenhuma entrega pendente encontrada.'
-                : 'Nenhuma entrega encontrada.'
+              {filtroRegistro.trim() 
+                ? 'Nenhuma entrega encontrada para este pedido.'
+                : filtroStatus === 'pendentes' 
+                  ? 'Nenhuma entrega pendente encontrada.'
+                  : 'Nenhuma entrega encontrada.'
               }
             </p>
             <p className="text-sm text-gray-400 mt-1">
-              {filtroStatus === 'pendentes' 
-                ? 'Todas as entregas foram concluídas!'
-                : 'Aguarde novas entregas serem atribuídas.'
+              {filtroRegistro.trim()
+                ? 'Verifique se o pedido foi despachado para você.'
+                : filtroStatus === 'pendentes' 
+                  ? 'Todas as entregas foram concluídas!'
+                  : 'Aguarde novas entregas serem atribuídas.'
               }
             </p>
           </div>

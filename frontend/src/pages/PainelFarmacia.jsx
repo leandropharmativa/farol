@@ -112,7 +112,7 @@ export default function PainelFarmacia() {
       )}
 
 {usuarioLogado.entregador ? (
-  <PainelEntregador usuarioLogado={usuarioLogado} />
+  <PainelEntregador usuarioLogado={usuarioLogado} filtroRegistro={filtroRegistro} />
 ) : (
   <PainelPedidosFarmacia
     farmaciaId={farmaciaId}
