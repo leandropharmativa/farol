@@ -24,6 +24,7 @@ export default function ModalConfirmacao({
 
   const [paciente, setPaciente] = useState('')
   const [endereco, setEndereco] = useState('')
+  const [telefone, setTelefone] = useState('')
   const [valorPago, setValorPago] = useState('')
   const [formaPagamento, setFormaPagamento] = useState('')
   const [codigoEntregador, setCodigoEntregador] = useState('')
@@ -94,6 +95,7 @@ export default function ModalConfirmacao({
     formData.append('farmacia_id', farmaciaId)
     formData.append('nome_paciente', paciente)
     formData.append('endereco_entrega', endereco)
+    formData.append('telefone_paciente', telefone)
     formData.append('entregador_id', entregador.id)
     formData.append('valor_pago', pagamentoJaFeito ? '' : valorPago || '')
     formData.append('forma_pagamento', pagamentoJaFeito ? '' : formaPagamento || '')
@@ -178,6 +180,13 @@ export default function ModalConfirmacao({
               className="w-full rounded-full border border-gray-300 px-3 py-2 text-sm mb-2"
               value={endereco}
               onChange={(e) => setEndereco(e.target.value)}
+            />
+            <input
+              type="tel"
+              placeholder="Telefone do paciente (opcional)"
+              className="w-full rounded-full border border-gray-300 px-3 py-2 text-sm mb-2"
+              value={telefone}
+              onChange={(e) => setTelefone(e.target.value)}
             />
             {!pagamentoJaFeito && (
               <div className="flex items-center gap-2 mb-2">
