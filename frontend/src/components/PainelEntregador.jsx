@@ -93,6 +93,35 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
     setAbrirModal(true)
   }
 
+  const obterCoordenadas = () => {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        resolve(null)
+        return
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy
+          }
+          resolve(coords)
+        },
+        (error) => {
+          console.warn('Erro ao obter localização:', error)
+          resolve(null)
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 300000 // 5 minutos
+        }
+      )
+    })
+  }
+
   const confirmarEntrega = async (codigoConfirmacao, observacao = '') => {
     const pedidoId = pedidoSelecionado?.id
     const farmaciaId = pedidoSelecionado?.farmacia_id
@@ -104,11 +133,20 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
         return
       }
 
+      // Obter coordenadas do entregador
+      const coordenadas = await obterCoordenadas()
+      let observacaoCompleta = observacao
+      
+      if (coordenadas) {
+        const coordsText = `📍 Coordenadas: ${coordenadas.latitude.toFixed(6)}, ${coordenadas.longitude.toFixed(6)} (precisão: ${coordenadas.accuracy}m)`
+        observacaoCompleta = observacao ? `${observacao}\n${coordsText}` : coordsText
+      }
+
       const formDataEntrega = new FormData()
       formDataEntrega.append('etapa', 'Entrega')
       formDataEntrega.append('usuario_logado_id', usuarioLogado?.id || 0)
       formDataEntrega.append('codigo_confirmacao', codigoConfirmacao)
-      formDataEntrega.append('observacao', observacao)
+      formDataEntrega.append('observacao', observacaoCompleta)
 
       await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formDataEntrega)
 
@@ -117,7 +155,7 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
       formDataPagamento.append('etapa', 'Pagamento')
       formDataPagamento.append('usuario_logado_id', usuarioLogado?.id || 0)
       formDataPagamento.append('codigo_confirmacao', codigoConfirmacao)
-      formDataPagamento.append('observacao', observacao)
+      formDataPagamento.append('observacao', observacaoCompleta)
 
       await api.post(`/pedidos/${pedidoId}/registrar-etapa`, formDataPagamento)
 
@@ -168,8 +206,8 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
 
   const renderCardEntrega = (e, idx, isConcluida = false) => {
     const pedidoId = e[1]
-    const dataDespacho = ajustarFusoHorario(e[10])
-    const previsaoEntrega = ajustarFusoHorario(e[12])
+    const dataDespacho = ajustarFusoHorario(e[10]) // data_despacho
+    const previsaoEntrega = ajustarFusoHorario(e[12]) // previsao_entrega
     const logDespacho = logsPorPedido[pedidoId]?.find(l => l.etapa === 'Despacho')
     const observacaoDespacho = logDespacho?.observacao || ''
     const tempoRestante = formatarTempoRestante(previsaoEntrega)
@@ -259,18 +297,18 @@ export default function PainelEntregador({ usuarioLogado, filtroRegistro = '' })
           </div>
 
           {/* Observação do Despacho */}
-          {observacaoDespacho && (
+          {e[19] && (
             <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
               <div className="flex items-start gap-2">
                 <MessageSquare size={16} className="text-yellow-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-yellow-800">{observacaoDespacho}</div>
+                <div className="text-sm text-yellow-800">{e[19]}</div>
               </div>
             </div>
           )}
 
           {/* Responsável */}
           <div className="text-xs text-gray-500 bg-gray-50 p-2 rounded">
-            <div>Despachado por <strong>{e[19] || logDespacho?.usuario_confirmador || 'N/A'}</strong></div>
+            <div>Despachado por <strong>{e[18] || logDespacho?.usuario_confirmador || 'N/A'}</strong></div>
           </div>
 
           {/* Botão de Confirmação */}
