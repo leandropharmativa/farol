@@ -371,8 +371,13 @@ def listar_logs_pedido(pedido_id: int):
         
         print(f"[DEBUG] Colunas disponíveis: {[desc[0] for desc in cursor.description]}")
         
-        linhas = cursor.fetchall()
-        print(f"[DEBUG] Logs encontrados para pedido {pedido_id}: {len(linhas)} registros")
+        # Tenta buscar os resultados, mas trata o caso onde não há nada para buscar
+        try:
+            linhas = cursor.fetchall()
+            print(f"[DEBUG] Logs encontrados para pedido {pedido_id}: {len(linhas)} registros")
+        except Exception as fetch_error:
+            print(f"[DEBUG] Erro ao buscar resultados para pedido {pedido_id}: {fetch_error}")
+            return []
         
         if not linhas:
             return []
