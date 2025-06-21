@@ -336,6 +336,8 @@ async def stream_pedidos(request: Request, farmacia_id: UUID = Query(...)):
 @router.get("/pedidos/{pedido_id}/logs")
 def listar_logs_pedido(pedido_id: int):
     try:
+        print(f"[DEBUG] Buscando logs para pedido {pedido_id}")
+        
         cursor.execute("""
             SELECT 
                 l.id,
@@ -354,15 +356,27 @@ def listar_logs_pedido(pedido_id: int):
             ORDER BY l.data_hora DESC
         """, (pedido_id,))
         
+        # Verifica se há resultados antes de tentar buscar
+        if cursor.description is None:
+            print(f"[DEBUG] Nenhum resultado para pedido {pedido_id}")
+            return []
+        
         linhas = cursor.fetchall()
+        print(f"[DEBUG] Logs encontrados para pedido {pedido_id}: {len(linhas)} registros")
+        
         if not linhas:
             return []
 
         colunas = [desc[0] for desc in cursor.description]
-        return [dict(zip(colunas, row)) for row in linhas]
+        resultado = [dict(zip(colunas, row)) for row in linhas]
+        print(f"[DEBUG] Logs processados com sucesso para pedido {pedido_id}")
+        return resultado
     
     except Exception as e:
         print(f"[ERRO] Falha ao buscar logs do pedido {pedido_id}: {str(e)}")
+        print(f"[ERRO] Tipo de erro: {type(e).__name__}")
+        import traceback
+        print(f"[ERRO] Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Erro ao buscar logs: {str(e)}")
 
 @router.get("/pedidos/{pedido_id}")

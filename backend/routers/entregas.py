@@ -67,6 +67,12 @@ def obter_entrega(pedido_id: int):
             LEFT JOIN farol_farmacia_usuarios u ON e.entregador_id = u.id
             WHERE e.pedido_id = %s
         """, (pedido_id,))
+        
+        # Verifica se há resultados antes de tentar buscar
+        if cursor.description is None:
+            print(f"[DEBUG] Nenhum resultado de entrega para pedido {pedido_id}")
+            raise HTTPException(status_code=404, detail="Entrega não encontrada.")
+        
         entrega = cursor.fetchone()
         print(f"[DEBUG] Entrega encontrada para pedido {pedido_id}: {entrega is not None}")
         
