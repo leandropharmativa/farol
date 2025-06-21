@@ -310,10 +310,18 @@ def listar_pedidos(farmacia_id: UUID):
         WHERE p.farmacia_id = %s
         ORDER BY p.data_criacao DESC
     """, (str(farmacia_id),))
+    
     if cursor.description is None:
         return []
+    
     colunas = [desc[0] for desc in cursor.description]
-    return [dict(zip(colunas, row)) for row in cursor.fetchall()]
+    
+    try:
+        linhas = cursor.fetchall()
+        return [dict(zip(colunas, row)) for row in linhas]
+    except Exception as fetch_error:
+        print(f"[DEBUG] Erro ao buscar pedidos para farmacia {farmacia_id}: {fetch_error}")
+        return []
 
 @router.get("/pedidos/stream")
 async def stream_pedidos(request: Request, farmacia_id: UUID = Query(...)):
@@ -338,12 +346,7 @@ def listar_logs_pedido(pedido_id: int):
     try:
         print(f"[DEBUG] Buscando logs para pedido {pedido_id}")
         
-        # Primeiro verifica se o pedido existe
-        cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE id = %s", (pedido_id,))
-        if not cursor.fetchone():
-            print(f"[DEBUG] Pedido {pedido_id} não existe")
-            return []
-        
+        # Query única que verifica se o pedido existe e busca os logs em uma só operação
         cursor.execute("""
             SELECT 
                 l.id,
@@ -358,6 +361,7 @@ def listar_logs_pedido(pedido_id: int):
             FROM farol_farmacia_pedido_logs l
             LEFT JOIN farol_farmacia_usuarios u1 ON l.usuario_logado_id = u1.id
             LEFT JOIN farol_farmacia_usuarios u2 ON l.usuario_confirmador_id = u2.id
+            INNER JOIN farol_farmacia_pedidos p ON l.pedido_id = p.id
             WHERE l.pedido_id = %s
             ORDER BY l.data_hora DESC
         """, (pedido_id,))
@@ -430,8 +434,17 @@ def obter_pedido(pedido_id: int):
         LEFT JOIN farol_farmacia_locais l_destino ON p.destino_id = l_destino.id
         WHERE p.id = %s
     """, (pedido_id,))
-    row = cursor.fetchone()
-    if not row or cursor.description is None:
+    
+    if cursor.description is None:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
-    colunas = [desc[0] for desc in cursor.description]
-    return dict(zip(colunas, row))
+    
+    try:
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Pedido não encontrado")
+        
+        colunas = [desc[0] for desc in cursor.description]
+        return dict(zip(colunas, row))
+    except Exception as fetch_error:
+        print(f"[DEBUG] Erro ao buscar pedido {pedido_id}: {fetch_error}")
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
