@@ -42,15 +42,7 @@ def obter_entrega(pedido_id: int):
     try:
         print(f"[DEBUG] Buscando entrega para pedido {pedido_id}")
         
-        # Primeiro verifica se o pedido existe
-        cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE id = %s", (pedido_id,))
-        pedido_existe = cursor.fetchone()
-        print(f"[DEBUG] Pedido {pedido_id} existe: {pedido_existe is not None}")
-        
-        if not pedido_existe:
-            raise HTTPException(status_code=404, detail="Pedido não encontrado.")
-        
-        # Depois busca a entrega
+        # Query única que verifica se o pedido existe e busca a entrega
         cursor.execute("""
             SELECT
                 e.id,
@@ -65,6 +57,7 @@ def obter_entrega(pedido_id: int):
                 e.data_despacho
             FROM farol_entregas e
             LEFT JOIN farol_farmacia_usuarios u ON e.entregador_id = u.id
+            INNER JOIN farol_farmacia_pedidos p ON e.pedido_id = p.id
             WHERE e.pedido_id = %s
         """, (pedido_id,))
         
@@ -73,8 +66,12 @@ def obter_entrega(pedido_id: int):
             print(f"[DEBUG] Nenhum resultado de entrega para pedido {pedido_id}")
             raise HTTPException(status_code=404, detail="Entrega não encontrada.")
         
-        entrega = cursor.fetchone()
-        print(f"[DEBUG] Entrega encontrada para pedido {pedido_id}: {entrega is not None}")
+        try:
+            entrega = cursor.fetchone()
+            print(f"[DEBUG] Entrega encontrada para pedido {pedido_id}: {entrega is not None}")
+        except Exception as fetch_error:
+            print(f"[DEBUG] Erro ao buscar entrega para pedido {pedido_id}: {fetch_error}")
+            raise HTTPException(status_code=404, detail="Entrega não encontrada.")
         
         if not entrega:
             raise HTTPException(status_code=404, detail="Entrega não encontrada.")
