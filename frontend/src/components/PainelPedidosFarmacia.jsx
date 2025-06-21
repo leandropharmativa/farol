@@ -77,24 +77,31 @@ const carregarPedidos = async () => {
 
     setPedidos(pedidosCarregados)
 
-    // 👇 Adiciona aqui a parte dos entregadores:
-    const entregadores = {}
-    await Promise.all(pedidosCarregados.map(async (p) => {
-      // Só busca entregador se o pedido foi despachado E é residencial
-      if (p.status_despacho && destinoEhResidencia(p)) {
+    // 👇 Busca o nome do entregador para cada pedido despachado e residencial
+    const entregadoresPromises = pedidosCarregados
+      .filter(p => p.status_despacho && destinoEhResidencia(p))
+      .map(async (p) => {
         try {
           const res = await api.get(`/entregas/${p.id}`)
-          const nomeEntregador = res.data?.[8]
-          if (nomeEntregador) entregadores[p.id] = nomeEntregador
+          const nomeEntregador = res.data?.[8] // Posição 8 é o nome_entregador
+          return { pedidoId: p.id, nome: nomeEntregador }
         } catch (e) {
-          // Se retornar 404, significa que não há entrega registrada (normal)
           if (e.response?.status !== 404) {
             console.warn(`Erro ao buscar entregador do pedido ${p.id}`, e)
           }
+          return { pedidoId: p.id, nome: null }
         }
+      })
+    
+    const entregadoresResultados = await Promise.all(entregadoresPromises)
+    const entregadoresMap = entregadoresResultados.reduce((acc, curr) => {
+      if (curr.nome) {
+        acc[curr.pedidoId] = curr.nome
       }
-    }))
-    setEntregadoresPorPedido(entregadores)
+      return acc
+    }, {})
+
+    setEntregadoresPorPedido(entregadoresMap)
 
   } catch (err) {
     toast.error('Erro ao carregar pedidos')
@@ -913,7 +920,6 @@ onClick={() => iniciarEdicao(p)}
 
 </div>
 </div>
-</div>
 ))}
 </div>
 
@@ -924,14 +930,13 @@ console.log('🏠 Destino é residência?', destinoEhResidencia(pedidoSelecionad
 
 return (
 <ModalConfirmacao
-titulo={etapaSelecionada}
-farmaciaId={farmaciaId}
-destinoEhResidencia={destinoEhResidencia(pedidoSelecionadoObj)}
-onConfirmar={confirmarEtapa}
-onCancelar={() => setAbrirModal(false)}
-IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
+  titulo={etapaSelecionada}
+  farmaciaId={farmaciaId}
+  destinoEhResidencia={destinoEhResidencia(pedidoSelecionadoObj)}
+  onConfirmar={confirmarEtapa}
+  onCancelar={() => setAbrirModal(false)}
+  IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
 />
-
 )
 })()}
 
