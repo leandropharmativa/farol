@@ -323,6 +323,55 @@ def listar_pedidos(farmacia_id: UUID):
         print(f"[DEBUG] Erro ao buscar pedidos para farmacia {farmacia_id}: {fetch_error}")
         return []
 
+@router.get("/pedidos/buscar")
+def buscar_pedidos_por_registro(farmacia_id: UUID, registro: str = ""):
+    """
+    Busca pedidos por registro em todos os pedidos da farmácia
+    """
+    try:
+        cursor.execute("""
+            SELECT 
+                p.id,
+                p.registro,
+                p.previsao_entrega,
+                p.data_criacao,
+                p.status_inclusao,
+                p.status_impressao,
+                p.status_conferencia,
+                p.status_producao,
+                p.status_despacho,
+                p.status_entrega,
+                p.status_pagamento,
+                p.status_recebimento,  
+                p.receita_arquivo,
+                u.nome AS atendente,
+                l_origem.nome AS origem_nome,
+                l_destino.nome AS destino_nome
+            FROM farol_farmacia_pedidos p
+            LEFT JOIN farol_farmacia_usuarios u ON p.atendente_id = u.id
+            LEFT JOIN farol_farmacia_locais l_origem ON p.origem_id = l_origem.id
+            LEFT JOIN farol_farmacia_locais l_destino ON p.destino_id = l_destino.id
+            WHERE p.farmacia_id = %s
+            AND p.registro ILIKE %s
+            ORDER BY p.data_criacao DESC
+        """, (str(farmacia_id), f"%{registro}%"))
+        
+        if cursor.description is None:
+            return []
+        
+        colunas = [desc[0] for desc in cursor.description]
+        
+        try:
+            linhas = cursor.fetchall()
+            return [dict(zip(colunas, row)) for row in linhas]
+        except Exception as fetch_error:
+            print(f"[DEBUG] Erro ao buscar pedidos por registro para farmacia {farmacia_id}: {fetch_error}")
+            return []
+    
+    except Exception as e:
+        print(f"[ERRO] Falha ao buscar pedidos por registro: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Erro ao buscar pedidos: {str(e)}")
+
 @router.get("/pedidos/stream")
 async def stream_pedidos(request: Request, farmacia_id: UUID = Query(...)):
     queue = asyncio.Queue()
@@ -448,52 +497,3 @@ def obter_pedido(pedido_id: int):
     except Exception as fetch_error:
         print(f"[DEBUG] Erro ao buscar pedido {pedido_id}: {fetch_error}")
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
-
-@router.get("/pedidos/buscar")
-def buscar_pedidos_por_registro(farmacia_id: UUID, registro: str = ""):
-    """
-    Busca pedidos por registro em todos os pedidos da farmácia
-    """
-    try:
-        cursor.execute("""
-            SELECT 
-                p.id,
-                p.registro,
-                p.previsao_entrega,
-                p.data_criacao,
-                p.status_inclusao,
-                p.status_impressao,
-                p.status_conferencia,
-                p.status_producao,
-                p.status_despacho,
-                p.status_entrega,
-                p.status_pagamento,
-                p.status_recebimento,  
-                p.receita_arquivo,
-                u.nome AS atendente,
-                l_origem.nome AS origem_nome,
-                l_destino.nome AS destino_nome
-            FROM farol_farmacia_pedidos p
-            LEFT JOIN farol_farmacia_usuarios u ON p.atendente_id = u.id
-            LEFT JOIN farol_farmacia_locais l_origem ON p.origem_id = l_origem.id
-            LEFT JOIN farol_farmacia_locais l_destino ON p.destino_id = l_destino.id
-            WHERE p.farmacia_id = %s
-            AND p.registro ILIKE %s
-            ORDER BY p.data_criacao DESC
-        """, (str(farmacia_id), f"%{registro}%"))
-        
-        if cursor.description is None:
-            return []
-        
-        colunas = [desc[0] for desc in cursor.description]
-        
-        try:
-            linhas = cursor.fetchall()
-            return [dict(zip(colunas, row)) for row in linhas]
-        except Exception as fetch_error:
-            print(f"[DEBUG] Erro ao buscar pedidos por registro para farmacia {farmacia_id}: {fetch_error}")
-            return []
-    
-    except Exception as e:
-        print(f"[ERRO] Falha ao buscar pedidos por registro: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Erro ao buscar pedidos: {str(e)}")
