@@ -40,6 +40,12 @@ def registrar_entrega(
 @router.get("/entregas/{pedido_id}")
 def obter_entrega(pedido_id: int):
     try:
+        # Primeiro verifica se o pedido existe
+        cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE id = %s", (pedido_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail="Pedido não encontrado.")
+        
+        # Depois busca a entrega
         cursor.execute("""
             SELECT
                 e.id,
@@ -59,8 +65,14 @@ def obter_entrega(pedido_id: int):
         entrega = cursor.fetchone()
         if not entrega:
             raise HTTPException(status_code=404, detail="Entrega não encontrada.")
-        return entrega
+        
+        # Retorna os dados como lista para manter compatibilidade com o frontend
+        return list(entrega)
+    except HTTPException:
+        # Re-raise HTTP exceptions (como 404)
+        raise
     except Exception as e:
+        print(f"[ERRO] Falha ao buscar entrega do pedido {pedido_id}: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Erro ao obter entrega: {str(e)}")
 
 @router.post("/entregas/editar")
