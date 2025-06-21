@@ -182,11 +182,11 @@ export default function ModalConfirmacao({
             {!pagamentoJaFeito && (
               <div className="flex gap-2 mb-2">
                 <div className="w-1/2 relative">
-                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-xs">R$</span>
                   <input
                     type="number"
                     placeholder="0,00"
-                    className="w-full rounded-full border border-gray-300 pl-8 pr-3 py-2 text-sm"
+                    className="w-full rounded-full border border-gray-300 pl-6 pr-3 py-2 text-sm"
                     value={valorPago}
                     onChange={(e) => setValorPago(e.target.value)}
                   />
