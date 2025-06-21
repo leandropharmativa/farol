@@ -64,8 +64,8 @@ const carregarPedidos = async () => {
     // 👇 Adiciona aqui a parte dos entregadores:
     const entregadores = {}
     await Promise.all(pedidosCarregados.map(async (p) => {
-      // Só busca entregador se o pedido foi despachado
-      if (p.status_despacho) {
+      // Só busca entregador se o pedido foi despachado E é residencial
+      if (p.status_despacho && destinoEhResidencia(p)) {
         try {
           const res = await api.get(`/entregas/${p.id}`)
           const nomeEntregador = res.data?.[8]

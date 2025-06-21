@@ -40,9 +40,14 @@ def registrar_entrega(
 @router.get("/entregas/{pedido_id}")
 def obter_entrega(pedido_id: int):
     try:
+        print(f"[DEBUG] Buscando entrega para pedido {pedido_id}")
+        
         # Primeiro verifica se o pedido existe
         cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE id = %s", (pedido_id,))
-        if not cursor.fetchone():
+        pedido_existe = cursor.fetchone()
+        print(f"[DEBUG] Pedido {pedido_id} existe: {pedido_existe is not None}")
+        
+        if not pedido_existe:
             raise HTTPException(status_code=404, detail="Pedido não encontrado.")
         
         # Depois busca a entrega
@@ -63,6 +68,8 @@ def obter_entrega(pedido_id: int):
             WHERE e.pedido_id = %s
         """, (pedido_id,))
         entrega = cursor.fetchone()
+        print(f"[DEBUG] Entrega encontrada para pedido {pedido_id}: {entrega is not None}")
+        
         if not entrega:
             raise HTTPException(status_code=404, detail="Entrega não encontrada.")
         
