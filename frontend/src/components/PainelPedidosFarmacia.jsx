@@ -44,20 +44,36 @@ l.nome?.trim().toLowerCase() === pedido.destino_nome?.trim().toLowerCase()
 
 const carregarPedidos = async () => {
   try {
-    const res = await api.get('/pedidos/listar', {
-      params: { farmacia_id: farmaciaId }
-    })
+    let res
+    
+    // Se há filtro de registro, usa a rota de busca
+    if (filtroRegistro.trim()) {
+      res = await api.get('/pedidos/buscar', {
+        params: { 
+          farmacia_id: farmaciaId,
+          registro: filtroRegistro.trim()
+        }
+      })
+    } else {
+      // Senão, usa a rota normal de listagem
+      res = await api.get('/pedidos/listar', {
+        params: { farmacia_id: farmaciaId }
+      })
+    }
 
     let pedidosCarregados = res.data
 
-    const dataFiltroLocal = new Date(dataSelecionada).toLocaleDateString('pt-BR')
+    // Aplica filtro de data apenas se não há filtro de registro
+    if (!filtroRegistro.trim()) {
+      const dataFiltroLocal = new Date(dataSelecionada).toLocaleDateString('pt-BR')
 
-    pedidosCarregados = pedidosCarregados.filter(p => {
-      const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
-      if (!campoOriginal) return false
-      const dataCampo = new Date(campoOriginal).toLocaleDateString('pt-BR')
-      return dataCampo === dataFiltroLocal
-    })
+      pedidosCarregados = pedidosCarregados.filter(p => {
+        const campoOriginal = filtroPorPrevisao ? p.previsao_entrega : p.data_criacao
+        if (!campoOriginal) return false
+        const dataCampo = new Date(campoOriginal).toLocaleDateString('pt-BR')
+        return dataCampo === dataFiltroLocal
+      })
+    }
 
     setPedidos(pedidosCarregados)
 
@@ -220,7 +236,7 @@ if (!farmaciaId) return
 carregarPedidos()
 api.get(`/usuarios/${farmaciaId}`).then(r => setUsuarios(r.data))
 api.get(`/locais/${farmaciaId}`).then(r => setLocais(r.data))
-}, [farmaciaId, dataSelecionada, filtroPorPrevisao])
+}, [farmaciaId, dataSelecionada, filtroPorPrevisao, filtroRegistro])
 
 useEffect(() => {
 const atualizarLocal = () => carregarPedidos()
@@ -273,10 +289,6 @@ corFixasLocais[nome] = cor
 indiceCorAtual++
 return cor
 }
-
-const pedidosFiltrados = pedidos.filter(p =>
-p.registro?.toLowerCase().includes(filtroRegistro.toLowerCase())
-)
 
 const totalSolidos = pedidos.reduce((total, p) => {
 const logConf = logsPorPedido[p.id]?.find(l => l.etapa?.toLowerCase() === 'conferência')
@@ -441,7 +453,7 @@ onContextMenu={(e) => { e.preventDefault(); alterarData('ano', -1) }}
 </div>
 
 <div className="space-y-0">
-{pedidosFiltrados.map((p, index) => (
+{pedidos.map((p, index) => (
 <div key={p.id} className={`pedido-card ${index % 2 === 0 ? 'pedido-card-branco' : 'pedido-card-cinza'}`}>
 <div className="pedido-linha">
 <div className="pedido-conteudo">
