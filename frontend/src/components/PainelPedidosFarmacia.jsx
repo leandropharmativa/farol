@@ -187,7 +187,7 @@ destinoEhResidencia(pedidos.find(p => p.id === pedidoSelecionado))
 ) {
 const entrega = extras.entrega
 await api.post('/entregas/registrar', {
-pedido_id: pedidoSelecionado.id,
+pedido_id: pedidoSelecionado,
 farmacia_id: farmaciaId,
 nome_paciente: entrega.nome_paciente,
 endereco_entrega: entrega.endereco_entrega,
@@ -692,12 +692,6 @@ className="pedido-info"
 
 <div className="flex items-center gap-2 ml-auto">
 {editandoId !== p.id && etapas.map(et => {
-// Ocultar ícone de Recebimento para pedidos domiciliares
-if (
-  et.nome === 'Recebimento' &&
-  destinoEhResidencia(p)
-) return null
-
 const Icone = et.icone
 const ativo = p[et.campo]
 
@@ -708,29 +702,23 @@ if (et.nome === 'Produção' && !p.status_conferencia) podeExecutar = false
 if (et.nome === 'Despacho' && !p.status_producao) podeExecutar = false
 
 if (et.nome === 'Entrega') {
-  const destinoResidencial = locais.find(l =>
-    l.nome === p.destino_nome || l.nome === p.destino?.nome
-  )?.residencia
-
+  const destinoResidencial = destinoEhResidencia(p)
+  
   if (destinoResidencial) {
     if (!p.status_despacho) {
       podeExecutar = false
     } else {
+      // Verifica se o entregador já foi buscado e se é diferente do usuário logado
       const nomeEntregador = entregadoresPorPedido[p.id]
       if (nomeEntregador && nomeEntregador !== usuarioLogado?.nome) {
         podeExecutar = false
       }
     }
-  } else {
+  } else { // Se não for residencial
     if (!p.status_recebimento) {
       podeExecutar = false
     }
   }
-}
-
-// Ocultar ícone de Recebimento se o pedido já foi entregue (para pedidos domiciliares)
-if (et.nome === 'Recebimento' && p.status_entrega) {
-  podeExecutar = false
 }
 
 if (et.nome === 'Recebimento' && !p.status_despacho) podeExecutar = false
@@ -765,10 +753,7 @@ if (et.nome === 'Despacho' && destinoEhResidencia(p) && p.status_despacho) {
     if (nomeEntregador) {
       entregadorHTML = `
         <div class='flex items-center gap-1 text-farol-primary mb-1'>
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
-            <path fill="none" d="M0 0h24v24H0z"></path>
-            <path d="M16,1 C16.5522847,1 17,1.44771525 17,2 L17,3 L22,3 L22,9 L19.980979,9 L22.7270773,16.5448432 C22.9032836,16.9958219 23,17.4866163 23,18 C23,20.209139 21.209139,22 19,22 C17.1361606,22 15.5700603,20.7252272 15.1260175,19 L10.8739825,19 C10.4299397,20.7252272 8.86383943,22 7,22 C5.05550552,22 3.43507622,20.612512 3.0747418,18.7735658 C2.43596423,18.4396361 2,17.7707305 2,17 L2,7 C2,6.44771525 2.44771525,6 3,6 L10,6 C10.5522847,6 11,6.44771525 11,7 L11,12 C11,12.5522847 11.4477153,13 12,13 L14,13 C14.5522847,13 15,12.5522847 15,12 L15,3 L12,3 L12,1 L16,1 Z M19,16 C17.8954305,16 17,16.8954305 17,18 C17,19.1045695 17.8954305,20 19,20 C20.1045695,20 21,19.1045695 21,18 C21,17.7596672 20.9576092,17.5292353 20.8798967,17.3157736 L20.8635387,17.2724216 C20.5725256,16.5276089 19.8478776,16 19,16 Z M7,16 C5.8954305,16 5,16.8954305 5,18 C5,19.1045695 5.8954305,20 7,20 C8.1045695,20 9,19.1045695 9,18 C9,16.8954305 8.1045695,16 7,16 Z M9,8 L4,8 L4,10 L9,10 L9,8 Z M20,5 L17,5 L17,7 L20,7 L20,5 Z" />
-          </svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M2.99988 10C2.99988 9.44772 3.4476 9 3.99988 9H13.9999C14.5522 9 14.9999 9.44772 14.9999 10V12C14.9999 12.2761 14.776 12.5 14.4999 12.5H11.5C11.2239 12.5 11 12.2761 11 12V7C11 6.44772 10.5523 6 10 6H3C2.44772 6 2 6.44772 2 7V17C2 17.7707 2.43596 18.4396 3.07474 18.7736C3.43508 20.6125 5.05551 22 7 22C8.86384 22 10.4299 20.7252 10.874 19H15.126C15.5701 20.7252 17.1362 22 19 22C21.2091 22 23 20.2091 23 18C23 17.4866 22.9033 16.9958 22.7271 16.5448L19.981 9H17V3L12 3V1H16V2C16 1.44772 16.4477 1 17 1C17.5523 1 18 1.44772 18 2V3H22V9H22.019L22.019 9.01902C21.4741 11.2111 20.9419 13.3644 20.8635 17.2724C20.5725 16.5276 19.8479 16 19 16C17.8954 16 17 16.8954 17 18C17 19.1046 17.8954 20 19 20C20.1046 20 21 19.1046 21 18C21 17.7597 20.9576 17.5292 20.8799 17.3158L20.8635 17.2724C20.9419 13.3644 21.4741 11.2111 22.019 9.01902L22.019 9H22V5H18V3C18 2.44772 17.5523 2 17 2C16.4477 2 16 2.44772 16 3V5H13V7H9V10.5H12.5C12.7761 10.5 13 10.7239 13 11V12C13 13.1046 12.1046 14 11 14H4C3.44772 14 3 13.5523 3 13L2.99988 10ZM7 16C5.89543 16 5 16.8954 5 18C5 19.1046 5.89543 20 7 20C8.10457 20 9 19.1046 9 18C9 16.8954 8.10457 16 7 16Z"></path></svg>
           <span>${nomeEntregador}</span>
         </div>
       `
@@ -936,6 +921,7 @@ return (
   onConfirmar={confirmarEtapa}
   onCancelar={() => setAbrirModal(false)}
   IconeEtapa={etapas.find(e => e.nome === etapaSelecionada)?.icone}
+  pedidoId={pedidoSelecionado}
 />
 )
 })()}
