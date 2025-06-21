@@ -338,6 +338,12 @@ def listar_logs_pedido(pedido_id: int):
     try:
         print(f"[DEBUG] Buscando logs para pedido {pedido_id}")
         
+        # Primeiro verifica se o pedido existe
+        cursor.execute("SELECT 1 FROM farol_farmacia_pedidos WHERE id = %s", (pedido_id,))
+        if not cursor.fetchone():
+            print(f"[DEBUG] Pedido {pedido_id} não existe")
+            return []
+        
         cursor.execute("""
             SELECT 
                 l.id,
@@ -356,10 +362,14 @@ def listar_logs_pedido(pedido_id: int):
             ORDER BY l.data_hora DESC
         """, (pedido_id,))
         
+        print(f"[DEBUG] Query executada para pedido {pedido_id}")
+        
         # Verifica se há resultados antes de tentar buscar
         if cursor.description is None:
             print(f"[DEBUG] Nenhum resultado para pedido {pedido_id}")
             return []
+        
+        print(f"[DEBUG] Colunas disponíveis: {[desc[0] for desc in cursor.description]}")
         
         linhas = cursor.fetchall()
         print(f"[DEBUG] Logs encontrados para pedido {pedido_id}: {len(linhas)} registros")
@@ -368,8 +378,20 @@ def listar_logs_pedido(pedido_id: int):
             return []
 
         colunas = [desc[0] for desc in cursor.description]
-        resultado = [dict(zip(colunas, row)) for row in linhas]
-        print(f"[DEBUG] Logs processados com sucesso para pedido {pedido_id}")
+        print(f"[DEBUG] Processando {len(linhas)} linhas com {len(colunas)} colunas")
+        
+        resultado = []
+        for i, row in enumerate(linhas):
+            try:
+                dict_row = dict(zip(colunas, row))
+                resultado.append(dict_row)
+            except Exception as row_error:
+                print(f"[ERRO] Falha ao processar linha {i}: {row_error}")
+                print(f"[ERRO] Linha: {row}")
+                print(f"[ERRO] Colunas: {colunas}")
+                raise
+        
+        print(f"[DEBUG] Logs processados com sucesso para pedido {pedido_id}: {len(resultado)} registros")
         return resultado
     
     except Exception as e:
