@@ -100,7 +100,6 @@ export default function ModalConfirmacao({
 
     try {
       await api.post('/entregas/registrar', formData)
-      toast.success('Entrega registrada com sucesso')
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erro ao registrar entrega')
       return
@@ -182,13 +181,16 @@ export default function ModalConfirmacao({
             />
             {!pagamentoJaFeito && (
               <div className="flex gap-2 mb-2">
-                <input
-                  type="number"
-                  placeholder="Valor"
-                  className="w-1/2 rounded-full border border-gray-300 px-3 py-2 text-sm"
-                  value={valorPago}
-                  onChange={(e) => setValorPago(e.target.value)}
-                />
+                <div className="w-1/2 relative">
+                  <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                  <input
+                    type="number"
+                    placeholder="0,00"
+                    className="w-full rounded-full border border-gray-300 pl-8 pr-3 py-2 text-sm"
+                    value={valorPago}
+                    onChange={(e) => setValorPago(e.target.value)}
+                  />
+                </div>
                 <select
                   className="w-1/2 rounded-full border border-gray-300 px-3 py-2 text-sm"
                   value={formaPagamento}

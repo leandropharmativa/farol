@@ -221,7 +221,11 @@ setTooltipStates(prev => ({
 [idEtapa]: { loading: false, html: novoTooltipHTML }
 }))
 
-toast.success(`Etapa '${etapa}' registrada com sucesso`)
+toast.success(
+  etapaLower === 'despacho' && destinoEhResidencia(pedidos.find(p => p.id === pedidoSelecionado))
+    ? `Despacho e entrega registrados com sucesso`
+    : `Etapa '${etapa}' registrada com sucesso`
+)
 setAbrirModal(false)
 carregarPedidos()
 } catch (err) {
